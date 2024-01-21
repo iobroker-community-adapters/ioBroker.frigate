@@ -1,0 +1,96 @@
+{
+  "i18n": true,
+  "type": "panel",
+  "items": {
+    "host": {
+      "type": "text",
+      "label": {
+        "en": "Frigate Hostname",
+        "de": "Frigate Hostname",
+        "ru": "Имя хоста",
+        "pt": "Nome de host de fragata",
+        "nl": "Fregat-hostnaam",
+        "fr": "Nom d'hôte de la frégate",
+        "it": "Frigate Hostname",
+        "es": "Frigate Hostname",
+        "pl": "Frigate Hostname",
+        "uk": "Фрегат Хостим",
+        "zh-cn": "护卫舰主机名"
+      },
+      "newLine": true,
+      "sm": 3
+    },
+    "port": {
+      "type": "number",
+      "label": {
+        "en": "Frigate Port",
+        "de": "Frigate Port",
+        "ru": "Порт фрегата",
+        "pt": "Porto de fragata",
+        "nl": "Fregat Haven",
+        "fr": "Port de la frégate",
+        "it": "Porto di Frigate",
+        "es": "Puerto de fragata",
+        "pl": "Port fregaty",
+        "uk": "Порт фрегату",
+        "zh-cn": "护卫舰港口"
+      },
+      "newLine": true,
+      "sm": 3
+    },
+    "mqttPort": {
+      "type": "number",
+      "label": {
+        "en": "MQTT Port",
+        "de": "MQTT Port",
+        "ru": "Порт MQTT",
+        "pt": "Porta MQTT",
+        "nl": "MQTT-poort",
+        "fr": "Port MQTT",
+        "it": "Porta MQTT",
+        "es": "Puerto MQTT",
+        "pl": "Port MQTT",
+        "uk": "Порт MQTT",
+        "zh-cn": "MQTT端口"
+      },
+      "newLine": true,
+      "sm": 3
+    },
+    "mqttUser": {
+      "type": "text",
+      "label": {
+        "en": "MQTT User (Optional)",
+        "de": "MQTT User (Optional)",
+        "ru": "Пользователь MQTT (необязательно)",
+        "pt": "Usuário MQTT (opcional)",
+        "nl": "MQTT-gebruiker (optioneel)",
+        "fr": "Utilisateur MQTT (facultatif)",
+        "it": "Utente MQTT (opzionale)",
+        "es": "Usuario MQTT (opcional)",
+        "pl": "Użytkownik MQTT (opcjonalnie)",
+        "uk": "Користувач MQTT (необов'язково)",
+        "zh-cn": "MQTT用户（可选）"
+      },
+      "newLine": true,
+      "sm": 3
+    },
+    "mqttPassword": {
+      "type": "password",
+      "label": {
+        "en": "MQTT Password (Optional)",
+        "de": "MQTT Password (Optional)",
+        "ru": "Пароль MQTT (необязательно)",
+        "pt": "Senha MQTT (opcional)",
+        "nl": "MQTT-wachtwoord (optioneel)",
+        "fr": "Mot de passe MQTT (facultatif)",
+        "it": "Password MQTT (opzionale)",
+        "es": "Contraseña MQTT (opcional)",
+        "pl": "Hasło MQTT (opcjonalnie)",
+        "uk": "Пароль MQTT (необов'язково)",
+        "zh-cn": "MQTT密码（可选）"
+      },
+      "newLine": true,
+      "sm": 3
+    }
+  }
+}

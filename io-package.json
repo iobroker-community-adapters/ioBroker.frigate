@@ -1,0 +1,116 @@
+{
+  "common": {
+    "name": "frigate",
+    "version": "0.0.1",
+    "news": {
+      "0.0.1": {
+        "en": "initial release",
+        "de": "Erstveröffentlichung",
+        "ru": "Начальная версия",
+        "pt": "lançamento inicial",
+        "nl": "Eerste uitgave",
+        "fr": "Première version",
+        "it": "Versione iniziale",
+        "es": "Versión inicial",
+        "pl": "Pierwsze wydanie",
+        "uk": "Початкова версія",
+        "zh-cn": "首次出版"
+      }
+    },
+    "title": "Frigate",
+    "titleLang": {
+      "en": "Frigate",
+      "de": "Fregatte",
+      "ru": "Фрегат",
+      "pt": "Fragata",
+      "nl": "Fregat",
+      "fr": "Frégate",
+      "it": "Fregata",
+      "es": "Fragata",
+      "pl": "Fregata",
+      "uk": "Фрегат",
+      "zh-cn": "护卫舰"
+    },
+    "desc": {
+      "en": "Adapter for Frigate",
+      "de": "Adapter für Fregatte",
+      "ru": "Адаптер для Фрегата",
+      "pt": "Adaptador para Fragata",
+      "nl": "Adapter voor fregat",
+      "fr": "Adaptateur pour Frégate",
+      "it": "Adattatore per fregata",
+      "es": "Adaptador para fragata",
+      "pl": "Adapter do fregaty",
+      "uk": "Адаптер для Фрегата",
+      "zh-cn": "护卫舰适配器"
+    },
+    "authors": ["TA2k <tombox2020@gmail.com>"],
+    "keywords": ["frigate", "ki", "detection"],
+    "license": "MIT",
+    "platform": "Javascript/Node.js",
+    "main": "main.js",
+    "icon": "frigate.png",
+    "enabled": true,
+    "extIcon": "https://raw.githubusercontent.com/iobroker-community-adapters/ioBroker.frigate/main/admin/frigate.png",
+    "readme": "https://github.com/iobroker-community-adapters/ioBroker.frigate/blob/main/README.md",
+    "loglevel": "info",
+    "tier": 3,
+    "mode": "daemon",
+    "type": "alarm",
+    "compact": true,
+    "connectionType": "local",
+    "dataSource": "push",
+    "adminUI": {
+      "config": "json"
+    },
+    "dependencies": [
+      {
+        "js-controller": ">=3.3.22"
+      }
+    ],
+    "globalDependencies": [
+      {
+        "admin": ">=5.1.13"
+      }
+    ],
+    "plugins": {
+      "sentry": {
+        "dsn": "https://802f699c7aa84a62b0bcb54b31485352@sentry.iobroker.net/226"
+      }
+    }
+  },
+  "encryptedNative": ["mqttPassword"],
+  "protectedNative": ["mqttPassword"],
+  "native": {
+    "host": "",
+    "friurl": "",
+    "port": "5000",
+    "mqttPort": "1883",
+    "mqttUser": "",
+    "mqttPassword": ""
+  },
+  "objects": [],
+  "instanceObjects": [
+    {
+      "_id": "info",
+      "type": "channel",
+      "common": {
+        "name": "Information"
+      },
+      "native": {}
+    },
+    {
+      "_id": "info.connection",
+      "type": "state",
+      "common": {
+        "role": "indicator.connected",
+        "name": "Device or service connected",
+        "type": "boolean",
+        "read": true,
+        "write": false,
+        "def": false
+      },
+      "native": {}
+    }
+  ]
+}
