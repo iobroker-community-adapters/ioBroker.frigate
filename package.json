@@ -38,7 +38,7 @@
     "@alcalzone/release-script-plugin-manual-review": "^3.7.0",
     "@iobroker/testing": "^4.1.0",
     "@tsconfig/node18": "^18.2.2",
-    "@types/node": "^18.19.8",
+    "@types/node": "^20.11.5",
     "eslint": "^8.56.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-prettier": "^5.1.3",
