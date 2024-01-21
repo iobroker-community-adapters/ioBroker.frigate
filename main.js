@@ -8,8 +8,9 @@
 // you need to create an adapter
 const utils = require('@iobroker/adapter-core');
 const json2iob = require('json2iob');
-const mqtt = require('mqtt');
 const axios = require('axios').default;
+const aedes = require('aedes')();
+const server = require('net').createServer(aedes.handle);
 
 class Frigate extends utils.Adapter {
   /**
@@ -27,7 +28,8 @@ class Frigate extends utils.Adapter {
       withCredentials: true,
       timeout: 3 * 60 * 1000, //3min client timeout
     });
-    this.mqttClient = null;
+    this.clientId = 'frigate';
+    this.json2iob = new json2iob(this);
   }
 
   /**
@@ -43,60 +45,108 @@ class Frigate extends utils.Adapter {
         this.log.warn('Using friurl instead: ' + this.config.host);
       }
     }
+    await this.cleanOldObjects();
     await this.initMqtt();
   }
-
-  async initMqtt() {
-    if (this.mqttClient) {
-      this.mqttClient.end();
+  async cleanOldObjects(vin) {
+    const remoteState = await this.getObjectAsync('lastidurl');
+    if (remoteState) {
+      this.log.info('clean old states ' + vin);
+      await this.delObjectAsync('', { recursive: true });
     }
-
-    this.mqttClient = mqtt.connect('http://' + this.config.host + this.config.mqttPort, {
-      username: this.config.mqttUser,
-      password: this.config.mqttPassword,
-      keepalive: 60,
-      reconnectPeriod: 1000,
-      connectTimeout: 30 * 1000,
+    await this.setObjectNotExistsAsync('info.connection', {
+      type: 'state',
+      common: {
+        name: 'connection',
+        type: 'boolean',
+        role: 'indicator.connected',
+        read: true,
+        write: false,
+      },
+      native: {},
     });
-    this.mqttClient.on('connect', () => {
-      this.log.info('MQTT connected');
+  }
+  async initMqtt() {
+    server.listen(this.config.mqttPort, () => {
+      this.log.info('MQTT server started and listening on port ' + this.config.mqttPort);
+      this.log.info(
+        "Please enter host: '" + this.host + "' and port: '" + this.config.mqttPort + "' in frigate config",
+      );
+    });
+    aedes.on('client', (client) => {
+      this.log.info('New client: ' + client.id);
+      this.log.info('Filter for message from client: ' + client.id);
+      this.clientId = client.id;
       this.setState('info.connection', true, true);
-      if (this.mqttClient) {
-        this.mqttClient.subscribe('frigate/available', { qos: 0 });
-        this.mqttClient.subscribe('frigate/events', { qos: 0 });
+    });
+    aedes.on('clientDisconnect', (client) => {
+      this.log.info('client disconnected ' + client.id);
+      this.setState('info.connection', false, true);
+    });
+    aedes.on('publish', async (packet, client) => {
+      if (packet.payload) {
+        this.log.debug('publish' + ' ' + packet.topic + ' ' + packet.payload.toString());
+      } else {
+        this.log.debug(JSON.stringify(packet));
+      }
+      if (client && client.id === this.clientId) {
+        try {
+          const pathArray = packet.topic.split('/');
+          //remove first element
+          pathArray.shift();
+          let data = packet.payload.toString();
+          try {
+            data = JSON.parse(data);
+          } catch (error) {}
+
+          this.json2iob.parse(pathArray.join('.'), data);
+          if (pathArray[0] === 'stats') {
+            if (data.cameras) {
+              for (const key in data.cameras) {
+                await this.extendObjectAsync(key, {
+                  type: 'device',
+                  common: {
+                    name: 'Camera ' + key,
+                  },
+                  native: {},
+                });
+              }
+            }
+          }
+        } catch (error) {
+          this.log.warn(error);
+        }
       }
     });
-    this.mqttClient.on('close', () => {
-      this.log.info('MQTT closed');
-      this.setState('info.connection', false, true);
+    aedes.on('subscribe', (subscriptions, client) => {
+      this.log.info(
+        'MQTT client \x1b[32m' +
+          (client ? client.id : client) +
+          '\x1b[0m subscribed to topics: ' +
+          subscriptions.map((s) => s.topic).join('\n') +
+          ' ' +
+          'from broker' +
+          ' ' +
+          aedes.id,
+      );
     });
-    this.mqttClient.on('error', (error) => {
-      this.log.error('MQTT error: ' + error);
-      this.setState('info.connection', false, true);
+    aedes.on('unsubscribe', (subscriptions, client) => {
+      this.log.info(
+        'MQTT client \x1b[32m' +
+          (client ? client.id : client) +
+          '\x1b[0m unsubscribed to topics: ' +
+          subscriptions.join('\n') +
+          ' ' +
+          'from broker' +
+          ' ' +
+          aedes.id,
+      );
     });
-    this.mqttClient.on('message', (topic, message) => {
-      this.log.debug('MQTT message: ' + topic + ' ' + message.toString());
-      const [frigate, camera, type] = topic.split('/');
-      const data = JSON.parse(message.toString());
-      //   if (type == 'last_event') {
-      //     this.setState(frigate + '.' + camera + '.last_event', data, true);
-      //   } else if (type == 'last_thumbnail') {
-      //     this.setState(frigate + '.' + camera + '.last_thumbnail', data, true);
-      //   } else if (type == 'last_person') {
-      //     this.setState(frigate + '.' + camera + '.last_person', data, true);
-      //   } else if (type == 'last_snapshot') {
-      //     this.setState(frigate + '.' + camera + '.last_snapshot', data, true);
-      //   } else if (type == 'last_person_snapshot') {
-      //     this.setState(frigate + '.' + camera + '.last_person_snapshot', data, true);
-      //   } else if (type == 'last_snapshot_person') {
-      //     this.setState(frigate + '.' + camera + '.last_snapshot_person', data, true);
-      //   } else if (type == 'snapshot') {
-      //     this.setState(frigate + '.' + camera + '.snapshot', data, true);
-      //   }
+    aedes.on('clientError', (client, err) => {
+      this.log.warn('client error' + client.id + ' ' + err.message + ' ' + err.stack);
     });
-    this.mqttClient.on('offline', () => {
-      this.log.info('MQTT offline');
-      this.setState('info.connection', false, true);
+    aedes.on('connectionError', (client, err) => {
+      this.log.warn('client error ' + client + ' ' + err.message + ' ' + err.stack);
     });
   }
 
@@ -121,10 +171,10 @@ class Frigate extends utils.Adapter {
   onStateChange(id, state) {
     if (state) {
       // The state was changed
-      this.log.info(`state ${id} changed: ${state.val} (ack = ${state.ack})`);
+      // this.log.info(`state ${id} changed: ${state.val} (ack = ${state.ack})`);
     } else {
       // The state was deleted
-      this.log.info(`state ${id} deleted`);
+      // this.log.info(`state ${id} deleted`);
     }
   }
 }

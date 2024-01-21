@@ -84,10 +84,8 @@
   "native": {
     "host": "",
     "friurl": "",
-    "port": "5000",
-    "mqttPort": "1883",
-    "mqttUser": "",
-    "mqttPassword": ""
+    "port": 5000,
+    "mqttPort": 1883
   },
   "objects": [],
   "instanceObjects": [
