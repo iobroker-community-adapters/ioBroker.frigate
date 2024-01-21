@@ -5,8 +5,8 @@
     "host": {
       "type": "text",
       "label": {
-        "en": "Frigate Hostname",
-        "de": "Frigate Hostname",
+        "en": "Frigate Hostname (localhost or 192.168.178.100)",
+        "de": "Frigate Hostname (localhost or 192.168.178.100)",
         "ru": "Имя хоста",
         "pt": "Nome de host de fragata",
         "nl": "Fregat-hostnaam",
