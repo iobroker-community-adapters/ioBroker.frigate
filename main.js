@@ -167,7 +167,7 @@ class Frigate extends utils.Adapter {
           ' ' +
           'from broker' +
           ' ' +
-          aedes.id
+          aedes.id,
       );
     });
     aedes.on('unsubscribe', (subscriptions, client) => {
@@ -179,7 +179,7 @@ class Frigate extends utils.Adapter {
           ' ' +
           'from broker' +
           ' ' +
-          aedes.id
+          aedes.id,
       );
     });
     aedes.on('clientError', (client, err) => {
@@ -328,7 +328,7 @@ class Frigate extends utils.Adapter {
       const sendInstances = this.config.notificationInstances.replace(/ /g, '').split(',');
       let sendUser = [];
       if (this.config.notificationUsers) {
-        this.config.notificationUsers.replace(/ /g, '').split(',');
+        sendUser = this.config.notificationUsers.replace(/ /g, '').split(',');
       }
       const messageText = `${message.source} ${message.type} ${message.state}`;
       for (const sendInstance of sendInstances) {
@@ -423,7 +423,7 @@ class Frigate extends utils.Adapter {
               } else {
                 this.log.info('published ' + topic + ' ' + state.val);
               }
-            }
+            },
           );
         }
       }

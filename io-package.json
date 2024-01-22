@@ -88,7 +88,7 @@
     "notificationActive": false,
     "notificationInstances": "telegram.0",
     "notificationUsers": "",
-    "notificationCamera": true,
+    "notificationCamera": false,
     "notificationEventSnapshot": true,
     "notificationEventClip": true
   },
