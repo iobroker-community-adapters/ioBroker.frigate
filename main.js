@@ -98,6 +98,13 @@ class Frigate extends utils.Adapter {
           try {
             data = JSON.parse(data);
           } catch (error) {}
+          if (pathArray[pathArray.length - 1] === 'motion') {
+            pathArray.push('current');
+          }
+          //convert snapshot jpg to base64 with data url
+          if (pathArray[pathArray.length - 1] === 'snapshot') {
+            data = 'data:image/jpeg;base64,' + packet.payload.toString('base64');
+          }
 
           this.json2iob.parse(pathArray.join('.'), data);
           if (pathArray[0] === 'stats') {
@@ -112,6 +119,22 @@ class Frigate extends utils.Adapter {
                 });
               }
             }
+          }
+          //if last path state then create set state
+          if (pathArray[pathArray.length - 1] === 'state') {
+            const path = pathArray.slice(0, pathArray.length - 1).join('.');
+            await this.extendObjectAsync(path + '.set', {
+              type: 'state',
+              common: {
+                name: 'Set state',
+                type: typeof data,
+                role: 'state',
+                read: false,
+                write: true,
+                def: data,
+              },
+              native: {},
+            });
           }
         } catch (error) {
           this.log.warn(error);
