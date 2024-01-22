@@ -8,6 +8,10 @@
 // you need to create an adapter
 const utils = require('@iobroker/adapter-core');
 const json2iob = require('json2iob');
+const fs = require('fs');
+const { v4: uuidv4 } = require('uuid');
+const { sep } = require('path');
+const { tmpdir } = require('os');
 // @ts-ignore
 const axios = require('axios').default;
 // @ts-ignore
@@ -28,15 +32,17 @@ class Frigate extends utils.Adapter {
     this.on('unload', this.onUnload.bind(this));
     this.requestClient = axios.create({
       withCredentials: true,
-      default: {
-        headers: {
-          'User-Agent': 'ioBroker.frigate',
-        },
+
+      headers: {
+        'User-Agent': 'ioBroker.frigate',
+        accept: '*/*',
       },
+
       timeout: 3 * 60 * 1000, //3min client timeout
     });
     this.clientId = 'frigate';
     this.json2iob = new json2iob(this);
+    this.tmpDir = tmpdir();
   }
 
   /**
@@ -81,10 +87,12 @@ class Frigate extends utils.Adapter {
       this.log.info('Filter for message from client: ' + client.id);
       this.clientId = client.id;
       this.setState('info.connection', true, true);
+      this.fetchEventHistory();
     });
     aedes.on('clientDisconnect', (client) => {
       this.log.info('client disconnected ' + client.id);
       this.setState('info.connection', false, true);
+      this.setState('available', 'offline', true);
     });
     aedes.on('publish', async (packet, client) => {
       if (packet.payload) {
@@ -177,14 +185,14 @@ class Frigate extends utils.Adapter {
 
   async fetchEventHistory() {
     await this.requestClient({
-      url: this.config.friurl + '/api/events',
+      url: 'http://' + this.config.friurl + '/api/events',
       method: 'get',
       params: { limit: this.config.webnum },
     })
-      .then((response) => {
+      .then(async (response) => {
         if (response.data) {
           this.log.debug('fetchEventHistory ' + JSON.stringify(response.data));
-          this.extendObjectAsync('events.history.json', {
+          await this.extendObjectAsync('events.history.json', {
             type: 'state',
             common: {
               name: 'history json',
@@ -199,14 +207,75 @@ class Frigate extends utils.Adapter {
           for (const event of response.data) {
             event.websnap = 'http://' + this.config.friurl + '/api/events/' + event.id + '/snapshot.jpg';
             event.webclip = 'http://' + this.config.friurl + '/api/events/' + event.id + '/clip.mp4';
+            event.thumbnail = 'data:image/jpeg;base64,' + event.thumbnail;
           }
           this.json2iob.parse('events.history', response.data, { forceIndex: true });
           this.setStateAsync('events.history.json', JSON.stringify(response.data), true);
         }
       })
       .catch((error) => {
-        this.log.error(error);
+        this.log.warn('fetchEventHistory error from http://' + this.config.friurl + '/api/events');
+        if (error.response && error.response.status >= 500) {
+          this.log.warn('Cannot reach server. You can ignore this after restarting the frigate server.');
+        }
+        this.log.warn(error);
       });
+  }
+
+  async sendNotification(message, imageBuffer) {
+    if (this.config.notificationActive) {
+      const uuid = uuidv4();
+      fs.writeFileSync(`${this.tmpDir}${sep}${uuid}.jpg`, imageBuffer.toString('base64'), 'base64');
+      const sendInstances = this.config.notificationInstances.replace(/ /g, '').split(',');
+      const sendUser = this.config.notificationUsers.replace(/ /g, '').split(',');
+
+      for (const sendInstance of sendInstances) {
+        if (sendUser.length > 0) {
+          for (const user of sendUser) {
+            if (sendInstance.includes('pushover')) {
+              await this.sendToAsync(sendInstance, {
+                device: user,
+                file: `${this.tmpDir}${sep}${uuid}.jpg`,
+                title: 'Event',
+              });
+            } else if (sendInstance.includes('signal-cmb')) {
+              await this.sendToAsync(sendInstance, 'send', {
+                text: 'Event',
+                phone: user,
+              });
+            } else {
+              await this.sendToAsync(sendInstance, {
+                user: user,
+                text: 'Event',
+              });
+              await this.sendToAsync(sendInstance, {
+                user: user,
+                text: `${this.tmpDir}${sep}${uuid}.jpg`,
+              });
+            }
+          }
+        } else {
+          if (sendInstance.includes('pushover')) {
+            await this.sendToAsync(sendInstance, {
+              file: `${this.tmpDir}${sep}${uuid}.jpg`,
+              title: 'Event',
+            });
+          } else if (sendInstance.includes('signal-cmb')) {
+            await this.sendToAsync(sendInstance, 'send', {
+              text: 'Event',
+            });
+          } else {
+            await this.sendToAsync(sendInstance, 'Event');
+            await this.sendToAsync(sendInstance, `${this.tmpDir}${sep}${uuid}.jpg`);
+          }
+        }
+      }
+      try {
+        fs.unlinkSync(`${this.tmpDir}${sep}${uuid}.jpg`);
+      } catch (error) {
+        this.log.error(error);
+      }
+    }
   }
   /**
    * Is called when adapter shuts down - callback has to be called under any circumstances!

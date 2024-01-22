@@ -5,17 +5,17 @@
     "friurl": {
       "type": "text",
       "label": {
-        "en": "Frigate Hostname:Port (http://localhost:5000 or http://192.168.178.100:5000)",
-        "de": "Frigate Hostname:Port (http://localhost:5000 oder http://192.168.178.100:5000)",
-        "ru": "Frigate Hostname:Port (http://localhost:5000 или http://192.168.178.100:5000)",
-        "pt": "Nome do anfitrião:Port (http://localhost:5000 ou http://192.168.178.100:5000)",
-        "nl": "Frigate Hostname:Port (http://localhost:5000 of http://192.168.178.100:5000)",
-        "fr": "Frigate Nom d'hôte:Port (http://localhost:5000 ou http://192.168.178.100:5000)",
-        "it": "Frigate Hostname:Port (http://localhost:5000 o http://192.168.178.100:5000)",
-        "es": "Frigate Hostname:Port (http://localhost:5000 or http://192.168.178.100:5000)",
-        "pl": "Frigate Hostname: Port (http: / / localhost: 5000 lub http: / / 192.168.178.100: 5000)",
-        "uk": "Фрегат Хостим:Порт (http://localhost:5000 або http://192.168.178.100:5000)",
-        "zh-cn": "护卫舰主机名:Port(http://localhost:5000或http://192.168.178.100:5000) 护卫舰主机名:Port(英语:"
+        "en": "Frigate Hostname:Port (localhost:5000 or 192.168.178.100:5000)",
+        "de": "Frigate Hostname:Port (localhost:5000 oder 192.168.178.100:5000)",
+        "ru": "Frigate Hostname:Port (localhost:5000 или 192.168.178.100:5000)",
+        "pt": "Nome do anfitrião:Port (localhost:5000 ou 192.168.178.100:5000)",
+        "nl": "Frigate Hostname:Port (localhost:5000 of 192.168.178.100:5000)",
+        "fr": "Frigate Nom d'hôte:Port (localhost:5000 ou 192.168.178.100:5000)",
+        "it": "Frigate Hostname:Port (localhost:5000 o 192.168.178.100:5000)",
+        "es": "Frigate Hostname:Port (localhost:5000 or 192.168.178.100:5000)",
+        "pl": "Frigate Hostname: Port (localhost:5000 lub 192.168.178.100:5000)",
+        "uk": "Фрегат Хостим:Порт (localhost:5000 або 192.168.178.100:5000)",
+        "zh-cn": "护卫舰主机名:Port(localhost:5000或192.168.178.100:5000) 护卫舰主机名:Port(英语:"
       },
       "newLine": true,
       "sm": 3
@@ -55,6 +55,130 @@
       },
       "newLine": true,
       "sm": 3
+    },
+    "_notificationPanel": {
+      "type": "panel",
+      "label": {
+        "en": "Notification Settings",
+        "de": "Benachrichtigungseinstellungen",
+        "ru": "Настройки уведомлений",
+        "pt": "Configurações de notificação",
+        "nl": "Meldingsinstellingen",
+        "fr": "Paramètres de notification",
+        "it": "Impostazioni di notifica",
+        "es": "Configuración de notificación",
+        "pl": "Ustawienia powiadomień",
+        "uk": "Налаштування сповіщень",
+        "zh-cn": "通知设置"
+      },
+      "items": {
+        "notificationActive": {
+          "type": "checkbox",
+          "label": {
+            "en": "Enable Notifications",
+            "de": "Benachrichtigungen aktivieren",
+            "ru": "Включить уведомления",
+            "pt": "Ativar notificações",
+            "nl": "Meldingen inschakelen",
+            "fr": "Activer les notifications",
+            "it": "Abilita le notifiche",
+            "es": "Habilitar notificaciones",
+            "pl": "Włącz powiadomienia",
+            "uk": "Увімкнути сповіщення",
+            "zh-cn": "启用通知"
+          },
+          "newLine": true,
+          "sm": 3
+        },
+        "notificationInstances": {
+          "type": "text",
+          "label": {
+            "en": "Instances to notify (comma separated)",
+            "de": "Instanzen, die benachrichtigt werden sollen (durch Komma getrennt)",
+            "ru": "Экземпляры для уведомления (через запятую)",
+            "pt": "Instâncias para notificar (separadas por vírgula)",
+            "nl": "Instanties om op de hoogte te stellen (gescheiden door komma's)",
+            "fr": "Instances à notifier (séparées par des virgules)",
+            "it": "Istanze da notificare (separate da virgola)",
+            "es": "Instancias para notificar (separadas por comas)",
+            "pl": "Instancje do powiadomienia (oddzielone przecinkami)",
+            "uk": "Екземпляри для сповіщення (через кому)",
+            "zh-cn": "要通知的实例(逗号分隔)"
+          },
+          "newLine": true,
+          "sm": 3
+        },
+        "notificationUsers": {
+          "type": "text",
+          "label": {
+            "en": "Users to notify (comma separated)",
+            "de": "Benutzer, die benachrichtigt werden sollen (durch Komma getrennt)",
+            "ru": "Пользователи для уведомления (через запятую)",
+            "pt": "Usuários para notificar (separados por vírgula)",
+            "nl": "Gebruikers om op de hoogte te stellen (gescheiden door komma's)",
+            "fr": "Utilisateurs à notifier (séparés par des virgules)",
+            "it": "Utenti da notificare (separati da virgola)",
+            "es": "Usuarios para notificar (separados por comas)",
+            "pl": "Użytkownicy do powiadomienia (oddzielone przecinkami)",
+            "uk": "Користувачі для сповіщення (через кому)",
+            "zh-cn": "要通知的用户(逗号分隔)"
+          },
+          "newLine": true,
+          "sm": 3
+        },
+        "notificationCamera": {
+          "type": "checkbox",
+          "label": {
+            "en": "Send Snapshot from camera detection",
+            "de": "Snapshot von der Kameraerkennung senden",
+            "ru": "Отправить снимок с обнаружения камеры",
+            "pt": "Enviar instantâneo da detecção da câmera",
+            "nl": "Snapshot van cameradetectie verzenden",
+            "fr": "Envoyer un instantané de la détection de la caméra",
+            "it": "Invia snapshot dal rilevamento della fotocamera",
+            "es": "Enviar instantánea de la detección de la cámara",
+            "pl": "Wyślij migawkę z wykrywania kamery",
+            "uk": "Надіслати знімок з виявлення камери",
+            "zh-cn": "从相机检测发送快照"
+          },
+          "newLine": true,
+          "sm": 3
+        },
+        "notificationEventSnapshot": {
+          "type": "checkbox",
+          "label": {
+            "en": "Send Snapshot from event",
+            "de": "Snapshot vom Ereignis senden",
+            "ru": "Отправить снимок с события",
+            "pt": "Enviar instantâneo do evento",
+            "nl": "Snapshot van evenement verzenden",
+            "fr": "Envoyer un instantané de l'événement",
+            "it": "Invia snapshot dall'evento",
+            "es": "Enviar instantánea del evento",
+            "pl": "Wyślij migawkę z wydarzenia",
+            "uk": "Надіслати знімок з події",
+            "zh-cn": "从事件发送快照"
+          },
+          "newLine": true,
+          "sm": 3
+        },
+        "notificationEventClip": {
+          "type": "checkbox",
+          "label": {
+            "en": "Send Clip from event",
+            "de": "Clip vom Ereignis senden",
+            "ru": "Отправить клип с события",
+            "pt": "Enviar clipe do evento",
+            "nl": "Clip van evenement verzenden",
+            "fr": "Envoyer un clip de l'événement",
+            "it": "Invia clip dall'evento",
+            "es": "Enviar clip del evento",
+            "pl": "Wyślij klip z wydarzenia",
+            "uk": "Надіслати кліп з події",
+            "zh-cn": "从事件发送剪辑"
+          }
+        }
+      }
     }
   }
 }

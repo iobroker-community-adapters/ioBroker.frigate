@@ -82,9 +82,15 @@
   "encryptedNative": ["mqttPassword"],
   "protectedNative": ["mqttPassword"],
   "native": {
-    "friurl": "http://localhost:5000",
+    "friurl": "localhost:5000",
     "mqttPort": 1883,
-    "webnum": 10
+    "webnum": 10,
+    "notificationActive": false,
+    "notificationInstances": "telegram.0",
+    "notificationUsers": "",
+    "notificationCamera": true,
+    "notificationEventSnapshot": true,
+    "notificationEventClip": true
   },
   "objects": [],
   "instanceObjects": [
