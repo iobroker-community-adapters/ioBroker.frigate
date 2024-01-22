@@ -21,6 +21,25 @@
       "newLine": true,
       "sm": 3
     },
+    "_frigateHost": {
+      "type": "header",
+      "text": {
+        "en": "Enter the ioBroker Ip Address in the frigate config under mqtt->host",
+        "de": "Geben Sie die ioBroker-IP-Adresse in der Frigate-Konfiguration unter mqtt->host ein",
+        "ru": "Введите IP-адрес ioBroker в конфигурации фрегата в разделе mqtt->host",
+        "pt": "Insira o endereço IP do ioBroker na configuração do frigate em mqtt->host",
+        "nl": "Voer het ioBroker IP-adres in in de frigate-configuratie onder mqtt->host",
+        "fr": "Entrez l'adresse IP ioBroker dans la configuration du frigate sous mqtt->host",
+        "it": "Inserisci l'indirizzo IP ioBroker nella configurazione del frigate in mqtt->host",
+        "es": "Ingrese la dirección IP de ioBroker en la configuración de frigate en mqtt->host",
+        "pl": "Wprowadź adres IP ioBroker w konfiguracji frigate w mqtt->host",
+        "uk": "Введіть IP-адресу ioBroker у конфігурації фрегата в розділі mqtt->host",
+        "zh-cn": "在frigate配置中输入ioBroker IP地址->主机"
+      },
+      "size": 2,
+      "newLine": true,
+      "sm": 3
+    },
     "friurl": {
       "type": "text",
       "label": {
