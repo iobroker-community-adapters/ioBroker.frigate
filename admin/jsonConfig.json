@@ -56,9 +56,10 @@
       "newLine": true,
       "sm": 3
     },
+    "_divider": { "type": "divider" },
     "_notificationText": {
-      "type": "staticText",
-      "label": {
+      "type": "header",
+      "text": {
         "en": "Notification Settings",
         "de": "Benachrichtigungseinstellungen",
         "ru": "Настройки уведомлений",
@@ -70,7 +71,10 @@
         "pl": "Ustawienia powiadomień",
         "uk": "Налаштування сповіщень",
         "zh-cn": "通知设置"
-      }
+      },
+      "size": 1,
+      "newLine": true,
+      "sm": 3
     },
     "notificationActive": {
       "type": "checkbox",
@@ -176,7 +180,9 @@
         "pl": "Wyślij klip z wydarzenia",
         "uk": "Надіслати кліп з події",
         "zh-cn": "从事件发送剪辑"
-      }
+      },
+      "newLine": true,
+      "sm": 3
     }
   }
 }
