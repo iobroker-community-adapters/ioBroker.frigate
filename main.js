@@ -97,7 +97,9 @@ class Frigate extends utils.Adapter {
           let data = packet.payload.toString();
           try {
             data = JSON.parse(data);
-          } catch (error) {}
+          } catch (error) {
+            //do nothing
+          }
           if (pathArray[pathArray.length - 1] === 'motion') {
             pathArray.push('current');
           }
@@ -179,7 +181,7 @@ class Frigate extends utils.Adapter {
    */
   onUnload(callback) {
     try {
-      this.mqttClient && this.mqttClient.end();
+      server.close();
       callback();
     } catch (e) {
       callback();
