@@ -329,7 +329,7 @@ class Frigate extends utils.Adapter {
       let ending = '.jpg';
       const uuid = uuidv4();
 
-      if (message.clip) {
+      if (message.clip != null) {
         imageBuffer = message.clip;
         ending = '.mp4';
       }
