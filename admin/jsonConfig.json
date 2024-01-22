@@ -129,17 +129,17 @@
         "notificationCamera": {
           "type": "checkbox",
           "label": {
-            "en": "Send Snapshot from camera detection",
-            "de": "Snapshot von der Kameraerkennung senden",
-            "ru": "Отправить снимок с обнаружения камеры",
-            "pt": "Enviar instantâneo da detecção da câmera",
-            "nl": "Snapshot van cameradetectie verzenden",
-            "fr": "Envoyer un instantané de la détection de la caméra",
-            "it": "Invia snapshot dal rilevamento della fotocamera",
-            "es": "Enviar instantánea de la detección de la cámara",
-            "pl": "Wyślij migawkę z wykrywania kamery",
-            "uk": "Надіслати знімок з виявлення камери",
-            "zh-cn": "从相机检测发送快照"
+            "en": "Send detailed object snapshot",
+            "de": "Detaillierten Objekt-Snapshot senden",
+            "ru": "Отправить подробный снимок объекта",
+            "pt": "Enviar instantâneo detalhado do objeto",
+            "nl": "Gedetailleerde objectopname verzenden",
+            "fr": "Envoyer un instantané détaillé de l'objet",
+            "it": "Invia snapshot dettagliato dell'oggetto",
+            "es": "Enviar instantánea detallada del objeto",
+            "pl": "Wyślij szczegółową migawkę obiektu",
+            "uk": "Надіслати детальний знімок об'єкта",
+            "zh-cn": "发送详细的对象快照"
           },
           "newLine": true,
           "sm": 3
@@ -147,8 +147,8 @@
         "notificationEventSnapshot": {
           "type": "checkbox",
           "label": {
-            "en": "Send Snapshot from event",
-            "de": "Snapshot vom Ereignis senden",
+            "en": "Send snapshot from event",
+            "de": "Snapshot vom Event senden",
             "ru": "Отправить снимок с события",
             "pt": "Enviar instantâneo do evento",
             "nl": "Snapshot van evenement verzenden",
@@ -166,7 +166,7 @@
           "type": "checkbox",
           "label": {
             "en": "Send Clip from event",
-            "de": "Clip vom Ereignis senden",
+            "de": "Clip vom Event senden",
             "ru": "Отправить клип с события",
             "pt": "Enviar clipe do evento",
             "nl": "Clip van evenement verzenden",

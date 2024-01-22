@@ -79,6 +79,7 @@ class Frigate extends utils.Adapter {
     server.listen(this.config.mqttPort, () => {
       this.log.info('MQTT server started and listening on port ' + this.config.mqttPort);
       this.log.info("Please enter host: '" + this.host + "' and port: '" + this.config.mqttPort + "' in frigate config");
+      this.log.info("If you don't see a new client connected, please restart frigate");
     });
     aedes.on('client', (client) => {
       this.log.info('New client: ' + client.id);
@@ -126,40 +127,7 @@ class Frigate extends utils.Adapter {
           }
           // events topic trigger history fetching
           if (pathArray[pathArray.length - 1] === 'events') {
-            if (this.config.notificationEventSnapshot) {
-              let state = '';
-              let image = '';
-              if (data.after && data.after.has_snapshot) {
-                image = data.after.snapshot;
-                state = 'Event After Snapshot';
-              } else if (data.before && data.before.has_snapshot) {
-                image = data.before.snapshot;
-                state = 'Event Before Snapshot';
-              }
-              this.sendNotification({
-                source: data.camera,
-                type: data.label,
-                state: state,
-                image: image,
-              });
-            }
-            if (this.config.notificationEventClip) {
-              let state = '';
-              let clip = '';
-              if (data.after && data.after.has_clip) {
-                clip = data.after.clip;
-                state = 'Event After Clip';
-              } else if (data.before && data.before.has_clip) {
-                clip = data.before.clip;
-                state = 'Event Before Clip';
-              }
-              this.sendNotification({
-                source: data.camera,
-                type: data.label,
-                state: state,
-                clip: clip,
-              });
-            }
+            this.prepareEventNotification(data);
 
             this.fetchEventHistory();
           }
@@ -222,6 +190,90 @@ class Frigate extends utils.Adapter {
     });
   }
 
+  async prepareEventNotification(data) {
+    let state = 'Event Before';
+    let camera = data.before.camera;
+    let label = data.before.label;
+    if (this.config.notificationEventSnapshot) {
+      let imageUrl = '';
+      let image = '';
+      if (data.before.has_snapshot) {
+        state += ' Snapshot';
+        imageUrl = `http://${this.config.friurl}/api/events/${data.before.id}/snapshot.jpg`;
+      }
+      if (data.after) {
+        // image = data.after.snapshot;
+        state = 'Event After';
+        camera = data.after.camera;
+        label = data.after.label;
+
+        if (data.after.has_snapshot) {
+          imageUrl = `http://${this.config.friurl}/api/events/${data.after.id}/snapshot.jpg`;
+          state += ' Snapshot';
+        }
+      }
+      if (imageUrl) {
+        image = await this.requestClient({
+          url: imageUrl,
+          method: 'get',
+          responseType: 'arraybuffer',
+        })
+          .then((response) => {
+            if (response.data) {
+              return Buffer.from(response.data, 'binary').toString('base64');
+            }
+          })
+          .catch((error) => {
+            this.log.warn('prepareEventNotification error from ' + imageUrl);
+            if (error.response && error.response.status >= 500) {
+              this.log.warn('Cannot reach server. You can ignore this after restarting the frigate server.');
+            }
+            this.log.warn(error);
+            return '';
+          });
+        data.imageContent = image;
+      }
+      this.sendNotification({
+        source: camera,
+        type: label,
+        state: state,
+        image: image,
+      });
+    }
+    if (this.config.notificationEventClip && data.before && data.before.has_clip) {
+      let state = 'Event Before Clip';
+      let clipUrl = `http://${this.config.friurl}/api/events/${data.before.id}/clip.mp4`;
+      if (data.after && data.after.has_clip) {
+        state = 'Event After Clip';
+        clipUrl = `http://${this.config.friurl}/api/events/${data.after.id}/clip.mp4`;
+      }
+      const clip = await this.requestClient({
+        url: clipUrl,
+        method: 'get',
+        responseType: 'arraybuffer',
+      })
+        .then((response) => {
+          if (response.data) {
+            return Buffer.from(response.data, 'binary').toString('base64');
+          }
+        })
+        .catch((error) => {
+          this.log.warn('prepareEventNotification error from ' + clipUrl);
+          if (error.response && error.response.status >= 500) {
+            this.log.warn('Cannot reach server. You can ignore this after restarting the frigate server.');
+          }
+          this.log.warn(error);
+          return '';
+        });
+      this.sendNotification({
+        source: camera,
+        type: label,
+        state: state,
+        clip: clip,
+      });
+    }
+  }
+
   async fetchEventHistory() {
     await this.requestClient({
       url: 'http://' + this.config.friurl + '/api/events',
@@ -263,6 +315,7 @@ class Frigate extends utils.Adapter {
 
   async sendNotification(message) {
     if (this.config.notificationActive) {
+      this.log.debug('sendNotification ' + JSON.stringify(message));
       let imageBuffer = message.image;
       let ending = '.jpg';
       const uuid = uuidv4();
@@ -273,8 +326,11 @@ class Frigate extends utils.Adapter {
       }
       fs.writeFileSync(`${this.tmpDir}${sep}${uuid}${ending}`, imageBuffer, 'base64');
       const sendInstances = this.config.notificationInstances.replace(/ /g, '').split(',');
-      const sendUser = this.config.notificationUsers.replace(/ /g, '').split(',');
-      const messageText = `${message.source} ${message.type} erkannt. ${message.state}:`;
+      let sendUser = [];
+      if (this.config.notificationUsers) {
+        this.config.notificationUsers.replace(/ /g, '').split(',');
+      }
+      const messageText = `${message.source} ${message.type} ${message.state}`;
       for (const sendInstance of sendInstances) {
         if (sendUser.length > 0) {
           for (const user of sendUser) {
@@ -296,14 +352,14 @@ class Frigate extends utils.Adapter {
               });
               await this.sendToAsync(sendInstance, {
                 user: user,
-                text: messageText,
+                text: `${this.tmpDir}${sep}${uuid}${ending}`,
               });
             }
           }
         } else {
           if (sendInstance.includes('pushover')) {
             await this.sendToAsync(sendInstance, {
-              file: `${this.tmpDir}${sep}${uuid}.jpg`,
+              file: `${this.tmpDir}${sep}${uuid}${ending}`,
               title: messageText,
             });
           } else if (sendInstance.includes('signal-cmb')) {
@@ -311,13 +367,13 @@ class Frigate extends utils.Adapter {
               text: messageText,
             });
           } else {
-            await this.sendToAsync(sendInstance, 'Event');
+            await this.sendToAsync(sendInstance, messageText);
             await this.sendToAsync(sendInstance, `${this.tmpDir}${sep}${uuid}${ending}`);
           }
         }
       }
       try {
-        fs.unlinkSync(`${this.tmpDir}${sep}${uuid}.jpg`);
+        fs.unlinkSync(`${this.tmpDir}${sep}${uuid}${ending}`);
       } catch (error) {
         this.log.error(error);
       }
