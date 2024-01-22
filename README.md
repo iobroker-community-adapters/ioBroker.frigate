@@ -15,7 +15,76 @@
 
 ## frigate adapter for ioBroker
 
-Adapter for Frigate
+Adapter for Frigate Tool [Frigate Video](https://frigate.video/)
+
+## Setup
+
+- Enter Frigate url e.g. localhost:5000 or 192.168.178.2:5000
+- Enter MQTT port: 1883 from the frigate config
+- Enter host or ip of iobroker sytem in the frigate config under
+  ```
+  mqtt:
+    host: ioBrokerIP
+  ```
+  After Starting Frigate and the Adapter you should see a new client conntected in the log
+
+## Usage
+
+#### stats
+
+General Information about the system and cameras
+
+#### events
+
+Last Event with before and after information
+
+History of the last X events
+
+History event has a thumbnail of the event and url to the snapshot and clip
+
+#### camera
+
+Status and settings of the camera
+
+Change state State to change the settings of the camera
+
+[Detailed Information about all states](https://docs.frigate.video/integrations/mqtt/)
+
+frigate.0.camera.motion:
+
+Whether camera_name is currently detecting motion. Expected values are ON and OFF. NOTE: After motion is initially detected, ON will be set until no motion has been detected for mqtt_off_delay seconds (30 by default).
+
+frigate.0.camera.person_snapshot:
+
+Publishes a jpeg encoded frame of the detected object type. When the object is no longer detected, the highest confidence image is published or the original image is published again.
+The height and crop of snapshots can be configured in the config.
+
+## Notifcations
+
+The adapter can send snapshots and clips from events and object detection to instances like telegram, pushover and signal-cbm
+
+You can specify multiple instance or user to send snapshots or clips
+
+Active the notification in the settings to receive the snapshots or clips
+
+## Integrate in vis
+
+You can integrate snapshots and clips in the vis:
+
+Snapshot:
+
+Add a `String img src` and use as Object Id: `frigate.0.camera.person_snapshot`
+
+Add a `String img src` and use as Object Id: `frigate.0.events.history.01.thumbnail`
+
+Clips:
+
+Add a `HTML` add as HTML:
+
+```
+<video width="100%" height="auto" src="{frigate.0.events.history.01.webclip}" autoplay muted>
+</video>
+```
 
 ## Changelog
 
