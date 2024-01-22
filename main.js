@@ -78,9 +78,7 @@ class Frigate extends utils.Adapter {
   async initMqtt() {
     server.listen(this.config.mqttPort, () => {
       this.log.info('MQTT server started and listening on port ' + this.config.mqttPort);
-      this.log.info(
-        "Please enter host: '" + this.host + "' and port: '" + this.config.mqttPort + "' in frigate config",
-      );
+      this.log.info("Please enter host: '" + this.host + "' and port: '" + this.config.mqttPort + "' in frigate config");
     });
     aedes.on('client', (client) => {
       this.log.info('New client: ' + client.id);
@@ -115,6 +113,12 @@ class Frigate extends utils.Adapter {
           //convert snapshot jpg to base64 with data url
           if (pathArray[pathArray.length - 1] === 'snapshot') {
             data = 'data:image/jpeg;base64,' + packet.payload.toString('base64');
+            this.sendNotification({
+              source: pathArray[0],
+              type: pathArray[1],
+              state: pathArray[pathArray.length - 1],
+              image: packet.payload.toString('base64'),
+            });
           }
           //if last path state then make it writable
           if (pathArray[pathArray.length - 1] === 'state') {
@@ -122,6 +126,41 @@ class Frigate extends utils.Adapter {
           }
           // events topic trigger history fetching
           if (pathArray[pathArray.length - 1] === 'events') {
+            if (this.config.notificationEventSnapshot) {
+              let state = '';
+              let image = '';
+              if (data.after && data.after.has_snapshot) {
+                image = data.after.snapshot;
+                state = 'Event After Snapshot';
+              } else if (data.before && data.before.has_snapshot) {
+                image = data.before.snapshot;
+                state = 'Event Before Snapshot';
+              }
+              this.sendNotification({
+                source: data.camera,
+                type: data.label,
+                state: state,
+                image: image,
+              });
+            }
+            if (this.config.notificationEventClip) {
+              let state = '';
+              let clip = '';
+              if (data.after && data.after.has_clip) {
+                clip = data.after.clip;
+                state = 'Event After Clip';
+              } else if (data.before && data.before.has_clip) {
+                clip = data.before.clip;
+                state = 'Event Before Clip';
+              }
+              this.sendNotification({
+                source: data.camera,
+                type: data.label,
+                state: state,
+                clip: clip,
+              });
+            }
+
             this.fetchEventHistory();
           }
           // join every path item except the first one to create a flat hierarchy
@@ -160,7 +199,7 @@ class Frigate extends utils.Adapter {
           ' ' +
           'from broker' +
           ' ' +
-          aedes.id,
+          aedes.id
       );
     });
     aedes.on('unsubscribe', (subscriptions, client) => {
@@ -172,14 +211,14 @@ class Frigate extends utils.Adapter {
           ' ' +
           'from broker' +
           ' ' +
-          aedes.id,
+          aedes.id
       );
     });
     aedes.on('clientError', (client, err) => {
-      this.log.warn('client error' + client.id + ' ' + err.message + ' ' + err.stack);
+      this.log.warn('client error: ' + client.id + ' ' + err.message + ' ' + err.stack);
     });
     aedes.on('connectionError', (client, err) => {
-      this.log.warn('client error ' + client + ' ' + err.message + ' ' + err.stack);
+      this.log.warn('client error: ' + client + ' ' + err.message + ' ' + err.stack);
     });
   }
 
@@ -222,35 +261,42 @@ class Frigate extends utils.Adapter {
       });
   }
 
-  async sendNotification(message, imageBuffer) {
+  async sendNotification(message) {
     if (this.config.notificationActive) {
+      let imageBuffer = message.image;
+      let ending = '.jpg';
       const uuid = uuidv4();
-      fs.writeFileSync(`${this.tmpDir}${sep}${uuid}.jpg`, imageBuffer.toString('base64'), 'base64');
+
+      if (message.clip) {
+        imageBuffer = message.clip;
+        ending = '.mp4';
+      }
+      fs.writeFileSync(`${this.tmpDir}${sep}${uuid}${ending}`, imageBuffer, 'base64');
       const sendInstances = this.config.notificationInstances.replace(/ /g, '').split(',');
       const sendUser = this.config.notificationUsers.replace(/ /g, '').split(',');
-
+      const messageText = `${message.source} ${message.type} erkannt. ${message.state}:`;
       for (const sendInstance of sendInstances) {
         if (sendUser.length > 0) {
           for (const user of sendUser) {
             if (sendInstance.includes('pushover')) {
               await this.sendToAsync(sendInstance, {
                 device: user,
-                file: `${this.tmpDir}${sep}${uuid}.jpg`,
-                title: 'Event',
+                file: `${this.tmpDir}${sep}${uuid}${ending}`,
+                title: messageText,
               });
             } else if (sendInstance.includes('signal-cmb')) {
               await this.sendToAsync(sendInstance, 'send', {
-                text: 'Event',
+                text: messageText,
                 phone: user,
               });
             } else {
               await this.sendToAsync(sendInstance, {
                 user: user,
-                text: 'Event',
+                text: messageText,
               });
               await this.sendToAsync(sendInstance, {
                 user: user,
-                text: `${this.tmpDir}${sep}${uuid}.jpg`,
+                text: messageText,
               });
             }
           }
@@ -258,15 +304,15 @@ class Frigate extends utils.Adapter {
           if (sendInstance.includes('pushover')) {
             await this.sendToAsync(sendInstance, {
               file: `${this.tmpDir}${sep}${uuid}.jpg`,
-              title: 'Event',
+              title: messageText,
             });
           } else if (sendInstance.includes('signal-cmb')) {
             await this.sendToAsync(sendInstance, 'send', {
-              text: 'Event',
+              text: messageText,
             });
           } else {
             await this.sendToAsync(sendInstance, 'Event');
-            await this.sendToAsync(sendInstance, `${this.tmpDir}${sep}${uuid}.jpg`);
+            await this.sendToAsync(sendInstance, `${this.tmpDir}${sep}${uuid}${ending}`);
           }
         }
       }
@@ -321,7 +367,7 @@ class Frigate extends utils.Adapter {
               } else {
                 this.log.info('published ' + topic + ' ' + state.val);
               }
-            },
+            }
           );
         }
       }
