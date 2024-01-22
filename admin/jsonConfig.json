@@ -37,6 +37,24 @@
       },
       "newLine": true,
       "sm": 3
+    },
+    "webnum": {
+      "type": "number",
+      "label": {
+        "en": "Number of last Events",
+        "de": "Anzahl der letzten Events",
+        "ru": "Число последних событий",
+        "pt": "Número de últimos eventos",
+        "nl": "Aantal laatste gebeurtenissen",
+        "fr": "Nombre de derniers événements",
+        "it": "Numero degli ultimi eventi",
+        "es": "Número de últimos eventos",
+        "pl": "Liczba ostatnich zdarzeń",
+        "uk": "Кількість останніх подій",
+        "zh-cn": "上次事件数"
+      },
+      "newLine": true,
+      "sm": 3
     }
   }
 }

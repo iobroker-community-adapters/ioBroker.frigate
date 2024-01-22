@@ -28,6 +28,11 @@ class Frigate extends utils.Adapter {
     this.on('unload', this.onUnload.bind(this));
     this.requestClient = axios.create({
       withCredentials: true,
+      default: {
+        headers: {
+          'User-Agent': 'ioBroker.frigate',
+        },
+      },
       timeout: 3 * 60 * 1000, //3min client timeout
     });
     this.clientId = 'frigate';
@@ -39,7 +44,7 @@ class Frigate extends utils.Adapter {
    */
   async onReady() {
     this.setState('info.connection', false, true);
-    this.subscribeStates('*');
+    this.subscribeStates('*_state');
     if (!this.config.friurl) {
       this.log.warn('No Frigate url set');
     }
@@ -99,12 +104,6 @@ class Frigate extends utils.Adapter {
           } catch (error) {
             //do nothing
           }
-          // join every path item except the first one to create a flat hierarchy
-          if (pathArray[0] !== 'stats' || pathArray[0] !== 'events' || pathArray[0] !== 'available') {
-            const cameraId = pathArray.shift();
-            pathArray = [cameraId, pathArray.join('_')];
-          }
-
           //convert snapshot jpg to base64 with data url
           if (pathArray[pathArray.length - 1] === 'snapshot') {
             data = 'data:image/jpeg;base64,' + packet.payload.toString('base64');
@@ -113,8 +112,19 @@ class Frigate extends utils.Adapter {
           if (pathArray[pathArray.length - 1] === 'state') {
             write = true;
           }
+          // events topic trigger history fetching
+          if (pathArray[pathArray.length - 1] === 'events') {
+            this.fetchEventHistory();
+          }
+          // join every path item except the first one to create a flat hierarchy
+          if (pathArray[0] !== 'stats' && pathArray[0] !== 'events' && pathArray[0] !== 'available') {
+            const cameraId = pathArray.shift();
+            pathArray = [cameraId, pathArray.join('_')];
+          }
+          //parse json to iobroker states
           this.json2iob.parse(pathArray.join('.'), data, { write: write });
 
+          //create devices state for cameras
           if (pathArray[0] === 'stats') {
             if (data.cameras) {
               for (const key in data.cameras) {
@@ -165,6 +175,39 @@ class Frigate extends utils.Adapter {
     });
   }
 
+  async fetchEventHistory() {
+    await this.requestClient({
+      url: this.config.friurl + '/api/events',
+      method: 'get',
+      params: { limit: this.config.webnum },
+    })
+      .then((response) => {
+        if (response.data) {
+          this.log.debug('fetchEventHistory ' + JSON.stringify(response.data));
+          this.extendObjectAsync('events.history.json', {
+            type: 'state',
+            common: {
+              name: 'history json',
+              type: 'string',
+              role: 'json',
+              read: true,
+              write: false,
+            },
+            native: {},
+          });
+
+          for (const event of response.data) {
+            event.websnap = 'http://' + this.config.friurl + '/api/events/' + event.id + '/snapshot.jpg';
+            event.webclip = 'http://' + this.config.friurl + '/api/events/' + event.id + '/clip.mp4';
+          }
+          this.json2iob.parse('events.history', response.data, { forceIndex: true });
+          this.setStateAsync('events.history.json', JSON.stringify(response.data), true);
+        }
+      })
+      .catch((error) => {
+        this.log.error(error);
+      });
+  }
   /**
    * Is called when adapter shuts down - callback has to be called under any circumstances!
    * @param {() => void} callback
@@ -185,8 +228,34 @@ class Frigate extends utils.Adapter {
    */
   onStateChange(id, state) {
     if (state) {
-      // The state was changed
-      // this.log.info(`state ${id} changed: ${state.val} (ack = ${state.ack})`);
+      if (!state.ack) {
+        if (id.endsWith('_state')) {
+          //remove adapter name and instance from id
+          id = id.replace(this.name + '.' + this.instance + '.', '');
+          id = id.replace('_state', '');
+          const idArray = id.split('.');
+          const pathArray = ['frigate', ...idArray, 'set'];
+
+          const topic = pathArray.join('/');
+          this.log.debug('publish' + ' ' + topic + ' ' + state.val);
+          aedes.publish(
+            {
+              cmd: 'publish',
+              qos: 0,
+              topic: topic,
+              payload: state.val,
+              retain: false,
+            },
+            (err) => {
+              if (err) {
+                this.log.error(err);
+              } else {
+                this.log.info('published ' + topic + ' ' + state.val);
+              }
+            },
+          );
+        }
+      }
     } else {
       // The state was deleted
       // this.log.info(`state ${id} deleted`);
