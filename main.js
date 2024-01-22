@@ -223,6 +223,8 @@ class Frigate extends utils.Adapter {
             if (response.data) {
               return Buffer.from(response.data, 'binary').toString('base64');
             }
+            this.log.debug('prepareEventNotification no data from ' + imageUrl);
+            return '';
           })
           .catch((error) => {
             this.log.warn('prepareEventNotification error from ' + imageUrl);
@@ -257,6 +259,8 @@ class Frigate extends utils.Adapter {
           if (response.data) {
             return Buffer.from(response.data, 'binary').toString('base64');
           }
+          this.log.debug('prepareEventNotification no data from ' + clipUrl);
+          return '';
         })
         .catch((error) => {
           this.log.warn('prepareEventNotification error from ' + clipUrl);
