@@ -2,6 +2,25 @@
   "i18n": true,
   "type": "panel",
   "items": {
+    "_generalText": {
+      "type": "header",
+      "text": {
+        "en": "General Settings",
+        "de": "Allgemeine Einstellungen",
+        "ru": "Общие настройки",
+        "pt": "Configurações gerais",
+        "nl": "Algemene instellingen",
+        "fr": "Réglages généraux",
+        "it": "Impostazioni generali",
+        "es": "Ajustes generales",
+        "pl": "Ustawienia ogólne",
+        "uk": "Загальні налаштування",
+        "zh-cn": "常规设置"
+      },
+      "size": 1,
+      "newLine": true,
+      "sm": 3
+    },
     "friurl": {
       "type": "text",
       "label": {
@@ -56,7 +75,6 @@
       "newLine": true,
       "sm": 3
     },
-    "_divider": { "type": "divider" },
     "_notificationText": {
       "type": "header",
       "text": {
@@ -115,8 +133,8 @@
     "notificationUsers": {
       "type": "text",
       "label": {
-        "en": "Users to notify (comma separated)",
-        "de": "Benutzer, die benachrichtigt werden sollen (durch Komma getrennt)",
+        "en": "Optional: Users to notify (comma separated)",
+        "de": "Optional: Benutzer, die benachrichtigt werden sollen (durch Komma getrennt)",
         "ru": "Пользователи для уведомления (через запятую)",
         "pt": "Usuários para notificar (separados por vírgula)",
         "nl": "Gebruikers om op de hoogte te stellen (gescheiden door komma's)",
@@ -130,24 +148,7 @@
       "newLine": true,
       "sm": 3
     },
-    "notificationCamera": {
-      "type": "checkbox",
-      "label": {
-        "en": "Send detailed object snapshot",
-        "de": "Detaillierten Objekt-Snapshot senden",
-        "ru": "Отправить подробный снимок объекта",
-        "pt": "Enviar instantâneo detalhado do objeto",
-        "nl": "Gedetailleerde objectopname verzenden",
-        "fr": "Envoyer un instantané détaillé de l'objet",
-        "it": "Invia snapshot dettagliato dell'oggetto",
-        "es": "Enviar instantánea detallada del objeto",
-        "pl": "Wyślij szczegółową migawkę obiektu",
-        "uk": "Надіслати детальний знімок об'єкта",
-        "zh-cn": "发送详细的对象快照"
-      },
-      "newLine": true,
-      "sm": 3
-    },
+
     "notificationEventSnapshot": {
       "type": "checkbox",
       "label": {
@@ -180,6 +181,24 @@
         "pl": "Wyślij klip z wydarzenia",
         "uk": "Надіслати кліп з події",
         "zh-cn": "从事件发送剪辑"
+      },
+      "newLine": true,
+      "sm": 3
+    },
+    "notificationCamera": {
+      "type": "checkbox",
+      "label": {
+        "en": "Send detailed object snapshot",
+        "de": "Detaillierten Objekt-Snapshot senden",
+        "ru": "Отправить подробный снимок объекта",
+        "pt": "Enviar instantâneo detalhado do objeto",
+        "nl": "Gedetailleerde objectopname verzenden",
+        "fr": "Envoyer un instantané détaillé de l'objet",
+        "it": "Invia snapshot dettagliato dell'oggetto",
+        "es": "Enviar instantánea detallada del objeto",
+        "pl": "Wyślij szczegółową migawkę obiektu",
+        "uk": "Надіслати детальний знімок об'єкта",
+        "zh-cn": "发送详细的对象快照"
       },
       "newLine": true,
       "sm": 3
