@@ -2,59 +2,78 @@
   "i18n": true,
   "type": "panel",
   "items": {
-    "friurl": {
-      "type": "text",
+    "_generalPanel": {
+      "type": "panel",
       "label": {
-        "en": "Frigate Hostname:Port (localhost:5000 or 192.168.178.100:5000)",
-        "de": "Frigate Hostname:Port (localhost:5000 oder 192.168.178.100:5000)",
-        "ru": "Frigate Hostname:Port (localhost:5000 или 192.168.178.100:5000)",
-        "pt": "Nome do anfitrião:Port (localhost:5000 ou 192.168.178.100:5000)",
-        "nl": "Frigate Hostname:Port (localhost:5000 of 192.168.178.100:5000)",
-        "fr": "Frigate Nom d'hôte:Port (localhost:5000 ou 192.168.178.100:5000)",
-        "it": "Frigate Hostname:Port (localhost:5000 o 192.168.178.100:5000)",
-        "es": "Frigate Hostname:Port (localhost:5000 or 192.168.178.100:5000)",
-        "pl": "Frigate Hostname: Port (localhost:5000 lub 192.168.178.100:5000)",
-        "uk": "Фрегат Хостим:Порт (localhost:5000 або 192.168.178.100:5000)",
-        "zh-cn": "护卫舰主机名:Port(localhost:5000或192.168.178.100:5000) 护卫舰主机名:Port(英语:"
+        "en": "General Settings",
+        "de": "Allgemeine Einstellungen",
+        "ru": "Общие настройки",
+        "pt": "Configurações gerais",
+        "nl": "Algemene instellingen",
+        "fr": "Paramètres généraux",
+        "it": "Impostazioni generali",
+        "es": "Ajustes generales",
+        "pl": "Ustawienia ogólne",
+        "uk": "Загальні налаштування",
+        "zh-cn": "常规设置"
       },
-      "newLine": true,
-      "sm": 3
-    },
-    "mqttPort": {
-      "type": "number",
-      "label": {
-        "en": "MQTT Server Port in Frigate config",
-        "de": "MQTT Server Port in der Frigate Config",
-        "ru": "Порт MQTT",
-        "pt": "Porta MQTT",
-        "nl": "MQTT-poort",
-        "fr": "Port MQTT",
-        "it": "Porta MQTT",
-        "es": "Puerto MQTT",
-        "pl": "Port MQTT",
-        "uk": "Порт MQTT",
-        "zh-cn": "MQTT端口"
-      },
-      "newLine": true,
-      "sm": 3
-    },
-    "webnum": {
-      "type": "number",
-      "label": {
-        "en": "Number of last Events",
-        "de": "Anzahl der letzten Events",
-        "ru": "Число последних событий",
-        "pt": "Número de últimos eventos",
-        "nl": "Aantal laatste gebeurtenissen",
-        "fr": "Nombre de derniers événements",
-        "it": "Numero degli ultimi eventi",
-        "es": "Número de últimos eventos",
-        "pl": "Liczba ostatnich zdarzeń",
-        "uk": "Кількість останніх подій",
-        "zh-cn": "上次事件数"
-      },
-      "newLine": true,
-      "sm": 3
+
+      "items": {
+        "friurl": {
+          "type": "text",
+          "label": {
+            "en": "Frigate Hostname:Port (localhost:5000 or 192.168.178.100:5000)",
+            "de": "Frigate Hostname:Port (localhost:5000 oder 192.168.178.100:5000)",
+            "ru": "Frigate Hostname:Port (localhost:5000 или 192.168.178.100:5000)",
+            "pt": "Nome do anfitrião:Port (localhost:5000 ou 192.168.178.100:5000)",
+            "nl": "Frigate Hostname:Port (localhost:5000 of 192.168.178.100:5000)",
+            "fr": "Frigate Nom d'hôte:Port (localhost:5000 ou 192.168.178.100:5000)",
+            "it": "Frigate Hostname:Port (localhost:5000 o 192.168.178.100:5000)",
+            "es": "Frigate Hostname:Port (localhost:5000 or 192.168.178.100:5000)",
+            "pl": "Frigate Hostname: Port (localhost:5000 lub 192.168.178.100:5000)",
+            "uk": "Фрегат Хостим:Порт (localhost:5000 або 192.168.178.100:5000)",
+            "zh-cn": "护卫舰主机名:Port(localhost:5000或192.168.178.100:5000) 护卫舰主机名:Port(英语:"
+          },
+          "newLine": true,
+          "sm": 3
+        },
+        "mqttPort": {
+          "type": "number",
+          "label": {
+            "en": "MQTT Server Port in Frigate config",
+            "de": "MQTT Server Port in der Frigate Config",
+            "ru": "Порт MQTT",
+            "pt": "Porta MQTT",
+            "nl": "MQTT-poort",
+            "fr": "Port MQTT",
+            "it": "Porta MQTT",
+            "es": "Puerto MQTT",
+            "pl": "Port MQTT",
+            "uk": "Порт MQTT",
+            "zh-cn": "MQTT端口"
+          },
+          "newLine": true,
+          "sm": 3
+        },
+        "webnum": {
+          "type": "number",
+          "label": {
+            "en": "Number of last Events",
+            "de": "Anzahl der letzten Events",
+            "ru": "Число последних событий",
+            "pt": "Número de últimos eventos",
+            "nl": "Aantal laatste gebeurtenissen",
+            "fr": "Nombre de derniers événements",
+            "it": "Numero degli ultimi eventi",
+            "es": "Número de últimos eventos",
+            "pl": "Liczba ostatnich zdarzeń",
+            "uk": "Кількість останніх подій",
+            "zh-cn": "上次事件数"
+          },
+          "newLine": true,
+          "sm": 3
+        }
+      }
     },
     "_notificationPanel": {
       "type": "panel",
