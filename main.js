@@ -243,7 +243,8 @@ class Frigate extends utils.Adapter {
         image: image,
       });
     }
-    if (this.config.notificationEventClip && data.before && data.before.has_clip) {
+    if (this.config.notificationEventClip && data.before && data.before.has_clip && data.type === 'end') {
+      await this.sleep(5000);
       let state = 'Event Before Clip';
       let clipUrl = `http://${this.config.friurl}/api/events/${data.before.id}/clip.mp4`;
       if (data.after && data.after.has_clip) {
@@ -279,6 +280,9 @@ class Frigate extends utils.Adapter {
     }
   }
 
+  async sleep(ms) {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+  }
   async fetchEventHistory() {
     await this.requestClient({
       url: 'http://' + this.config.friurl + '/api/events',
