@@ -2,38 +2,20 @@
   "i18n": true,
   "type": "panel",
   "items": {
-    "host": {
+    "friurl": {
       "type": "text",
       "label": {
-        "en": "Frigate Hostname (localhost or 192.168.178.100)",
-        "de": "Frigate Hostname (localhost or 192.168.178.100)",
-        "ru": "Имя хоста",
-        "pt": "Nome de host de fragata",
-        "nl": "Fregat-hostnaam",
-        "fr": "Nom d'hôte de la frégate",
-        "it": "Frigate Hostname",
-        "es": "Frigate Hostname",
-        "pl": "Frigate Hostname",
-        "uk": "Фрегат Хостим",
-        "zh-cn": "护卫舰主机名"
-      },
-      "newLine": true,
-      "sm": 3
-    },
-    "port": {
-      "type": "number",
-      "label": {
-        "en": "Frigate Port",
-        "de": "Frigate Port",
-        "ru": "Порт фрегата",
-        "pt": "Porto de fragata",
-        "nl": "Fregat Haven",
-        "fr": "Port de la frégate",
-        "it": "Porto di Frigate",
-        "es": "Puerto de fragata",
-        "pl": "Port fregaty",
-        "uk": "Порт фрегату",
-        "zh-cn": "护卫舰港口"
+        "en": "Frigate Hostname:Port (http://localhost:5000 or http://192.168.178.100:5000)",
+        "de": "Frigate Hostname:Port (http://localhost:5000 oder http://192.168.178.100:5000)",
+        "ru": "Frigate Hostname:Port (http://localhost:5000 или http://192.168.178.100:5000)",
+        "pt": "Nome do anfitrião:Port (http://localhost:5000 ou http://192.168.178.100:5000)",
+        "nl": "Frigate Hostname:Port (http://localhost:5000 of http://192.168.178.100:5000)",
+        "fr": "Frigate Nom d'hôte:Port (http://localhost:5000 ou http://192.168.178.100:5000)",
+        "it": "Frigate Hostname:Port (http://localhost:5000 o http://192.168.178.100:5000)",
+        "es": "Frigate Hostname:Port (http://localhost:5000 or http://192.168.178.100:5000)",
+        "pl": "Frigate Hostname: Port (http: / / localhost: 5000 lub http: / / 192.168.178.100: 5000)",
+        "uk": "Фрегат Хостим:Порт (http://localhost:5000 або http://192.168.178.100:5000)",
+        "zh-cn": "护卫舰主机名:Port(http://localhost:5000或http://192.168.178.100:5000) 护卫舰主机名:Port(英语:"
       },
       "newLine": true,
       "sm": 3

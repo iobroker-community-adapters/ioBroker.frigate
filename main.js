@@ -8,7 +8,9 @@
 // you need to create an adapter
 const utils = require('@iobroker/adapter-core');
 const json2iob = require('json2iob');
+// @ts-ignore
 const axios = require('axios').default;
+// @ts-ignore
 const aedes = require('aedes')();
 const server = require('net').createServer(aedes.handle);
 
@@ -38,12 +40,8 @@ class Frigate extends utils.Adapter {
   async onReady() {
     this.setState('info.connection', false, true);
     this.subscribeStates('*');
-    if (!this.config.host) {
-      this.log.warn('No host set');
-      if (this.config.friurl) {
-        this.config.host = this.config.friurl.split(':')[0].replace('http://', '').replace('https://', '');
-        this.log.warn('Using friurl instead: ' + this.config.host);
-      }
+    if (!this.config.friurl) {
+      this.log.warn('No Frigate url set');
     }
     await this.cleanOldObjects();
     await this.initMqtt();
@@ -91,24 +89,32 @@ class Frigate extends utils.Adapter {
       }
       if (client && client.id === this.clientId) {
         try {
-          const pathArray = packet.topic.split('/');
+          let pathArray = packet.topic.split('/');
           //remove first element
           pathArray.shift();
           let data = packet.payload.toString();
+          let write = false;
           try {
             data = JSON.parse(data);
           } catch (error) {
             //do nothing
           }
-          if (pathArray[pathArray.length - 1] === 'motion') {
-            pathArray.push('current');
+          // join every path item except the first one to create a flat hierarchy
+          if (pathArray[0] !== 'stats' || pathArray[0] !== 'events' || pathArray[0] !== 'available') {
+            const cameraId = pathArray.shift();
+            pathArray = [cameraId, pathArray.join('_')];
           }
+
           //convert snapshot jpg to base64 with data url
           if (pathArray[pathArray.length - 1] === 'snapshot') {
             data = 'data:image/jpeg;base64,' + packet.payload.toString('base64');
           }
+          //if last path state then make it writable
+          if (pathArray[pathArray.length - 1] === 'state') {
+            write = true;
+          }
+          this.json2iob.parse(pathArray.join('.'), data, { write: write });
 
-          this.json2iob.parse(pathArray.join('.'), data);
           if (pathArray[0] === 'stats') {
             if (data.cameras) {
               for (const key in data.cameras) {
@@ -121,22 +127,6 @@ class Frigate extends utils.Adapter {
                 });
               }
             }
-          }
-          //if last path state then create set state
-          if (pathArray[pathArray.length - 1] === 'state') {
-            const path = pathArray.slice(0, pathArray.length - 1).join('.');
-            await this.extendObjectAsync(path + '.set', {
-              type: 'state',
-              common: {
-                name: 'Set state',
-                type: typeof data,
-                role: 'state',
-                read: false,
-                write: true,
-                def: data,
-              },
-              native: {},
-            });
           }
         } catch (error) {
           this.log.warn(error);

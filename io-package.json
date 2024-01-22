@@ -82,9 +82,7 @@
   "encryptedNative": ["mqttPassword"],
   "protectedNative": ["mqttPassword"],
   "native": {
-    "host": "",
-    "friurl": "",
-    "port": 5000,
+    "friurl": "http://localhost:5000",
     "mqttPort": 1883
   },
   "objects": [],
