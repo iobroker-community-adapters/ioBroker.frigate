@@ -79,7 +79,7 @@ class Frigate extends utils.Adapter {
     server.listen(this.config.mqttPort, () => {
       this.log.info('MQTT server started and listening on port ' + this.config.mqttPort);
       this.log.info("Please enter host: '" + this.host + "' and port: '" + this.config.mqttPort + "' in frigate config");
-      this.log.info("If you don't see a new client connected, please restart frigate");
+      this.log.info("If you don't see a new client connected, please restart frigate and adapter.");
     });
     aedes.on('client', (client) => {
       this.log.info('New client: ' + client.id);
@@ -194,6 +194,7 @@ class Frigate extends utils.Adapter {
     let state = 'Event Before';
     let camera = data.before.camera;
     let label = data.before.label;
+    let status = data.type;
     if (this.config.notificationEventSnapshot) {
       let imageUrl = '';
       let image = '';
@@ -236,7 +237,7 @@ class Frigate extends utils.Adapter {
       this.sendNotification({
         source: camera,
         type: label,
-        state: state,
+        state: state + ' ' + status,
         image: image,
       });
     }
@@ -268,7 +269,7 @@ class Frigate extends utils.Adapter {
       this.sendNotification({
         source: camera,
         type: label,
-        state: state,
+        state: state + ' ' + status,
         clip: clip,
       });
     }
