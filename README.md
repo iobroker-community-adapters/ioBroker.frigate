@@ -99,7 +99,7 @@ Add a `HTML` add as HTML:
 
 ### **WORK IN PROGRESS**
 
-- (TA2k) initial release
+- New Version with new state structure. Please check you vis and scripts. The new version doesn't need the mqtt adapter and can send directly notification to telegram.
 
 ## License
 
