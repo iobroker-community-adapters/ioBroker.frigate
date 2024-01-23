@@ -77,10 +77,44 @@
       "sentry": {
         "dsn": "https://802f699c7aa84a62b0bcb54b31485352@sentry.iobroker.net/226"
       }
-    }
+    },
+    "messages": [
+      {
+        "condition": {
+          "operand": "and",
+          "rules": ["oldVersion<1.0.0", "newVersion>=1.0.0"]
+        },
+        "title": {
+          "en": "Adapter Change",
+          "de": "Adapter Umstellung",
+          "ru": "Изменение адаптера",
+          "pt": "Mudança de adaptador",
+          "nl": "Adapterverandering",
+          "fr": "Changement d'adaptateur",
+          "it": "Cambiamento dell'adattatore",
+          "es": "Cambio de adaptador",
+          "pl": "Zmiana adaptera",
+          "uk": "Зміна адаптера",
+          "zh-cn": "适配器更改"
+        },
+        "text": {
+          "en": "The adapter has completly changed with v1.0.0. All old states are deleted. Please check the settings and change your vis and scripts to the news states. See details in the readme.",
+          "de": "Der Adapter hat sich mit v1.0.0 komplett geändert. Alle alten States wurden gelöscht. Bitte überprüfe die Einstellungen und ändere deine Vis und Skripte auf die neuen States. Details findest du in der Readme.",
+          "ru": "Адаптер полностью изменился с v1.0.0. Все старые состояния удалены. Пожалуйста, проверьте настройки и измените свои визуализации и скрипты на новые состояния. См. Подробности в readme.",
+          "pt": "O adaptador mudou completamente com v1.0.0. Todos os estados antigos são excluídos. Verifique as configurações e altere seu vis e scripts para os novos estados. Veja detalhes no readme.",
+          "nl": "De adapter is volledig veranderd met v1.0.0. Alle oude staten worden verwijderd. Controleer de instellingen en wijzig uw vis en scripts naar de nieuwsstaten. Zie details in de readme.",
+          "fr": "L'adaptateur a complètement changé avec v1.0.0. Tous les anciens états sont supprimés. Veuillez vérifier les paramètres et modifier votre vis et vos scripts pour les nouveaux états. Voir les détails dans le readme.",
+          "it": "L'adattatore è cambiato completamente con v1.0.0. Tutti i vecchi stati vengono eliminati. Controlla le impostazioni e modifica il tuo vis e gli script per i nuovi stati. Vedi dettagli nel readme.",
+          "es": "El adaptador ha cambiado por completo con v1.0.0. Todos los estados antiguos se eliminan. Verifique la configuración y cambie su vis y scripts a los estados de noticias. Ver detalles en el readme.",
+          "pl": "Adapter został całkowicie zmieniony w wersji v1.0.0. Wszystkie stare stany są usuwane. Sprawdź ustawienia i zmień swoją wizję i skrypty na nowe stany. Zobacz szczegóły w readme.",
+          "uk": "Адаптер повністю змінився з v1.0.0. Всі старі стани видаляються. Перевірте налаштування та змініть свої візуалізації та скрипти на нові стани. Див. Деталі в readme.",
+          "zh-cn": "适配器已在v1.0.0中完全更改。所有旧状态都已删除。请检查设置并将您的vis和脚本更改为新闻状态。有关详细信息，请参见自述文件。"
+        },
+        "level": "warn",
+        "buttons": ["agree", "cancel"]
+      }
+    ]
   },
-  "encryptedNative": ["mqttPassword"],
-  "protectedNative": ["mqttPassword"],
   "native": {
     "friurl": "localhost:5000",
     "mqttPort": 1883,
