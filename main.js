@@ -212,6 +212,8 @@ class Frigate extends utils.Adapter {
       if (data.before.has_snapshot) {
         state += ' Snapshot';
         imageUrl = `http://${this.config.friurl}/api/events/${data.before.id}/snapshot.jpg`;
+      } else {
+        this.log.info(`Snapshot sending active but no snapshot available for event ${data.id}`);
       }
       if (data.after) {
         // image = data.after.snapshot;
@@ -257,43 +259,47 @@ class Frigate extends utils.Adapter {
       });
     }
     //check if clip should be notified and event is end
-    if (this.config.notificationEventClip && data.before && data.before.has_clip && data.type === 'end') {
-      this.log.debug(`Wait ${this.config.notificationEventClipWaitTime} seconds for clip`);
-      await this.sleep(this.config.notificationEventClipWaitTime * 1000);
-      let state = 'Event Before Clip';
-      let clipUrl = `http://${this.config.friurl}/api/events/${data.before.id}/clip.mp4`;
-      if (data.after && data.after.has_clip) {
-        state = 'Event After Clip';
-        score = data.after.score;
-        clipUrl = `http://${this.config.friurl}/api/events/${data.after.id}/clip.mp4`;
-      }
-      const clip = await this.requestClient({
-        url: clipUrl,
-        method: 'get',
-        responseType: 'arraybuffer',
-      })
-        .then((response) => {
-          if (response.data) {
-            return Buffer.from(response.data, 'binary').toString('base64');
-          }
-          this.log.debug('prepareEventNotification no data from ' + clipUrl);
-          return '';
+    if (this.config.notificationEventClip) {
+      if (data.before && data.before.has_clip && data.type === 'end') {
+        this.log.debug(`Wait ${this.config.notificationEventClipWaitTime} seconds for clip`);
+        await this.sleep(this.config.notificationEventClipWaitTime * 1000);
+        let state = 'Event Before Clip';
+        let clipUrl = `http://${this.config.friurl}/api/events/${data.before.id}/clip.mp4`;
+        if (data.after && data.after.has_clip) {
+          state = 'Event After Clip';
+          score = data.after.score;
+          clipUrl = `http://${this.config.friurl}/api/events/${data.after.id}/clip.mp4`;
+        }
+        const clip = await this.requestClient({
+          url: clipUrl,
+          method: 'get',
+          responseType: 'arraybuffer',
         })
-        .catch((error) => {
-          this.log.warn('prepareEventNotification error from ' + clipUrl);
-          if (error.response && error.response.status >= 500) {
-            this.log.warn('Cannot reach server. You can ignore this after restarting the frigate server.');
-          }
-          this.log.warn(error);
-          return '';
+          .then((response) => {
+            if (response.data) {
+              return Buffer.from(response.data, 'binary').toString('base64');
+            }
+            this.log.debug('prepareEventNotification no data from ' + clipUrl);
+            return '';
+          })
+          .catch((error) => {
+            this.log.warn('prepareEventNotification error from ' + clipUrl);
+            if (error.response && error.response.status >= 500) {
+              this.log.warn('Cannot reach server. You can ignore this after restarting the frigate server.');
+            }
+            this.log.warn(error);
+            return '';
+          });
+        this.sendNotification({
+          source: camera,
+          type: label,
+          state: state + ' ' + status,
+          clip: clip,
+          score: score,
         });
-      this.sendNotification({
-        source: camera,
-        type: label,
-        state: state + ' ' + status,
-        clip: clip,
-        score: score,
-      });
+      } else {
+        this.log.info(`Clip sending active but no clip available or event ${data.id} is not end`);
+      }
     }
   }
 
