@@ -98,6 +98,14 @@
   "objects": [],
   "instanceObjects": [
     {
+      "_id": "events",
+      "type": "channel",
+      "common": {
+        "name": "Events Current/History"
+      },
+      "native": {}
+    },
+    {
       "_id": "info",
       "type": "channel",
       "common": {
