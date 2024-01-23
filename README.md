@@ -67,6 +67,10 @@ You can specify multiple instance or user to send snapshots or clips
 
 Active the notification in the settings to receive the snapshots or clips
 
+For Event can enter a minimum score before sending. 0 = Disabled
+
+Clips are send 5s (Instance settings) after event end.
+
 ## Integrate in vis
 
 You can integrate snapshots and clips in the vis:

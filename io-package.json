@@ -85,12 +85,15 @@
     "friurl": "localhost:5000",
     "mqttPort": 1883,
     "webnum": 10,
+    "notificationMinScore": 0,
     "notificationActive": false,
     "notificationInstances": "telegram.0",
     "notificationUsers": "",
     "notificationCamera": false,
     "notificationEventSnapshot": true,
-    "notificationEventClip": true
+    "notificationEventSnapshotStart": false,
+    "notificationEventClip": true,
+    "notificationEventClipWaitTime": 5
   },
   "objects": [],
   "instanceObjects": [

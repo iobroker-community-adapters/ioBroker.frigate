@@ -171,8 +171,8 @@
     "notificationEventSnapshot": {
       "type": "checkbox",
       "label": {
-        "en": "Send snapshot from event",
-        "de": "Snapshot vom Event senden",
+        "en": "Send snapshot from event end",
+        "de": "Snapshot vom Event Ende senden",
         "ru": "Отправить снимок с события",
         "pt": "Enviar instantâneo do evento",
         "nl": "Snapshot van evenement verzenden",
@@ -186,11 +186,29 @@
       "newLine": true,
       "sm": 3
     },
+    "notificationEventSnapshotStart": {
+      "type": "checkbox",
+      "label": {
+        "en": "Send snapshot from event start/update",
+        "de": "Snapshot vom Event Start/Update senden",
+        "ru": "Отправить снимок с начала / обновления события",
+        "pt": "Enviar instantâneo do início / atualização do evento",
+        "nl": "Snapshot van evenement start / update verzenden",
+        "fr": "Envoyer un instantané du début / mise à jour de l'événement",
+        "it": "Invia snapshot dall'inizio / aggiornamento dell'evento",
+        "es": "Enviar instantánea desde el inicio / actualización del evento",
+        "pl": "Wyślij migawkę z początku / aktualizacji wydarzenia",
+        "uk": "Надіслати знімок з початку / оновлення події",
+        "zh-cn": "从事件开始/更新发送快照"
+      },
+      "newLine": true,
+      "sm": 3
+    },
     "notificationEventClip": {
       "type": "checkbox",
       "label": {
-        "en": "Send Clip from event",
-        "de": "Clip vom Event senden",
+        "en": "Send Clip from event end",
+        "de": "Clip vom Event Ende senden",
         "ru": "Отправить клип с события",
         "pt": "Enviar clipe do evento",
         "nl": "Clip van evenement verzenden",
@@ -200,6 +218,40 @@
         "pl": "Wyślij klip z wydarzenia",
         "uk": "Надіслати кліп з події",
         "zh-cn": "从事件发送剪辑"
+      },
+      "newLine": true,
+      "sm": 3
+    },
+    "notificationEventClipWaitTime": {
+      "type": "number",
+      "label": {
+        "en": "Wait time after Events end for Clip creation in seconds",
+        "de": "Wartezeit nach Event Ende für Cliperstellung in Sekunden",
+        "ru": "Время ожидания после окончания событий для создания клипа в секундах",
+        "pt": "Tempo de espera após o término dos eventos para a criação de clipes em segundos",
+        "nl": "Wachttijd na het einde van de gebeurtenissen voor het maken van clips in seconden",
+        "fr": "Temps d'attente après la fin des événements pour la création de clips en secondes",
+        "it": "Tempo di attesa dopo la fine degli eventi per la creazione di clip in secondi",
+        "es": "Tiempo de espera después del final de los eventos para la creación de clips en segundos",
+        "pl": "Czas oczekiwania po zakończeniu wydarzeń na utworzenie klipów w sekundach",
+        "uk": "Час очікування після закінчення подій для створення кліпів в секундах",
+        "zh-cn": "事件结束后等待时间以秒为单位创建剪辑"
+      }
+    },
+    "notificationMinScore": {
+      "type": "number",
+      "label": {
+        "en": "Minimum Event Score 0-1 to notify. 0 = Disabled",
+        "de": "Minimale Event Score 0-1 zum Benachrichtigen. 0 = Deaktiviert",
+        "ru": "Минимальный балл события для уведомления. 0 = Отключено",
+        "pt": "Pontuação mínima do evento para notificar. 0 = Desativado",
+        "nl": "Minimale gebeurtenisscore om op de hoogte te stellen. 0 = Uitgeschakeld",
+        "fr": "Score d'événement minimum à notifier. 0 = Désactivé",
+        "it": "Punteggio minimo dell'evento da notificare. 0 = Disabilitato",
+        "es": "Puntuación mínima del evento para notificar. 0 = Desactivado",
+        "pl": "Minimalny wynik wydarzenia do powiadomienia. 0 = Wyłączone",
+        "uk": "Мінімальний бал події для сповіщення. 0 = Вимкнено",
+        "zh-cn": "通知的最低事件分数。0 =禁用"
       },
       "newLine": true,
       "sm": 3

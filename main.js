@@ -194,8 +194,10 @@ class Frigate extends utils.Adapter {
     let state = 'Event Before';
     let camera = data.before.camera;
     let label = data.before.label;
-    let status = data.type;
-    if (this.config.notificationEventSnapshot) {
+    let score = data.before.score;
+    const status = data.type;
+    //check if only end events should be notified or start and update events
+    if ((this.config.notificationEventSnapshot && status === 'end') || this.config.notificationEventSnapshotStart) {
       let imageUrl = '';
       let image = '';
       if (data.before.has_snapshot) {
@@ -207,6 +209,7 @@ class Frigate extends utils.Adapter {
         state = 'Event After';
         camera = data.after.camera;
         label = data.after.label;
+        score = data.after.score;
 
         if (data.after.has_snapshot) {
           imageUrl = `http://${this.config.friurl}/api/events/${data.after.id}/snapshot.jpg`;
@@ -241,14 +244,18 @@ class Frigate extends utils.Adapter {
         type: label,
         state: state + ' ' + status,
         image: image,
+        score: score,
       });
     }
+    //check if clip should be notified and event is end
     if (this.config.notificationEventClip && data.before && data.before.has_clip && data.type === 'end') {
-      await this.sleep(5000);
+      this.log.debug(`Wait ${this.config.notificationEventClipWaitTime} seconds for clip`);
+      await this.sleep(this.config.notificationEventClipWaitTime * 1000);
       let state = 'Event Before Clip';
       let clipUrl = `http://${this.config.friurl}/api/events/${data.before.id}/clip.mp4`;
       if (data.after && data.after.has_clip) {
         state = 'Event After Clip';
+        score = data.after.score;
         clipUrl = `http://${this.config.friurl}/api/events/${data.after.id}/clip.mp4`;
       }
       const clip = await this.requestClient({
@@ -276,6 +283,7 @@ class Frigate extends utils.Adapter {
         type: label,
         state: state + ' ' + status,
         clip: clip,
+        score: score,
       });
     }
   }
@@ -324,6 +332,10 @@ class Frigate extends utils.Adapter {
 
   async sendNotification(message) {
     if (this.config.notificationActive) {
+      if (message.score != null && this.config.notificationMinScore > 0 && message.score < this.config.notificationMinScore) {
+        this.log.debug('sendNotification score to low ' + message.score + ' < ' + this.config.notificationMinScore);
+        return;
+      }
       this.log.debug('sendNotification ' + JSON.stringify(message));
       let imageBuffer = message.image;
       let ending = '.jpg';
