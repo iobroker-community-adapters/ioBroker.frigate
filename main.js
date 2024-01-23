@@ -374,13 +374,14 @@ class Frigate extends utils.Adapter {
                 phone: user,
               });
             } else {
-              await this.sendToAsync(sendInstance, {
-                user: user,
-                text: messageText,
-              });
+              // await this.sendToAsync(sendInstance, {
+              //   user: user,
+              //   text: messageText,
+              // });
               await this.sendToAsync(sendInstance, {
                 user: user,
                 text: `${this.tmpDir}${sep}${uuid}${ending}`,
+                caption: messageText,
               });
             }
           }
@@ -395,8 +396,8 @@ class Frigate extends utils.Adapter {
               text: messageText,
             });
           } else {
-            await this.sendToAsync(sendInstance, messageText);
-            await this.sendToAsync(sendInstance, `${this.tmpDir}${sep}${uuid}${ending}`);
+            // await this.sendToAsync(sendInstance, messageText);
+            await this.sendToAsync(sendInstance, { text: `${this.tmpDir}${sep}${uuid}${ending}`, caption: messageText });
           }
         }
       }
