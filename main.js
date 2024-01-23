@@ -121,12 +121,14 @@ class Frigate extends utils.Adapter {
           //convert snapshot jpg to base64 with data url
           if (pathArray[pathArray.length - 1] === 'snapshot') {
             data = 'data:image/jpeg;base64,' + packet.payload.toString('base64');
-            this.sendNotification({
-              source: pathArray[0],
-              type: pathArray[1],
-              state: pathArray[pathArray.length - 1],
-              image: packet.payload.toString('base64'),
-            });
+            if (this.config.notificationCamera) {
+              this.sendNotification({
+                source: pathArray[0],
+                type: pathArray[1],
+                state: pathArray[pathArray.length - 1],
+                image: packet.payload.toString('base64'),
+              });
+            }
           }
           //if last path state then make it writable
           if (pathArray[pathArray.length - 1] === 'state') {
@@ -344,18 +346,18 @@ class Frigate extends utils.Adapter {
         return;
       }
       this.log.debug('sendNotification ' + JSON.stringify(message));
-      let imageBuffer = message.image;
+      let imageB64 = message.image;
       let ending = '.jpg';
       let type = 'photo';
       const uuid = uuidv4();
 
       if (message.clip != null) {
-        imageBuffer = message.clip;
+        imageB64 = message.clip;
         ending = '.mp4';
         type = 'video';
       }
 
-      const img = Buffer.from(imageBuffer, 'base64');
+      const imgBuffer = Buffer.from(imageB64, 'base64');
       const sendInstances = this.config.notificationInstances.replace(/ /g, '').split(',');
       let sendUser = [];
       if (this.config.notificationUsers) {
@@ -369,7 +371,7 @@ class Frigate extends utils.Adapter {
               // fs.writeFileSync(`${this.tmpDir}${sep}${uuid}${ending}`, imageBuffer, 'base64');
               await this.sendToAsync(sendInstance, {
                 device: user,
-                file: { name: `${this.tmpDir}${sep}${uuid}${ending}`, data: img },
+                file: { name: `${this.tmpDir}${sep}${uuid}${ending}`, data: imgBuffer },
                 title: messageText,
               });
             } else if (sendInstance.includes('signal-cmb')) {
@@ -380,7 +382,7 @@ class Frigate extends utils.Adapter {
             } else {
               await this.sendToAsync(sendInstance, {
                 user: user,
-                text: img,
+                text: imgBuffer,
                 type: type,
                 caption: messageText,
               });
@@ -388,9 +390,9 @@ class Frigate extends utils.Adapter {
           }
         } else {
           if (sendInstance.includes('pushover')) {
-            fs.writeFileSync(`${this.tmpDir}${sep}${uuid}${ending}`, imageBuffer, 'base64');
+            fs.writeFileSync(`${this.tmpDir}${sep}${uuid}${ending}`, imageB64, 'base64');
             await this.sendToAsync(sendInstance, {
-              file: { name: `${this.tmpDir}${sep}${uuid}${ending}`, data: img },
+              file: { name: `${this.tmpDir}${sep}${uuid}${ending}`, data: imgBuffer },
               title: messageText,
             });
           } else if (sendInstance.includes('signal-cmb')) {
@@ -398,7 +400,7 @@ class Frigate extends utils.Adapter {
               text: messageText,
             });
           } else {
-            await this.sendToAsync(sendInstance, { text: img, type: type, caption: messageText });
+            await this.sendToAsync(sendInstance, { text: imgBuffer, type: type, caption: messageText });
           }
         }
       }
