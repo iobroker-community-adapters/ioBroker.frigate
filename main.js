@@ -8,7 +8,7 @@
 // you need to create an adapter
 const utils = require('@iobroker/adapter-core');
 const json2iob = require('json2iob');
-const fs = require('fs');
+// const fs = require('fs');
 const { v4: uuidv4 } = require('uuid');
 const { sep } = require('path');
 const { tmpdir } = require('os');
@@ -374,6 +374,11 @@ class Frigate extends utils.Adapter {
                 file: { name: `${this.tmpDir}${sep}${uuid}${ending}`, data: imgBuffer },
                 title: messageText,
               });
+              // try {
+              //   fs.unlinkSync(`${this.tmpDir}${sep}${uuid}${ending}`);
+              // } catch (error) {
+              //   this.log.error(error);
+              // }
             } else if (sendInstance.includes('signal-cmb')) {
               await this.sendToAsync(sendInstance, 'send', {
                 text: messageText,
@@ -390,11 +395,16 @@ class Frigate extends utils.Adapter {
           }
         } else {
           if (sendInstance.includes('pushover')) {
-            fs.writeFileSync(`${this.tmpDir}${sep}${uuid}${ending}`, imageB64, 'base64');
+            // fs.writeFileSync(`${this.tmpDir}${sep}${uuid}${ending}`, imageB64, 'base64');
             await this.sendToAsync(sendInstance, {
               file: { name: `${this.tmpDir}${sep}${uuid}${ending}`, data: imgBuffer },
               title: messageText,
             });
+            // try {
+            //   fs.unlinkSync(`${this.tmpDir}${sep}${uuid}${ending}`);
+            // } catch (error) {
+            //   this.log.error(error);
+            // }
           } else if (sendInstance.includes('signal-cmb')) {
             await this.sendToAsync(sendInstance, 'send', {
               text: messageText,
@@ -403,11 +413,6 @@ class Frigate extends utils.Adapter {
             await this.sendToAsync(sendInstance, { text: imgBuffer, type: type, caption: messageText });
           }
         }
-      }
-      try {
-        fs.unlinkSync(`${this.tmpDir}${sep}${uuid}${ending}`);
-      } catch (error) {
-        this.log.error(error);
       }
     }
   }
