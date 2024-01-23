@@ -298,7 +298,7 @@ class Frigate extends utils.Adapter {
   }
 
   async sleep(ms) {
-    return new Promise((resolve) => setTimeout(resolve, ms));
+    return new Promise((resolve) => this.setTimeout(resolve, ms));
   }
   async fetchEventHistory() {
     await this.requestClient({
