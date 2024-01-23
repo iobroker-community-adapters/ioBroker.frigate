@@ -79,17 +79,17 @@
     "webnum": {
       "type": "number",
       "label": {
-        "en": "Number of last Events Histore frigate.0.events.history",
-        "de": "Anzahl der letzten Ereignisse Histore frigate.0.events.history",
-        "ru": "Количество последних событий Histore frigate.0.events.history",
-        "pt": "Número de últimos eventos Histore frigate.0.events.history",
-        "nl": "Aantal laatste gebeurtenissen Histore frigate.0.events.history",
-        "fr": "Nombre de derniers événements Histore frigate.0.events.history",
-        "it": "Numero di ultimi eventi Histore frigate.0.events.history",
-        "es": "Número de últimos eventos Histore frigate.0.events.history",
-        "pl": "Liczba ostatnich wydarzeń Histore frigate.0.events.history",
-        "uk": "Кількість останніх подій Histore frigate.0.events.history",
-        "zh-cn": "最后事件Histore frigate.0.events.history的数量"
+        "en": "Number of last Events History frigate.0.events.history",
+        "de": "Anzahl der letzten Ereignisse History frigate.0.events.history",
+        "ru": "Количество последних событий History frigate.0.events.history",
+        "pt": "Número de eventos da última história frigate.0.events.history",
+        "nl": "Aantal laatste gebeurtenissen Geschiedenis frigate.0.events.history",
+        "fr": "Nombre des derniers événements Histoire frigate.0.events.history",
+        "it": "Numero degli ultimi eventi Storia frigate.0.events.history",
+        "es": "Número de los últimos eventos Historia frigate.0.events.history",
+        "pl": "Liczba ostatnich wydarzeń Historia frigate.0.events.history",
+        "uk": "Кількість останніх подій Історія frigate.0.events.history",
+        "zh-cn": "最后事件历史frigate.0.events.history的数量"
       },
       "newLine": true,
       "sm": 3
