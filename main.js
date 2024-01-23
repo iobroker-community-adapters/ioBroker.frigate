@@ -55,6 +55,13 @@ class Frigate extends utils.Adapter {
       this.log.warn('No Frigate url set');
     }
     await this.cleanOldObjects();
+    await this.extendObjectAsync('events', {
+      type: 'channel',
+      common: {
+        name: 'Events current and history',
+      },
+      native: {},
+    });
     await this.initMqtt();
   }
   async cleanOldObjects(vin) {
