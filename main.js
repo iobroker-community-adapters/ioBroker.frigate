@@ -346,13 +346,16 @@ class Frigate extends utils.Adapter {
       this.log.debug('sendNotification ' + JSON.stringify(message));
       let imageBuffer = message.image;
       let ending = '.jpg';
+      let type = 'photo';
       const uuid = uuidv4();
 
       if (message.clip != null) {
         imageBuffer = message.clip;
         ending = '.mp4';
+        type = 'video';
       }
-      fs.writeFileSync(`${this.tmpDir}${sep}${uuid}${ending}`, imageBuffer, 'base64');
+
+      const img = Buffer.from(imageBuffer, 'base64');
       const sendInstances = this.config.notificationInstances.replace(/ /g, '').split(',');
       let sendUser = [];
       if (this.config.notificationUsers) {
@@ -363,9 +366,10 @@ class Frigate extends utils.Adapter {
         if (sendUser.length > 0) {
           for (const user of sendUser) {
             if (sendInstance.includes('pushover')) {
+              // fs.writeFileSync(`${this.tmpDir}${sep}${uuid}${ending}`, imageBuffer, 'base64');
               await this.sendToAsync(sendInstance, {
                 device: user,
-                file: `${this.tmpDir}${sep}${uuid}${ending}`,
+                file: { name: `${this.tmpDir}${sep}${uuid}${ending}`, data: img },
                 title: messageText,
               });
             } else if (sendInstance.includes('signal-cmb')) {
@@ -374,21 +378,19 @@ class Frigate extends utils.Adapter {
                 phone: user,
               });
             } else {
-              // await this.sendToAsync(sendInstance, {
-              //   user: user,
-              //   text: messageText,
-              // });
               await this.sendToAsync(sendInstance, {
                 user: user,
-                text: `${this.tmpDir}${sep}${uuid}${ending}`,
+                text: img,
+                type: type,
                 caption: messageText,
               });
             }
           }
         } else {
           if (sendInstance.includes('pushover')) {
+            fs.writeFileSync(`${this.tmpDir}${sep}${uuid}${ending}`, imageBuffer, 'base64');
             await this.sendToAsync(sendInstance, {
-              file: `${this.tmpDir}${sep}${uuid}${ending}`,
+              file: { name: `${this.tmpDir}${sep}${uuid}${ending}`, data: img },
               title: messageText,
             });
           } else if (sendInstance.includes('signal-cmb')) {
@@ -396,8 +398,7 @@ class Frigate extends utils.Adapter {
               text: messageText,
             });
           } else {
-            // await this.sendToAsync(sendInstance, messageText);
-            await this.sendToAsync(sendInstance, { text: `${this.tmpDir}${sep}${uuid}${ending}`, caption: messageText });
+            await this.sendToAsync(sendInstance, { text: img, type: type, caption: messageText });
           }
         }
       }
