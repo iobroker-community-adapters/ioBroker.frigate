@@ -236,7 +236,9 @@
         "pl": "Czas oczekiwania po zakończeniu wydarzeń na utworzenie klipów w sekundach",
         "uk": "Час очікування після закінчення подій для створення кліпів в секундах",
         "zh-cn": "事件结束后等待时间以秒为单位创建剪辑"
-      }
+      },
+      "newLine": true,
+      "sm": 3
     },
     "notificationMinScore": {
       "type": "number",
