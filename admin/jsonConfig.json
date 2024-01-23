@@ -79,17 +79,17 @@
     "webnum": {
       "type": "number",
       "label": {
-        "en": "Number of last Events",
-        "de": "Anzahl der letzten Events",
-        "ru": "Число последних событий",
-        "pt": "Número de últimos eventos",
-        "nl": "Aantal laatste gebeurtenissen",
-        "fr": "Nombre de derniers événements",
-        "it": "Numero degli ultimi eventi",
-        "es": "Número de últimos eventos",
-        "pl": "Liczba ostatnich zdarzeń",
-        "uk": "Кількість останніх подій",
-        "zh-cn": "上次事件数"
+        "en": "Number of last Events Histore frigate.0.events.history",
+        "de": "Anzahl der letzten Ereignisse Histore frigate.0.events.history",
+        "ru": "Количество последних событий Histore frigate.0.events.history",
+        "pt": "Número de últimos eventos Histore frigate.0.events.history",
+        "nl": "Aantal laatste gebeurtenissen Histore frigate.0.events.history",
+        "fr": "Nombre de derniers événements Histore frigate.0.events.history",
+        "it": "Numero di ultimi eventi Histore frigate.0.events.history",
+        "es": "Número de últimos eventos Histore frigate.0.events.history",
+        "pl": "Liczba ostatnich wydarzeń Histore frigate.0.events.history",
+        "uk": "Кількість останніх подій Histore frigate.0.events.history",
+        "zh-cn": "最后事件Histore frigate.0.events.history的数量"
       },
       "newLine": true,
       "sm": 3
