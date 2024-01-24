@@ -214,7 +214,7 @@ class Frigate extends utils.Adapter {
         state += ' Snapshot';
         imageUrl = `http://${this.config.friurl}/api/events/${data.before.id}/snapshot.jpg`;
       } else {
-        this.log.info(`Snapshot sending active but no snapshot available for event ${data.id}`);
+        this.log.info(`Snapshot sending active but no snapshot available for event ${data.before.id}`);
       }
       if (data.after) {
         // image = data.after.snapshot;
@@ -367,8 +367,9 @@ class Frigate extends utils.Adapter {
         this.log.info(
           `Notification score ${message.score} is lower than ${this.config.notificationMinScore} state  ${message.state} type ${message.type}`,
         );
-
         return;
+      } else {
+        this.log.debug(`Notification score ${message.score} is higher than ${this.config.notificationMinScore} type ${message.type}`);
       }
 
       const imgBuffer = Buffer.from(imageB64, 'base64');
