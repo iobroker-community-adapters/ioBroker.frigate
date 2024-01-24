@@ -243,7 +243,7 @@
     "notificationMinScore": {
       "type": "number",
       "label": {
-        "en": "Minimum Event Score 0-1 to notify. 0 = Disabled",
+        "en": "Minimum Event Score 0,1-1,0 to notify. 0 = Disabled",
         "de": "Minimale Event Score 0-1 zum Benachrichtigen. 0 = Deaktiviert",
         "ru": "Минимальный балл события для уведомления. 0 = Отключено",
         "pt": "Pontuação mínima do evento para notificar. 0 = Desativado",
