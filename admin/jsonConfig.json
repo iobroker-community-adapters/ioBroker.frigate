@@ -241,8 +241,21 @@
       "sm": 3
     },
     "notificationMinScore": {
-      "type": "number",
+      "type": "text",
       "label": {
+        "en": "Minimum Event Score 0.1-1.0 to notify. 0 = Disabled. Camera specific: cam1:0.5;cam2:0.7",
+        "de": "Minimale Ereignisbewertung 0.1-1.0 zum Benachrichtigen. 0 = Deaktiviert. Kamera-spezifisch: cam1:0.5;cam2:0.7",
+        "ru": "Минимальный балл события 0.1-1.0 для уведомления. 0 = Отключено. Камера: cam1:0.5;cam2:0.7",
+        "pt": "Pontuação mínima do evento 0.1-1.0 para notificar. 0 = Desativado. Câmera específica: cam1:0.5;cam2:0.7",
+        "nl": "Minimale gebeurtenisscore 0.1-1.0 om te melden. 0 = Uitgeschakeld. Camera specifiek: cam1:0.5;cam2:0.7",
+        "fr": "Score d'événement minimum 0.1-1.0 à notifier. 0 = Désactivé. Caméra spécifique: cam1:0.5;cam2:0.7",
+        "it": "Punteggio evento minimo 0.1-1.0 da notificare. 0 = Disabilitato. Fotocamera specifica: cam1:0.5;cam2:0.7",
+        "es": "Puntuación mínima del evento 0.1-1.0 para notificar. 0 = Desactivado. Cámara específica: cam1:0.5;cam2:0.7",
+        "pl": "Minimalna ocena wydarzenia 0.1-1.0 do powiadomienia. 0 = Wyłączone. Konkretna kamera: cam1:0.5;cam2:0.7",
+        "uk": "Мінімальний бал події 0,1-1,0 для сповіщення. 0 = Вимкнено. Конкретна камера: cam1:0.5;cam2:0.7",
+        "zh-cn": "最低事件分数0.1-1.0通知。 0 =禁用。 摄像机特定: cam1:0.5;cam2:0.7"
+      },
+      "help": {
         "en": "Minimum Event Score 0.1-1.0 to notify. 0 = Disabled. Camera specific: cam1:0.5;cam2:0.7",
         "de": "Minimale Ereignisbewertung 0.1-1.0 zum Benachrichtigen. 0 = Deaktiviert. Kamera-spezifisch: cam1:0.5;cam2:0.7",
         "ru": "Минимальный балл события 0.1-1.0 для уведомления. 0 = Отключено. Камера: cam1:0.5;cam2:0.7",
@@ -293,7 +306,7 @@
         "uk": "Виключити камери з повідомлення (через кому)",
         "zh-cn": "从通知中排除摄像机(逗号分隔)"
       },
-      "placeholder": "0,5",
+      "placeholder": "camera1,camera2",
       "newLine": true,
       "sm": 3
     },
