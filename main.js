@@ -59,7 +59,7 @@ class Frigate extends utils.Adapter {
     }
     try {
       if (this.config.notificationMinScore) {
-        if (this.config.notificationMinScore.includes(':')) {
+        if (this.config.notificationMinScore.includes && this.config.notificationMinScore.includes(':')) {
           this.notificationMinScoreArray = this.config.notificationMinScore.replace(/,/g, '.').replace(/ /g, '').split(';');
           for (const minScore of this.notificationMinScoreArray) {
             const minScoreArray = minScore.split(':');
@@ -108,6 +108,7 @@ class Frigate extends utils.Adapter {
         name: 'Pause notifications',
         type: 'boolean',
         role: 'switch',
+        def: false,
         read: true,
         write: true,
       },
@@ -435,13 +436,13 @@ class Frigate extends utils.Adapter {
       );
       if (message.score != null && this.notificationMinScore > 0 && message.score < this.config.notificationMinScore) {
         this.log.info(
-          `Notification score ${message.score} is lower than ${this.config.notificationMinScore} state  ${message.state} type ${message.type}`,
+          `Notification skipped score ${message.score} is lower than ${this.config.notificationMinScore} state  ${message.state} type ${message.type}`,
         );
         return;
       }
       if (this.notificationMinScores[message.source] && message.score < this.notificationMinScores[message.source]) {
         this.log.info(
-          `Notification score ${message.score} is lower than ${this.notificationMinScores[message.source]}  for source ${message.source}`,
+          `Notification skipped score ${message.score} is lower than ${this.notificationMinScores[message.source]}  for source ${message.source}`,
         );
         return;
       } else {
