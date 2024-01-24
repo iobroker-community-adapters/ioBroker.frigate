@@ -54,6 +54,10 @@ class Frigate extends utils.Adapter {
     if (!this.config.friurl) {
       this.log.warn('No Frigate url set');
     }
+    if (this.config.notificationMinScore > 1) {
+      this.log.warn('Notification min score is higher than 1. Recalculate to ' + this.config.notificationMinScore / 100);
+      this.config.notificationMinScore = this.config.notificationMinScore / 100;
+    }
     await this.cleanOldObjects();
     await this.extendObjectAsync('events', {
       type: 'channel',
@@ -204,7 +208,7 @@ class Frigate extends utils.Adapter {
     let state = 'Event Before';
     let camera = data.before.camera;
     let label = data.before.label;
-    let score = data.before.score;
+    let score = data.before.top_score;
     const status = data.type;
     //check if only end events should be notified or start and update events
     if ((this.config.notificationEventSnapshot && status === 'end') || this.config.notificationEventSnapshotStart) {
@@ -221,7 +225,7 @@ class Frigate extends utils.Adapter {
         state = 'Event After';
         camera = data.after.camera;
         label = data.after.label;
-        score = data.after.score;
+        score = data.after.top_score;
 
         if (data.after.has_snapshot) {
           imageUrl = `http://${this.config.friurl}/api/events/${data.after.id}/snapshot.jpg`;
@@ -269,7 +273,7 @@ class Frigate extends utils.Adapter {
           let clipUrl = `http://${this.config.friurl}/api/events/${data.before.id}/clip.mp4`;
           if (data.after && data.after.has_clip) {
             state = 'Event After Clip';
-            score = data.after.score;
+            score = data.after.top_score;
             clipUrl = `http://${this.config.friurl}/api/events/${data.after.id}/clip.mp4`;
           }
           const clip = await this.requestClient({
