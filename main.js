@@ -43,6 +43,9 @@ class Frigate extends utils.Adapter {
     this.clientId = 'frigate';
     this.json2iob = new json2iob(this);
     this.tmpDir = tmpdir();
+    this.notificationMinScoreArray = [];
+    this.notificationMinScores = {};
+    this.notificationMinScore = null;
   }
 
   /**
@@ -54,10 +57,36 @@ class Frigate extends utils.Adapter {
     if (!this.config.friurl) {
       this.log.warn('No Frigate url set');
     }
-    if (this.config.notificationMinScore > 1) {
-      this.log.warn('Notification min score is higher than 1. Recalculate to ' + this.config.notificationMinScore / 100);
-      this.config.notificationMinScore = this.config.notificationMinScore / 100;
+    try {
+      if (this.config.notificationMinScore) {
+        if (this.config.notificationMinScore.includes(':')) {
+          this.notificationMinScoreArray = this.config.notificationMinScore.replace(/,/g, '.').replace(/ /g, '').split(';');
+          for (const minScore of this.notificationMinScoreArray) {
+            const minScoreArray = minScore.split(':');
+            if (minScoreArray.length === 2) {
+              this.notificationMinScores[minScoreArray[0]] = parseFloat(minScoreArray[1]);
+            }
+          }
+        } else {
+          this.notificationMinScore = parseFloat(this.config.notificationMinScore);
+          if (this.notificationMinScore > 1) {
+            this.notificationMinScore = this.notificationMinScore / 100;
+            this.log.info('Notification min score is higher than 1. Recalculated to ' + this.notificationMinScore);
+          }
+        }
+      }
+    } catch (error) {
+      this.log.error(error);
     }
+
+    if (this.config.notificationEventClipWaitTime < 1) {
+      this.log.warn('Notification clip wait time is lower than 1. Set to 1');
+      this.config.notificationEventClipWaitTime = 1;
+    }
+    if (this.config.notificationExcludeList) {
+      this.notificationExcludeArray = this.config.notificationExcludeList.replace(/ /g, '').split(',');
+    }
+
     await this.cleanOldObjects();
     await this.extendObjectAsync('events', {
       type: 'channel',
@@ -376,9 +405,15 @@ class Frigate extends utils.Adapter {
       this.log.debug(
         `Notification score ${message.score} type ${message.type} state ${message.state} image/clip ${imageB64.length} format ${type}`,
       );
-      if (message.score != null && this.config.notificationMinScore > 0 && message.score < this.config.notificationMinScore) {
+      if (message.score != null && this.notificationMinScore > 0 && message.score < this.config.notificationMinScore) {
         this.log.info(
           `Notification score ${message.score} is lower than ${this.config.notificationMinScore} state  ${message.state} type ${message.type}`,
+        );
+        return;
+      }
+      if (this.notificationMinScores[message.source] && message.score < this.notificationMinScores[message.source]) {
+        this.log.info(
+          `Notification score ${message.score} is lower than ${this.notificationMinScores[message.source]}  for source ${message.source}`,
         );
         return;
       } else {
@@ -391,7 +426,12 @@ class Frigate extends utils.Adapter {
       if (this.config.notificationUsers) {
         sendUser = this.config.notificationUsers.replace(/ /g, '').split(',');
       }
-      const messageText = `${message.source} ${message.type} ${message.state}`;
+      const messageText = this.config.notificationTextTemplate
+        .replace(/{{source}}/g, message.source)
+        .replace(/{{type}}/g, message.type)
+        .replace(/{{state}}/g, message.state)
+        .replace(/{{score}}/g, message.score);
+      this.log.debug('Notification message ' + messageText);
       for (const sendInstance of sendInstances) {
         if (sendUser.length > 0) {
           for (const user of sendUser) {

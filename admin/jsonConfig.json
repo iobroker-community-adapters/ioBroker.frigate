@@ -243,18 +243,57 @@
     "notificationMinScore": {
       "type": "number",
       "label": {
-        "en": "Minimum Event Score 0,1-1,0 to notify. 0 = Disabled",
-        "de": "Minimale Event Score 0-1 zum Benachrichtigen. 0 = Deaktiviert",
-        "ru": "Минимальный балл события для уведомления. 0 = Отключено",
-        "pt": "Pontuação mínima do evento para notificar. 0 = Desativado",
-        "nl": "Minimale gebeurtenisscore om op de hoogte te stellen. 0 = Uitgeschakeld",
-        "fr": "Score d'événement minimum à notifier. 0 = Désactivé",
-        "it": "Punteggio minimo dell'evento da notificare. 0 = Disabilitato",
-        "es": "Puntuación mínima del evento para notificar. 0 = Desactivado",
-        "pl": "Minimalny wynik wydarzenia do powiadomienia. 0 = Wyłączone",
-        "uk": "Мінімальний бал події для сповіщення. 0 = Вимкнено",
-        "zh-cn": "通知的最低事件分数。0 =禁用"
+        "en": "Minimum Event Score 0.1-1.0 to notify. 0 = Disabled. Camera specific: cam1:0.5;cam2:0.7",
+        "de": "Minimale Ereignisbewertung 0.1-1.0 zum Benachrichtigen. 0 = Deaktiviert. Kamera-spezifisch: cam1:0.5;cam2:0.7",
+        "ru": "Минимальный балл события 0.1-1.0 для уведомления. 0 = Отключено. Камера: cam1:0.5;cam2:0.7",
+        "pt": "Pontuação mínima do evento 0.1-1.0 para notificar. 0 = Desativado. Câmera específica: cam1:0.5;cam2:0.7",
+        "nl": "Minimale gebeurtenisscore 0.1-1.0 om te melden. 0 = Uitgeschakeld. Camera specifiek: cam1:0.5;cam2:0.7",
+        "fr": "Score d'événement minimum 0.1-1.0 à notifier. 0 = Désactivé. Caméra spécifique: cam1:0.5;cam2:0.7",
+        "it": "Punteggio evento minimo 0.1-1.0 da notificare. 0 = Disabilitato. Fotocamera specifica: cam1:0.5;cam2:0.7",
+        "es": "Puntuación mínima del evento 0.1-1.0 para notificar. 0 = Desactivado. Cámara específica: cam1:0.5;cam2:0.7",
+        "pl": "Minimalna ocena wydarzenia 0.1-1.0 do powiadomienia. 0 = Wyłączone. Konkretna kamera: cam1:0.5;cam2:0.7",
+        "uk": "Мінімальний бал події 0,1-1,0 для сповіщення. 0 = Вимкнено. Конкретна камера: cam1:0.5;cam2:0.7",
+        "zh-cn": "最低事件分数0.1-1.0通知。 0 =禁用。 摄像机特定: cam1:0.5;cam2:0.7"
       },
+      "placeholder": "0.5",
+      "newLine": true,
+      "sm": 3
+    },
+    "notificationTextTemplate": {
+      "type": "text",
+      "label": {
+        "en": "Notification Text Template",
+        "de": "Benachrichtigungs-Textvorlage",
+        "ru": "Шаблон текста уведомления",
+        "pt": "Modelo de texto de notificação",
+        "nl": "Meldingstekstsjabloon",
+        "fr": "Modèle de texte de notification",
+        "it": "Modello di testo di notifica",
+        "es": "Plantilla de texto de notificación",
+        "pl": "Szablon tekstu powiadomienia",
+        "uk": "Шаблон тексту сповіщення",
+        "zh-cn": "通知文本模板"
+      },
+      "placeholder": "{{source}} {{type}} erkannt {{state}}",
+      "newLine": true,
+      "sm": 3
+    },
+    "notificationExcludeList": {
+      "type": "text",
+      "label": {
+        "en": "Exclude cameras from notification (comma separated)",
+        "de": "Kameras von der Benachrichtigung ausschließen (durch Komma getrennt)",
+        "ru": "Исключить камеры из уведомления (через запятую)",
+        "pt": "Excluir câmeras da notificação (separadas por vírgula)",
+        "nl": "Camera's uitsluiten van melding (gescheiden door komma's)",
+        "fr": "Exclure les caméras de la notification (séparées par des virgules)",
+        "it": "Escludi le telecamere dalla notifica (separate da virgola)",
+        "es": "Excluir cámaras de la notificación (separadas por comas)",
+        "pl": "Wyklucz kamery z powiadomienia (oddzielone przecinkami)",
+        "uk": "Виключити камери з повідомлення (через кому)",
+        "zh-cn": "从通知中排除摄像机(逗号分隔)"
+      },
+      "placeholder": "0,5",
       "newLine": true,
       "sm": 3
     },
