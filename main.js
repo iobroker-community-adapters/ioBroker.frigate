@@ -55,7 +55,7 @@ class Frigate extends utils.Adapter {
       this.log.warn('No Frigate url set');
     }
     if (this.config.notificationMinScore > 1) {
-      this.log.warn('Notification min score is higher than 1. Recalculate to ' + notificationMinScore / 100);
+      this.log.warn('Notification min score is higher than 1. Recalculate to ' + this.config.notificationMinScore / 100);
       this.config.notificationMinScore = this.config.notificationMinScore / 100;
     }
     await this.cleanOldObjects();
