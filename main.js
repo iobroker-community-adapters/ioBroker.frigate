@@ -261,45 +261,47 @@ class Frigate extends utils.Adapter {
     }
     //check if clip should be notified and event is end
     if (this.config.notificationEventClip) {
-      if (data.before && data.before.has_clip && data.type === 'end') {
-        this.log.debug(`Wait ${this.config.notificationEventClipWaitTime} seconds for clip`);
-        await this.sleep(this.config.notificationEventClipWaitTime * 1000);
-        let state = 'Event Before Clip';
-        let clipUrl = `http://${this.config.friurl}/api/events/${data.before.id}/clip.mp4`;
-        if (data.after && data.after.has_clip) {
-          state = 'Event After Clip';
-          score = data.after.score;
-          clipUrl = `http://${this.config.friurl}/api/events/${data.after.id}/clip.mp4`;
-        }
-        const clip = await this.requestClient({
-          url: clipUrl,
-          method: 'get',
-          responseType: 'arraybuffer',
-        })
-          .then((response) => {
-            if (response.data) {
-              return Buffer.from(response.data, 'binary').toString('base64');
-            }
-            this.log.debug('prepareEventNotification no data from ' + clipUrl);
-            return '';
+      if (data.type === 'end') {
+        if (data.before && data.before.has_clip) {
+          this.log.debug(`Wait ${this.config.notificationEventClipWaitTime} seconds for clip`);
+          await this.sleep(this.config.notificationEventClipWaitTime * 1000);
+          let state = 'Event Before Clip';
+          let clipUrl = `http://${this.config.friurl}/api/events/${data.before.id}/clip.mp4`;
+          if (data.after && data.after.has_clip) {
+            state = 'Event After Clip';
+            score = data.after.score;
+            clipUrl = `http://${this.config.friurl}/api/events/${data.after.id}/clip.mp4`;
+          }
+          const clip = await this.requestClient({
+            url: clipUrl,
+            method: 'get',
+            responseType: 'arraybuffer',
           })
-          .catch((error) => {
-            this.log.warn('prepareEventNotification error from ' + clipUrl);
-            if (error.response && error.response.status >= 500) {
-              this.log.warn('Cannot reach server. You can ignore this after restarting the frigate server.');
-            }
-            this.log.warn(error);
-            return '';
+            .then((response) => {
+              if (response.data) {
+                return Buffer.from(response.data, 'binary').toString('base64');
+              }
+              this.log.debug('prepareEventNotification no data from ' + clipUrl);
+              return '';
+            })
+            .catch((error) => {
+              this.log.warn('prepareEventNotification error from ' + clipUrl);
+              if (error.response && error.response.status >= 500) {
+                this.log.warn('Cannot reach server. You can ignore this after restarting the frigate server.');
+              }
+              this.log.warn(error);
+              return '';
+            });
+          this.sendNotification({
+            source: camera,
+            type: label,
+            state: state + ' ' + status,
+            clip: clip,
+            score: score,
           });
-        this.sendNotification({
-          source: camera,
-          type: label,
-          state: state + ' ' + status,
-          clip: clip,
-          score: score,
-        });
-      } else {
-        this.log.info(`Clip sending active but no clip available or event ${data.id} is not end`);
+        } else {
+          this.log.info(`Clip sending active but no clip available `);
+        }
       }
     }
   }
@@ -348,11 +350,6 @@ class Frigate extends utils.Adapter {
 
   async sendNotification(message) {
     if (this.config.notificationActive) {
-      if (message.score != null && this.config.notificationMinScore > 0 && message.score < this.config.notificationMinScore) {
-        this.log.debug('sendNotification score to low ' + message.score + ' < ' + this.config.notificationMinScore);
-        return;
-      }
-      this.log.debug('sendNotification ' + JSON.stringify(message));
       let imageB64 = message.image;
       let ending = '.jpg';
       let type = 'photo';
@@ -362,6 +359,16 @@ class Frigate extends utils.Adapter {
         imageB64 = message.clip;
         ending = '.mp4';
         type = 'video';
+      }
+      this.log.debug(
+        `Notification score ${message.score} type ${message.type} state ${message.state} image/clip ${imageB64.length} format ${type}`,
+      );
+      if (message.score != null && this.config.notificationMinScore > 0 && message.score < this.config.notificationMinScore) {
+        this.log.info(
+          `Notification score ${message.score} is lower than ${this.config.notificationMinScore} state  ${message.state} type ${message.type}`,
+        );
+
+        return;
       }
 
       const imgBuffer = Buffer.from(imageB64, 'base64');
