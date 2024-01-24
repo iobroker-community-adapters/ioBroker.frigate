@@ -244,7 +244,7 @@
       "type": "text",
       "label": {
         "en": "Minimum Event Score 0.1-1.0 to notify. 0 = Disabled. Camera specific: cam1:0.5;cam2:0.7",
-        "de": "Minimale Ereignisbewertung 0.1-1.0 zum Benachrichtigen. 0 = Deaktiviert. Kamera-spezifisch: cam1:0.5;cam2:0.7",
+        "de": "Minimale Event Score 0.1-1.0 zum Benachrichtigen. 0 = Deaktiviert. Kamera-spezifisch: cam1:0.5;cam2:0.7",
         "ru": "Минимальный балл события 0.1-1.0 для уведомления. 0 = Отключено. Камера: cam1:0.5;cam2:0.7",
         "pt": "Pontuação mínima do evento 0.1-1.0 para notificar. 0 = Desativado. Câmera específica: cam1:0.5;cam2:0.7",
         "nl": "Minimale gebeurtenisscore 0.1-1.0 om te melden. 0 = Uitgeschakeld. Camera specifiek: cam1:0.5;cam2:0.7",

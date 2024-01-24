@@ -414,6 +414,11 @@ class Frigate extends utils.Adapter {
       this.log.debug('Notifications paused');
       return;
     }
+    if (this.notificationExcludeArray && this.notificationExcludeArray.includes(message.source)) {
+      this.log.debug('Notification for ' + message.source + ' is excluded');
+      return;
+    }
+
     if (this.config.notificationActive) {
       let imageB64 = message.image;
       let ending = '.jpg';
