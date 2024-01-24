@@ -55,7 +55,7 @@ class Frigate extends utils.Adapter {
       this.log.warn('No Frigate url set');
     }
     if (this.config.notificationMinScore > 1) {
-      this.log.warn('Notification min score is higher than 1. Recalculate to ' + this.config.notificationMinScore / 100);
+      this.log.warn('Notification min score is higher than 1. Recalculate to ' + notificationMinScore / 100);
       this.config.notificationMinScore = this.config.notificationMinScore / 100;
     }
     await this.cleanOldObjects();
@@ -87,11 +87,20 @@ class Frigate extends utils.Adapter {
     });
   }
   async initMqtt() {
-    server.listen(this.config.mqttPort, () => {
-      this.log.info('MQTT server started and listening on port ' + this.config.mqttPort);
-      this.log.info("Please enter host: '" + this.host + "' and port: '" + this.config.mqttPort + "' in frigate config");
-      this.log.info("If you don't see a new client connected, please restart frigate and adapter.");
-    });
+    server
+      .listen(this.config.mqttPort, () => {
+        this.log.info('MQTT server started and listening on port ' + this.config.mqttPort);
+        this.log.info("Please enter host: '" + this.host + "' and port: '" + this.config.mqttPort + "' in frigate config");
+        this.log.info("If you don't see a new client connected, please restart frigate and adapter.");
+      })
+      .once('error', (err) => {
+        this.log.error('MQTT server error: ' + err);
+        this.log.error(
+          'Please check if port ' +
+            this.config.mqttPort +
+            ' is already in use. Use a different port in instance and frigate settings or restart ioBroker.',
+        );
+      });
     aedes.on('client', (client) => {
       this.log.info('New client: ' + client.id);
       this.log.info('Filter for message from client: ' + client.id);
