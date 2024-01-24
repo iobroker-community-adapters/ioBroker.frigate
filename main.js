@@ -95,6 +95,24 @@ class Frigate extends utils.Adapter {
       },
       native: {},
     });
+    await this.extendObjectAsync('remote', {
+      type: 'channel',
+      common: {
+        name: 'Control adapter',
+      },
+      native: {},
+    });
+    await this.extendObjectAsync('remote.pauseNotifications', {
+      type: 'state',
+      common: {
+        name: 'Pause notifications',
+        type: 'boolean',
+        role: 'switch',
+        read: true,
+        write: true,
+      },
+      native: {},
+    });
     await this.initMqtt();
   }
   async cleanOldObjects(vin) {
@@ -391,6 +409,11 @@ class Frigate extends utils.Adapter {
   }
 
   async sendNotification(message) {
+    const pauseState = await this.getStateAsync('remote.pauseNotifications');
+    if (pauseState && pauseState.val) {
+      this.log.debug('Notifications paused');
+      return;
+    }
     if (this.config.notificationActive) {
       let imageB64 = message.image;
       let ending = '.jpg';
