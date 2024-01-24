@@ -145,11 +145,10 @@ class Frigate extends utils.Adapter {
             const cameraId = pathArray.shift();
             pathArray = [cameraId, pathArray.join('_')];
           }
-          //parse json to iobroker states
-          this.json2iob.parse(pathArray.join('.'), data, { write: write });
 
           //create devices state for cameras
           if (pathArray[0] === 'stats') {
+            delete data['cpu_usages'];
             if (data.cameras) {
               for (const key in data.cameras) {
                 await this.extendObjectAsync(key, {
@@ -162,6 +161,8 @@ class Frigate extends utils.Adapter {
               }
             }
           }
+          //parse json to iobroker states
+          this.json2iob.parse(pathArray.join('.'), data, { write: write });
         } catch (error) {
           this.log.warn(error);
         }
