@@ -45,6 +45,7 @@ class Frigate extends utils.Adapter {
     this.tmpDir = tmpdir();
     this.notificationMinScore = null;
     this.firstStart = true;
+    this.deviceArray = [''];
   }
 
   /**
@@ -187,7 +188,6 @@ class Frigate extends utils.Adapter {
           // events topic trigger history fetching
           if (pathArray[pathArray.length - 1] === 'events') {
             this.prepareEventNotification(data);
-
             this.fetchEventHistory();
           }
           // join every path item except the first one to create a flat hierarchy
@@ -199,65 +199,7 @@ class Frigate extends utils.Adapter {
           //create devices state for cameras
           if (pathArray[0] === 'stats') {
             delete data['cpu_usages'];
-            if (this.firstStart) {
-              this.log.debug('first start create devices');
-              if (data.cameras) {
-                for (const key in data.cameras) {
-                  await this.extendObjectAsync(key, {
-                    type: 'device',
-                    common: {
-                      name: 'Camera ' + key,
-                    },
-                    native: {},
-                  });
-                  await this.extendObjectAsync(key + '.remote', {
-                    type: 'channel',
-                    common: {
-                      name: 'Control camera',
-                    },
-                    native: {},
-                  });
-                  await this.extendObjectAsync(key + '.remote.pauseNotifications', {
-                    type: 'state',
-                    common: {
-                      name: 'Pause Camera notifications',
-                      type: 'boolean',
-                      role: 'switch',
-                      def: false,
-                      read: true,
-                      write: true,
-                    },
-                    native: {},
-                  });
-                  await this.extendObjectAsync(key + '.remote.notificationText', {
-                    type: 'state',
-                    common: {
-                      name: 'Overwrite the notification text',
-                      type: 'string',
-                      role: 'text',
-                      def: '',
-                      read: true,
-                      write: true,
-                    },
-                    native: {},
-                  });
-                  await this.extendObjectAsync(key + '.remote.notificationMinScore', {
-                    type: 'state',
-                    common: {
-                      name: 'Overwrite notification min score',
-                      type: 'number',
-                      role: 'value',
-                      def: 0,
-                      read: true,
-                      write: true,
-                    },
-                    native: {},
-                  });
-                }
-
-                this.firstStart = false;
-              }
-            }
+            await this.createCameraDevices(data);
           }
           //parse json to iobroker states
           this.json2iob.parse(pathArray.join('.'), data, { write: write });
@@ -298,6 +240,76 @@ class Frigate extends utils.Adapter {
     });
   }
 
+  async createCameraDevices(data) {
+    if (this.firstStart) {
+      this.log.debug('first start create devices');
+      if (data.cameras) {
+        for (const key in data.cameras) {
+          this.deviceArray.push(key);
+          await this.extendObjectAsync(key, {
+            type: 'device',
+            common: {
+              name: 'Camera ' + key,
+            },
+            native: {},
+          });
+          await this.extendObjectAsync(key + '.history', {
+            type: 'channel',
+            common: {
+              name: 'Event History',
+            },
+            native: {},
+          });
+          await this.extendObjectAsync(key + '.remote', {
+            type: 'channel',
+            common: {
+              name: 'Control camera',
+            },
+            native: {},
+          });
+          await this.extendObjectAsync(key + '.remote.pauseNotifications', {
+            type: 'state',
+            common: {
+              name: 'Pause Camera notifications',
+              type: 'boolean',
+              role: 'switch',
+              def: false,
+              read: true,
+              write: true,
+            },
+            native: {},
+          });
+          await this.extendObjectAsync(key + '.remote.notificationText', {
+            type: 'state',
+            common: {
+              name: 'Overwrite the notification text',
+              type: 'string',
+              role: 'text',
+              def: '',
+              read: true,
+              write: true,
+            },
+            native: {},
+          });
+          await this.extendObjectAsync(key + '.remote.notificationMinScore', {
+            type: 'state',
+            common: {
+              name: 'Overwrite notification min score',
+              type: 'number',
+              role: 'value',
+              def: 0,
+              read: true,
+              write: true,
+            },
+            native: {},
+          });
+        }
+
+        this.firstStart = false;
+      }
+    }
+  }
+
   async prepareEventNotification(data) {
     let state = 'Event Before';
     let camera = data.before.camera;
@@ -309,7 +321,6 @@ class Frigate extends utils.Adapter {
       let imageUrl = '';
       let image = '';
       if (data.before.has_snapshot) {
-        state += ' Snapshot';
         imageUrl = `http://${this.config.friurl}/api/events/${data.before.id}/snapshot.jpg`;
       } else {
         this.log.info(`Snapshot sending active but no snapshot available for event ${data.before.id}`);
@@ -323,7 +334,6 @@ class Frigate extends utils.Adapter {
 
         if (data.after.has_snapshot) {
           imageUrl = `http://${this.config.friurl}/api/events/${data.after.id}/snapshot.jpg`;
-          state += ' Snapshot';
         }
       }
       if (imageUrl) {
@@ -352,7 +362,8 @@ class Frigate extends utils.Adapter {
       this.sendNotification({
         source: camera,
         type: label,
-        state: state + ' ' + status,
+        state: state,
+        status: status,
         image: image,
         score: score,
       });
@@ -363,10 +374,11 @@ class Frigate extends utils.Adapter {
         if (data.before && data.before.has_clip) {
           this.log.debug(`Wait ${this.config.notificationEventClipWaitTime} seconds for clip`);
           await this.sleep(this.config.notificationEventClipWaitTime * 1000);
-          let state = 'Event Before Clip';
+          let state = 'Event Before';
+          score = data.before.top_score;
           let clipUrl = `http://${this.config.friurl}/api/events/${data.before.id}/clip.mp4`;
           if (data.after && data.after.has_clip) {
-            state = 'Event After Clip';
+            state = 'Event After';
             score = data.after.top_score;
             clipUrl = `http://${this.config.friurl}/api/events/${data.after.id}/clip.mp4`;
           }
@@ -393,7 +405,8 @@ class Frigate extends utils.Adapter {
           this.sendNotification({
             source: camera,
             type: label,
-            state: state + ' ' + status,
+            state: state,
+            status: status,
             clip: clip,
             score: score,
           });
@@ -408,42 +421,41 @@ class Frigate extends utils.Adapter {
     return new Promise((resolve) => this.setTimeout(resolve, ms));
   }
   async fetchEventHistory() {
-    await this.requestClient({
-      url: 'http://' + this.config.friurl + '/api/events',
-      method: 'get',
-      params: { limit: this.config.webnum },
-    })
-      .then(async (response) => {
-        if (response.data) {
-          this.log.debug('fetchEventHistory ' + JSON.stringify(response.data));
-          await this.extendObjectAsync('events.history.json', {
-            type: 'state',
-            common: {
-              name: 'history json',
-              type: 'string',
-              role: 'json',
-              read: true,
-              write: false,
-            },
-            native: {},
-          });
-
-          for (const event of response.data) {
-            event.websnap = 'http://' + this.config.friurl + '/api/events/' + event.id + '/snapshot.jpg';
-            event.webclip = 'http://' + this.config.friurl + '/api/events/' + event.id + '/clip.mp4';
-            event.thumbnail = 'data:image/jpeg;base64,' + event.thumbnail;
-          }
-          this.json2iob.parse('events.history', response.data, { forceIndex: true });
-          this.setStateAsync('events.history.json', JSON.stringify(response.data), true);
-        }
+    for (const device of this.deviceArray) {
+      const params = { limit: this.config.webnum };
+      if (device) {
+        params.cameras = device;
+      }
+      await this.requestClient({
+        url: 'http://' + this.config.friurl + '/api/events',
+        method: 'get',
+        params: params,
       })
-      .catch((error) => {
-        this.log.warn('fetchEventHistory error from http://' + this.config.friurl + '/api/events');
-        if (error.response && error.response.status >= 500) {
-          this.log.warn('Cannot reach server. You can ignore this after restarting the frigate server.');
-        }
-        this.log.warn(error);
-      });
+        .then(async (response) => {
+          if (response.data) {
+            this.log.debug('fetchEventHistory ' + JSON.stringify(response.data));
+
+            for (const event of response.data) {
+              event.websnap = 'http://' + this.config.friurl + '/api/events/' + event.id + '/snapshot.jpg';
+              event.webclip = 'http://' + this.config.friurl + '/api/events/' + event.id + '/clip.mp4';
+              event.thumbnail = 'data:image/jpeg;base64,' + event.thumbnail;
+            }
+            let path = 'events.history';
+            if (device) {
+              path = device + '.history';
+            }
+            this.json2iob.parse(path, response.data, { forceIndex: true, channelName: 'Events history' });
+            this.setStateAsync('events.history.json', JSON.stringify(response.data), true);
+          }
+        })
+        .catch((error) => {
+          this.log.warn('fetchEventHistory error from http://' + this.config.friurl + '/api/events');
+          if (error.response && error.response.status >= 500) {
+            this.log.warn('Cannot reach server. You can ignore this after restarting the frigate server.');
+          }
+          this.log.warn(error);
+        });
+    }
   }
 
   async sendNotification(message) {
@@ -475,7 +487,7 @@ class Frigate extends utils.Adapter {
         type = 'video';
       }
       this.log.debug(
-        `Notification score ${message.score} type ${message.type} state ${message.state} image/clip ${imageB64.length} format ${type}`,
+        `Notification score ${message.score} type ${message.type} state ${message.state} ${message.status} image/clip length ${imageB64.length} format ${type}`,
       );
       const notificationMinScoreState = await this.getStateAsync(message.source + '.remote.notificationMinScore');
       if (notificationMinScoreState && notificationMinScoreState.val) {
