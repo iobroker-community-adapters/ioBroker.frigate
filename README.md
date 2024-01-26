@@ -30,19 +30,24 @@ Adapter for Frigate Tool [Frigate Video](https://frigate.video/)
 
 ## Usage
 
-#### stats
+### stats
 
 General Information about the system and cameras
 
-#### events
+### remotes
+
+`frigate.0.remote.pauseNotifications`
+Pause Notification for all Cameras
+
+### events
 
 Last Event with before and after information
 
-History of the last X events
+`frigate.0.events.history` History of the last X events
 
 History event has a thumbnail of the event and url to the snapshot and clip
 
-#### camera
+### camera_name
 
 Status and settings of the camera
 
@@ -50,14 +55,21 @@ Change state State to change the settings of the camera
 
 [Detailed Information about all states](https://docs.frigate.video/integrations/mqtt/)
 
-frigate.0.camera.motion:
+`frigate.0.camera_name.motion`
 
 Whether camera_name is currently detecting motion. Expected values are ON and OFF. NOTE: After motion is initially detected, ON will be set until no motion has been detected for mqtt_off_delay seconds (30 by default).
 
-frigate.0.camera.person_snapshot:
+`frigate.0.camera_name.person_snapshot`
 
 Publishes a jpeg encoded frame of the detected object type. When the object is no longer detected, the highest confidence image is published or the original image is published again.
 The height and crop of snapshots can be configured in the config.
+
+`frigate.0.camera_name.history`
+Event history of the camera
+
+`frigate.0.camera_name.remote.notificationText` custom notification text for the camera
+`frigate.0.camera_name.remote.notificationMinScore` custom notification min score for the camera
+`frigate.0.camera_name.remote.pauseNotifications`pause notification for the camera
 
 ## Notifcations
 
@@ -71,13 +83,15 @@ For Event can enter a minimum score before sending. 0 = Disabled
 
 Clips are send 5s (Instance settings) after event end.
 
+You can enter custom notification text with placeholder `{{source}} {{type}} erkannt {{status}} {{score}} {{state}}`
+
 ## Integrate in vis
 
 You can integrate snapshots and clips in the vis:
 
 Snapshot:
 
-Add a `String img src` and use as Object Id: `frigate.0.camera.person_snapshot`
+Add a `String img src` and use as Object Id: `frigate.0.camera_name.person_snapshot`
 
 Add a `String img src` and use as Object Id: `frigate.0.events.history.01.thumbnail`
 
@@ -89,6 +103,10 @@ Add a `HTML` add as HTML:
 <video width="100%" height="auto" src="{frigate.0.events.history.01.webclip}" autoplay muted>
 </video>
 ```
+
+## Discussion and questions
+
+[https://forum.iobroker.net/topic/64928/frigate-adapter-für-iobroker](https://forum.iobroker.net/topic/64928/frigate-adapter-für-iobroker)
 
 ## Changelog
 
