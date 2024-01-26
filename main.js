@@ -243,7 +243,7 @@ class Frigate extends utils.Adapter {
 
   async createCameraDevices(data) {
     if (this.firstStart) {
-      this.log.debug('first start create devices');
+      this.log.info('Create Device information and fetch Event History');
       if (data.cameras) {
         for (const key in data.cameras) {
           this.deviceArray.push(key);
@@ -434,7 +434,7 @@ class Frigate extends utils.Adapter {
       })
         .then(async (response) => {
           if (response.data) {
-            this.log.debug('fetchEventHistory ' + JSON.stringify(response.data));
+            this.log.debug('fetchEventHistory succesfull ' + device);
 
             for (const event of response.data) {
               event.websnap = 'http://' + this.config.friurl + '/api/events/' + event.id + '/snapshot.jpg';
