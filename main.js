@@ -513,7 +513,7 @@ class Frigate extends utils.Adapter {
         sendUser = this.config.notificationUsers.replace(/ /g, '').split(',');
       }
       let messageTextTemplate = this.config.notificationTextTemplate;
-      const notificationTextState = await this.getStateAsync(message.source + 'remote.notificationText');
+      const notificationTextState = await this.getStateAsync(message.source + '.remote.notificationText');
       if (notificationTextState && notificationTextState.val) {
         if (notificationTextState.val != null) {
           messageTextTemplate = notificationTextState.val.toString();
