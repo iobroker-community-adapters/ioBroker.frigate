@@ -43,9 +43,8 @@ class Frigate extends utils.Adapter {
     this.clientId = 'frigate';
     this.json2iob = new json2iob(this);
     this.tmpDir = tmpdir();
-    this.notificationMinScoreArray = [];
-    this.notificationMinScores = {};
     this.notificationMinScore = null;
+    this.firstStart = true;
   }
 
   /**
@@ -59,20 +58,10 @@ class Frigate extends utils.Adapter {
     }
     try {
       if (this.config.notificationMinScore) {
-        if (this.config.notificationMinScore.includes && this.config.notificationMinScore.includes(':')) {
-          this.notificationMinScoreArray = this.config.notificationMinScore.replace(/,/g, '.').replace(/ /g, '').split(';');
-          for (const minScore of this.notificationMinScoreArray) {
-            const minScoreArray = minScore.split(':');
-            if (minScoreArray.length === 2) {
-              this.notificationMinScores[minScoreArray[0]] = parseFloat(minScoreArray[1]);
-            }
-          }
-        } else {
-          this.notificationMinScore = parseFloat(this.config.notificationMinScore);
-          if (this.notificationMinScore > 1) {
-            this.notificationMinScore = this.notificationMinScore / 100;
-            this.log.info('Notification min score is higher than 1. Recalculated to ' + this.notificationMinScore);
-          }
+        this.notificationMinScore = this.config.notificationMinScore;
+        if (this.notificationMinScore > 1) {
+          this.notificationMinScore = this.notificationMinScore / 100;
+          this.log.info('Notification min score is higher than 1. Recalculated to ' + this.notificationMinScore);
         }
       }
     } catch (error) {
@@ -105,7 +94,7 @@ class Frigate extends utils.Adapter {
     await this.extendObjectAsync('remote.pauseNotifications', {
       type: 'state',
       common: {
-        name: 'Pause notifications',
+        name: 'Pause All notifications',
         type: 'boolean',
         role: 'switch',
         def: false,
@@ -210,16 +199,62 @@ class Frigate extends utils.Adapter {
           //create devices state for cameras
           if (pathArray[0] === 'stats') {
             delete data['cpu_usages'];
-            if (data.cameras) {
-              for (const key in data.cameras) {
-                await this.extendObjectAsync(key, {
-                  type: 'device',
-                  common: {
-                    name: 'Camera ' + key,
-                  },
-                  native: {},
-                });
+            if (this.firstStart) {
+              if (data.cameras) {
+                for (const key in data.cameras) {
+                  await this.extendObjectAsync(key, {
+                    type: 'device',
+                    common: {
+                      name: 'Camera ' + key,
+                    },
+                    native: {},
+                  });
+                  await this.extendObjectAsync(key + '.remote', {
+                    type: 'channel',
+                    common: {
+                      name: 'Control adapter',
+                    },
+                    native: {},
+                  });
+                  await this.extendObjectAsync(key + 'remote.pauseNotifications', {
+                    type: 'state',
+                    common: {
+                      name: 'Pause Camera notifications',
+                      type: 'boolean',
+                      role: 'switch',
+                      def: false,
+                      read: true,
+                      write: true,
+                    },
+                    native: {},
+                  });
+                  await this.extendObjectAsync(key + 'remote.notificationText', {
+                    type: 'state',
+                    common: {
+                      name: 'Overwrite the notification text',
+                      type: 'string',
+                      role: 'text',
+                      def: '',
+                      read: true,
+                      write: true,
+                    },
+                    native: {},
+                  });
+                  await this.extendObjectAsync(key + 'remote.notificationMinScore', {
+                    type: 'state',
+                    common: {
+                      name: 'Overwrite notification min score',
+                      type: 'number',
+                      role: 'value',
+                      def: 0,
+                      read: true,
+                      write: true,
+                    },
+                    native: {},
+                  });
+                }
               }
+              this.firstStart = false;
             }
           }
           //parse json to iobroker states
@@ -415,6 +450,12 @@ class Frigate extends utils.Adapter {
       this.log.debug('Notifications paused');
       return;
     }
+    const cameraPauseState = await this.getStateAsync(message.source + 'remote.pauseNotifications');
+    if (cameraPauseState && cameraPauseState.val) {
+      this.log.debug('Notifications paused for camera ' + message.source);
+      return;
+    }
+
     if (this.notificationExcludeArray && this.notificationExcludeArray.includes(message.source)) {
       this.log.debug('Notification for ' + message.source + ' is excluded');
       return;
@@ -434,15 +475,22 @@ class Frigate extends utils.Adapter {
       this.log.debug(
         `Notification score ${message.score} type ${message.type} state ${message.state} image/clip ${imageB64.length} format ${type}`,
       );
-      if (message.score != null && this.notificationMinScore > 0 && message.score < this.config.notificationMinScore) {
+      const notificationMinScoreState = await this.getStateAsync(message.source + 'remote.notificationMinScore');
+      if (notificationMinScoreState && notificationMinScoreState.val) {
+        const notificationMinScoreStateValue = notificationMinScoreState.val;
+        if (
+          notificationMinScoreStateValue != null &&
+          notificationMinScoreStateValue > 0 &&
+          message.score < notificationMinScoreStateValue
+        ) {
+          this.log.info(
+            `Notification skipped score ${message.score} is lower than ${notificationMinScoreState.val} state  ${message.state} type ${message.type}`,
+          );
+          return;
+        }
+      } else if (message.score != null && this.notificationMinScore > 0 && message.score < this.config.notificationMinScore) {
         this.log.info(
           `Notification skipped score ${message.score} is lower than ${this.config.notificationMinScore} state  ${message.state} type ${message.type}`,
-        );
-        return;
-      }
-      if (this.notificationMinScores[message.source] && message.score < this.notificationMinScores[message.source]) {
-        this.log.info(
-          `Notification skipped score ${message.score} is lower than ${this.notificationMinScores[message.source]}  for source ${message.source}`,
         );
         return;
       } else {
@@ -455,7 +503,14 @@ class Frigate extends utils.Adapter {
       if (this.config.notificationUsers) {
         sendUser = this.config.notificationUsers.replace(/ /g, '').split(',');
       }
-      const messageText = this.config.notificationTextTemplate
+      let messageTextTemplate = this.config.notificationTextTemplate;
+      const notificationTextState = await this.getStateAsync(message.source + 'remote.notificationText');
+      if (notificationTextState && notificationTextState.val) {
+        if (notificationTextState.val != null) {
+          messageTextTemplate = notificationTextState.val.toString();
+        }
+      }
+      const messageText = messageTextTemplate
         .replace(/{{source}}/g, message.source)
         .replace(/{{type}}/g, message.type)
         .replace(/{{state}}/g, message.state)
