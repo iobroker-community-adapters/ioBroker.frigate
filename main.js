@@ -200,6 +200,7 @@ class Frigate extends utils.Adapter {
           if (pathArray[0] === 'stats') {
             delete data['cpu_usages'];
             if (this.firstStart) {
+              this.log.debug('first start create devices');
               if (data.cameras) {
                 for (const key in data.cameras) {
                   await this.extendObjectAsync(key, {
@@ -212,11 +213,11 @@ class Frigate extends utils.Adapter {
                   await this.extendObjectAsync(key + '.remote', {
                     type: 'channel',
                     common: {
-                      name: 'Control adapter',
+                      name: 'Control camera',
                     },
                     native: {},
                   });
-                  await this.extendObjectAsync(key + 'remote.pauseNotifications', {
+                  await this.extendObjectAsync(key + '.remote.pauseNotifications', {
                     type: 'state',
                     common: {
                       name: 'Pause Camera notifications',
@@ -228,7 +229,7 @@ class Frigate extends utils.Adapter {
                     },
                     native: {},
                   });
-                  await this.extendObjectAsync(key + 'remote.notificationText', {
+                  await this.extendObjectAsync(key + '.remote.notificationText', {
                     type: 'state',
                     common: {
                       name: 'Overwrite the notification text',
@@ -240,7 +241,7 @@ class Frigate extends utils.Adapter {
                     },
                     native: {},
                   });
-                  await this.extendObjectAsync(key + 'remote.notificationMinScore', {
+                  await this.extendObjectAsync(key + '.remote.notificationMinScore', {
                     type: 'state',
                     common: {
                       name: 'Overwrite notification min score',
@@ -253,8 +254,9 @@ class Frigate extends utils.Adapter {
                     native: {},
                   });
                 }
+
+                this.firstStart = false;
               }
-              this.firstStart = false;
             }
           }
           //parse json to iobroker states
