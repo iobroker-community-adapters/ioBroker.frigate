@@ -1,6 +1,6 @@
 {
   "name": "iobroker.frigate",
-  "version": "0.2.9",
+  "version": "1.0.0",
   "description": "Adapter for Frigate",
   "author": {
     "name": "TA2k",

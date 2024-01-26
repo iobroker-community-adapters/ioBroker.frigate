@@ -1,9 +1,9 @@
 {
   "common": {
     "name": "frigate",
-    "version": "0.2.9",
+    "version": "1.0.0",
     "news": {
-      "0.2.9": {
+      "1.0.0": {
         "en": "New Version with new state structure. Please check you vis and scripts. The new version doesn't need the mqtt adapter and can send directly notification to telegram. Ringpuffer is under events.history.",
         "de": "Neue Version mit neuer State Struktur. Bitte überprüfe deine vis und Skripte. Die neue Version benötigt keinen mqtt Adapter mehr und kann direkt Benachrichtigungen an Telegramm senden. Ringspeicher ist unter events.history.",
         "ru": "Новая версия с новой структурой состояния. Пожалуйста, проверяйте визу и скрипты. Новая версия не нуждается в адаптере mqtt и может отправлять непосредственное уведомление на телеграмму.",
