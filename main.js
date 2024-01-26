@@ -58,7 +58,7 @@ class Frigate extends utils.Adapter {
     }
     try {
       if (this.config.notificationMinScore) {
-        this.notificationMinScore = this.config.notificationMinScore;
+        this.notificationMinScore = parseFloat(this.config.notificationMinScore);
         if (this.notificationMinScore > 1) {
           this.notificationMinScore = this.notificationMinScore / 100;
           this.log.info('Notification min score is higher than 1. Recalculated to ' + this.notificationMinScore);
@@ -452,7 +452,7 @@ class Frigate extends utils.Adapter {
       this.log.debug('Notifications paused');
       return;
     }
-    const cameraPauseState = await this.getStateAsync(message.source + 'remote.pauseNotifications');
+    const cameraPauseState = await this.getStateAsync(message.source + '.remote.pauseNotifications');
     if (cameraPauseState && cameraPauseState.val) {
       this.log.debug('Notifications paused for camera ' + message.source);
       return;
@@ -477,14 +477,9 @@ class Frigate extends utils.Adapter {
       this.log.debug(
         `Notification score ${message.score} type ${message.type} state ${message.state} image/clip ${imageB64.length} format ${type}`,
       );
-      const notificationMinScoreState = await this.getStateAsync(message.source + 'remote.notificationMinScore');
+      const notificationMinScoreState = await this.getStateAsync(message.source + '.remote.notificationMinScore');
       if (notificationMinScoreState && notificationMinScoreState.val) {
-        const notificationMinScoreStateValue = notificationMinScoreState.val;
-        if (
-          notificationMinScoreStateValue != null &&
-          notificationMinScoreStateValue > 0 &&
-          message.score < notificationMinScoreStateValue
-        ) {
+        if (notificationMinScoreState.val != null && notificationMinScoreState.val > 0 && message.score < notificationMinScoreState.val) {
           this.log.info(
             `Notification skipped score ${message.score} is lower than ${notificationMinScoreState.val} state  ${message.state} type ${message.type}`,
           );
@@ -495,9 +490,8 @@ class Frigate extends utils.Adapter {
           `Notification skipped score ${message.score} is lower than ${this.config.notificationMinScore} state  ${message.state} type ${message.type}`,
         );
         return;
-      } else {
-        this.log.debug(`Notification score ${message.score} is higher than ${this.config.notificationMinScore} type ${message.type}`);
       }
+      this.log.debug(`Notification score ${message.score} is higher than ${this.config.notificationMinScore} type ${message.type}`);
 
       const imgBuffer = Buffer.from(imageB64, 'base64');
       const sendInstances = this.config.notificationInstances.replace(/ /g, '').split(',');
