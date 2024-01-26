@@ -300,7 +300,7 @@
         "uk": "Шаблон тексту сповіщення. Конкретна камера: frigate.0.remote.notificationTextTemplate",
         "zh-cn": "通知文本模板。 摄像机特定:frigate.0.remote.notificationTextTemplate"
       },
-      "placeholder": "{{source}} {{type}} erkannt {{state}}",
+      "placeholder": "{{source}} {{type}} erkannt {{status}} {{score}} {{state}}",
       "newLine": true,
       "sm": 3
     },
