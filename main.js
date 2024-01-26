@@ -200,7 +200,6 @@ class Frigate extends utils.Adapter {
           if (pathArray[0] === 'stats') {
             delete data['cpu_usages'];
             await this.createCameraDevices(data);
-            this.fetchEventHistory();
           }
           //parse json to iobroker states
           this.json2iob.parse(pathArray.join('.'), data, { write: write });
@@ -306,6 +305,7 @@ class Frigate extends utils.Adapter {
           });
         }
 
+        this.fetchEventHistory();
         this.firstStart = false;
       }
     }
