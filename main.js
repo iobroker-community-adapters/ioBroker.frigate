@@ -523,7 +523,8 @@ class Frigate extends utils.Adapter {
         .replace(/{{source}}/g, message.source)
         .replace(/{{type}}/g, message.type)
         .replace(/{{state}}/g, message.state)
-        .replace(/{{score}}/g, message.score);
+        .replace(/{{score}}/g, message.score)
+        .replace(/{{status}}/g, message.status);
       this.log.debug('Notification message ' + messageText);
       for (const sendInstance of sendInstances) {
         if (sendUser.length > 0) {
