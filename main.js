@@ -569,7 +569,7 @@ class Frigate extends utils.Adapter {
               await this.sendToAsync(sendInstance, {
                 device: user,
                 file: `${this.tmpDir}${sep}${uuid}${ending}`,
-                title: messageText,
+                message: messageText,
               });
               try {
                 fs.unlinkSync(`${this.tmpDir}${sep}${uuid}${ending}`);
@@ -595,7 +595,7 @@ class Frigate extends utils.Adapter {
             fs.writeFileSync(`${this.tmpDir}${sep}${uuid}${ending}`, imageB64, 'base64');
             await this.sendToAsync(sendInstance, {
               file: `${this.tmpDir}${sep}${uuid}${ending}`,
-              title: messageText,
+              message: messageText,
             });
             try {
               fs.unlinkSync(`${this.tmpDir}${sep}${uuid}${ending}`);
