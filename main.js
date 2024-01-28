@@ -258,12 +258,17 @@ class Frigate extends utils.Adapter {
       const data = await this.requestClient({
         url: 'http://' + this.config.friurl + '/api/config',
         method: 'get',
-      }).catch((error) => {
-        this.log.warn('createCameraDevices error from http://' + this.config.friurl + '/api/config');
-        this.log.error(error);
-        error.response && this.log.error(JSON.stringify(error.response.data));
-        return;
-      });
+      })
+        .then((response) => {
+          this.log.debug(JSON.stringify(response.data));
+          return response.data;
+        })
+        .catch((error) => {
+          this.log.warn('createCameraDevices error from http://' + this.config.friurl + '/api/config');
+          this.log.error(error);
+          error.response && this.log.error(JSON.stringify(error.response.data));
+          return;
+        });
       if (!data) {
         return;
       }
