@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "frigate",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "news": {
+      "1.0.1": {
+        "en": "fix frigate v12 camera fetching\nfix pushover notifications",
+        "de": "fix für frigate v12 kamera erstellung \npushover benachrichtigungen gefixt.",
+        "ru": "фиксация фрегата v12 фото камеры\nфиксация push-уведомлений",
+        "pt": "corrigir fragata v12 câmera de busca\ncorrigir notificações pushover",
+        "nl": "fix fregat v12 camera apporteren\npushover notificaties repareren",
+        "fr": "correction de la frégate v12 récupération de la caméra\ncorrection des notifications de poussée",
+        "it": "fix frigate v12 fotocamera fetching\ncorreggere le notifiche pushover",
+        "es": "fijar frigate v12 cámara buscar\nfijar notificaciones de empuje",
+        "pl": "naprawić pobieranie aparatu frigate v12\nnaprawić powiadomienia o przekierowaniu",
+        "uk": "fix frigate v12 камера fetching\nфіксувати сповіщувач повідомлення",
+        "zh-cn": "固定护卫舰 v12 摄像头\n固定推进通知"
+      },
       "1.0.0": {
         "en": "New Version with new state structure. Please check you vis and scripts. The new version doesn't need the mqtt adapter and can send directly notification to telegram. Ringpuffer is under events.history.",
         "de": "Neue Version mit neuer State Struktur. Bitte überprüfe deine vis und Skripte. Die neue Version benötigt keinen mqtt Adapter mehr und kann direkt Benachrichtigungen an Telegramm senden. Ringspeicher ist unter events.history.",
