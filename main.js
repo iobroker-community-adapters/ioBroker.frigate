@@ -246,6 +246,7 @@ class Frigate extends utils.Adapter {
       if (data.cameras) {
         for (const key in data.cameras) {
           this.deviceArray.push(key);
+          this.log.info('Create device information for: ' + key);
           await this.extendObjectAsync(key, {
             type: 'device',
             common: {
@@ -304,10 +305,11 @@ class Frigate extends utils.Adapter {
             native: {},
           });
         }
-
-        this.fetchEventHistory();
-        this.firstStart = false;
       }
+
+      this.fetchEventHistory();
+      this.firstStart = false;
+      this.log.info('Device information created');
     }
   }
 
