@@ -565,6 +565,10 @@ class Frigate extends utils.Adapter {
         if (sendUser.length > 0) {
           for (const user of sendUser) {
             if (sendInstance.includes('pushover')) {
+              if (type === 'video') {
+                this.log.info('Pushover does not support video.');
+                return;
+              }
               fs.writeFileSync(`${this.tmpDir}${sep}${uuid}${ending}`, imageB64, 'base64');
               await this.sendToAsync(sendInstance, {
                 device: user,
@@ -592,6 +596,11 @@ class Frigate extends utils.Adapter {
           }
         } else {
           if (sendInstance.includes('pushover')) {
+            if (type === 'video') {
+              this.log.info('Pushover does not support video.');
+              return;
+            }
+
             fs.writeFileSync(`${this.tmpDir}${sep}${uuid}${ending}`, imageB64, 'base64');
             await this.sendToAsync(sendInstance, {
               file: `${this.tmpDir}${sep}${uuid}${ending}`,

@@ -114,6 +114,12 @@ Add a `HTML` add as HTML:
     Placeholder for the next version (at the beginning of the line):
     ### **WORK IN PROGRESS**
 -->
+
+### **WORK IN PROGRESS**
+
+- fix frigate v12 camera fetching
+- fix pushover notifications
+
 ### 1.0.0 (2024-01-26)
 
 - New Version with new state structure. Please check you vis and scripts. The new version doesn't need the mqtt adapter and can send directly notification to telegram.
