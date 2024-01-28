@@ -305,8 +305,11 @@ class Frigate extends utils.Adapter {
             native: {},
           });
         }
+      } else {
+        this.log.warn('No cameras found');
+        this.log.info(JSON.stringify(data));
       }
-
+      this.log.info('Fetch event history for ' + (this.deviceArray.length - 1) + ' cameras');
       this.fetchEventHistory();
       this.firstStart = false;
       this.log.info('Device information created');
