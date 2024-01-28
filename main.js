@@ -85,6 +85,17 @@ class Frigate extends utils.Adapter {
       },
       native: {},
     });
+    await this.extendObjectAsync('events.history.json', {
+      type: 'state',
+      common: {
+        name: 'Events history',
+        type: 'string',
+        role: 'json',
+        read: true,
+        write: false,
+      },
+      native: {},
+    });
     await this.extendObjectAsync('remote', {
       type: 'channel',
       common: {
@@ -199,7 +210,8 @@ class Frigate extends utils.Adapter {
           //create devices state for cameras
           if (pathArray[0] === 'stats') {
             delete data['cpu_usages'];
-            await this.createCameraDevices(data);
+
+            this.createCameraDevices();
           }
           //parse json to iobroker states
           this.json2iob.parse(pathArray.join('.'), data, { write: write });
@@ -240,9 +252,22 @@ class Frigate extends utils.Adapter {
     });
   }
 
-  async createCameraDevices(data) {
+  async createCameraDevices() {
     if (this.firstStart) {
       this.log.info('Create Device information and fetch Event History');
+      const data = await this.requestClient({
+        url: 'http://' + this.config.friurl + '/api/config',
+        method: 'get',
+      }).catch((error) => {
+        this.log.warn('createCameraDevices error from http://' + this.config.friurl + '/api/config');
+        this.log.error(error);
+        error.response && this.log.error(JSON.stringify(error.response.data));
+        return;
+      });
+      if (!data) {
+        return;
+      }
+
       if (data.cameras) {
         for (const key in data.cameras) {
           this.deviceArray.push(key);
