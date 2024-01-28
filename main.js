@@ -155,7 +155,7 @@ class Frigate extends utils.Adapter {
       this.log.info('Filter for message from client: ' + client.id);
       this.clientId = client.id;
       this.setState('info.connection', true, true);
-      this.createCameraDevices();
+      this.fetchEventHistory();
     });
     aedes.on('clientDisconnect', (client) => {
       this.log.info('client disconnected ' + client.id);
@@ -210,6 +210,8 @@ class Frigate extends utils.Adapter {
           //create devices state for cameras
           if (pathArray[0] === 'stats') {
             delete data['cpu_usages'];
+
+            this.createCameraDevices();
           }
           //parse json to iobroker states
           this.json2iob.parse(pathArray.join('.'), data, { write: write });
@@ -251,7 +253,6 @@ class Frigate extends utils.Adapter {
   }
 
   async createCameraDevices() {
-    await this.sleep(5000);
     if (this.firstStart) {
       this.log.info('Create Device information and fetch Event History');
       const data = await this.requestClient({
