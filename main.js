@@ -8,7 +8,7 @@
 // you need to create an adapter
 const utils = require('@iobroker/adapter-core');
 const json2iob = require('json2iob');
-// const fs = require('fs');
+const fs = require('fs');
 const { v4: uuidv4 } = require('uuid');
 const { sep } = require('path');
 const { tmpdir } = require('os');
@@ -565,17 +565,17 @@ class Frigate extends utils.Adapter {
         if (sendUser.length > 0) {
           for (const user of sendUser) {
             if (sendInstance.includes('pushover')) {
-              // fs.writeFileSync(`${this.tmpDir}${sep}${uuid}${ending}`, imageBuffer, 'base64');
+              fs.writeFileSync(`${this.tmpDir}${sep}${uuid}${ending}`, imageB64, 'base64');
               await this.sendToAsync(sendInstance, {
                 device: user,
-                file: { name: `${this.tmpDir}${sep}${uuid}${ending}`, data: imgBuffer },
+                file: `${this.tmpDir}${sep}${uuid}${ending}`,
                 title: messageText,
               });
-              // try {
-              //   fs.unlinkSync(`${this.tmpDir}${sep}${uuid}${ending}`);
-              // } catch (error) {
-              //   this.log.error(error);
-              // }
+              try {
+                fs.unlinkSync(`${this.tmpDir}${sep}${uuid}${ending}`);
+              } catch (error) {
+                this.log.error(error);
+              }
             } else if (sendInstance.includes('signal-cmb')) {
               await this.sendToAsync(sendInstance, 'send', {
                 text: messageText,
@@ -592,16 +592,16 @@ class Frigate extends utils.Adapter {
           }
         } else {
           if (sendInstance.includes('pushover')) {
-            // fs.writeFileSync(`${this.tmpDir}${sep}${uuid}${ending}`, imageB64, 'base64');
+            fs.writeFileSync(`${this.tmpDir}${sep}${uuid}${ending}`, imageB64, 'base64');
             await this.sendToAsync(sendInstance, {
-              file: { name: `${this.tmpDir}${sep}${uuid}${ending}`, data: imgBuffer },
+              file: `${this.tmpDir}${sep}${uuid}${ending}`,
               title: messageText,
             });
-            // try {
-            //   fs.unlinkSync(`${this.tmpDir}${sep}${uuid}${ending}`);
-            // } catch (error) {
-            //   this.log.error(error);
-            // }
+            try {
+              fs.unlinkSync(`${this.tmpDir}${sep}${uuid}${ending}`);
+            } catch (error) {
+              this.log.error(error);
+            }
           } else if (sendInstance.includes('signal-cmb')) {
             await this.sendToAsync(sendInstance, 'send', {
               text: messageText,
