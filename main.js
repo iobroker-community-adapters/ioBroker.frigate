@@ -214,7 +214,9 @@ class Frigate extends utils.Adapter {
             this.createCameraDevices();
           }
           //parse json to iobroker states
-          this.json2iob.parse(pathArray.join('.'), data, { write: write });
+          await this.json2iob.parse(pathArray.join('.'), data, { write: write });
+          data = null;
+          packet.payload = null;
         } catch (error) {
           this.log.warn(error);
         }
@@ -393,7 +395,6 @@ class Frigate extends utils.Adapter {
             this.log.warn(error);
             return '';
           });
-        data.imageContent = image;
       }
       this.sendNotification({
         source: camera,
@@ -403,6 +404,7 @@ class Frigate extends utils.Adapter {
         image: image,
         score: score,
       });
+      image = '';
     }
     //check if clip should be notified and event is end
     if (this.config.notificationEventClip) {
@@ -418,7 +420,7 @@ class Frigate extends utils.Adapter {
             score = data.after.top_score;
             clipUrl = `http://${this.config.friurl}/api/events/${data.after.id}/clip.mp4`;
           }
-          const clip = await this.requestClient({
+          let clip = await this.requestClient({
             url: clipUrl,
             method: 'get',
             responseType: 'arraybuffer',
@@ -446,6 +448,7 @@ class Frigate extends utils.Adapter {
             clip: clip,
             score: score,
           });
+          clip = null;
         } else {
           this.log.info(`Clip sending active but no clip available `);
         }
@@ -541,7 +544,7 @@ class Frigate extends utils.Adapter {
       }
       this.log.debug(`Notification score ${message.score} is higher than ${this.config.notificationMinScore} type ${message.type}`);
 
-      const imgBuffer = Buffer.from(imageB64, 'base64');
+      let imgBuffer = Buffer.from(imageB64, 'base64');
       const sendInstances = this.config.notificationInstances.replace(/ /g, '').split(',');
       let sendUser = [];
       if (this.config.notificationUsers) {
@@ -620,6 +623,8 @@ class Frigate extends utils.Adapter {
           }
         }
       }
+      imageB64 = null;
+      imgBuffer = null;
     }
     message.image = null;
     message.clip = null;
