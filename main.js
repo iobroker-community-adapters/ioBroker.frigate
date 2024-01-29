@@ -426,7 +426,7 @@ class Frigate extends utils.Adapter {
           }
 
           const uuid = uuidv4();
-          fileName = `${this.tmpDir}${sep}${uuid}.jpg`;
+          fileName = `${this.tmpDir}${sep}${uuid}.mp4`;
           await this.requestClient({
             url: clipUrl,
             method: 'get',
