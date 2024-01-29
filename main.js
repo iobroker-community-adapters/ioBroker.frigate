@@ -621,6 +621,8 @@ class Frigate extends utils.Adapter {
         }
       }
     }
+    message.image = null;
+    message.clip = null;
   }
   /**
    * Is called when adapter shuts down - callback has to be called under any circumstances!
