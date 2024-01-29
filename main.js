@@ -377,18 +377,20 @@ class Frigate extends utils.Adapter {
       if (imageUrl) {
         const uuid = uuidv4();
         fileName = `${this.tmpDir}${sep}${uuid}.jpg`;
-        const streamPromise = await this.requestClient({
+        await this.requestClient({
           url: imageUrl,
           method: 'get',
           responseType: 'stream',
         })
-          .then((response) => {
+          .then(async (response) => {
             if (response.data) {
               const writer = fs.createWriteStream(fileName);
               response.data.pipe(writer);
-              return new Promise((resolve, reject) => {
+              await new Promise((resolve, reject) => {
                 writer.on('finish', resolve);
                 writer.on('error', reject);
+              }).catch((error) => {
+                this.log.error(error);
               });
             }
             this.log.debug('prepareEventNotification no data from ' + imageUrl);
@@ -402,11 +404,6 @@ class Frigate extends utils.Adapter {
             this.log.warn(error);
             return;
           });
-        if (streamPromise) {
-          await streamPromise.catch((error) => {
-            this.log.error(error);
-          });
-        }
       }
       this.sendNotification({
         source: camera,
@@ -436,7 +433,7 @@ class Frigate extends utils.Adapter {
 
           const uuid = uuidv4();
           fileName = `${this.tmpDir}${sep}${uuid}.mp4`;
-          const streamPromise = await this.requestClient({
+          await this.requestClient({
             url: clipUrl,
             method: 'get',
             responseType: 'stream',
@@ -445,9 +442,11 @@ class Frigate extends utils.Adapter {
               if (response.data) {
                 const writer = fs.createWriteStream(fileName);
                 response.data.pipe(writer);
-                return new Promise((resolve, reject) => {
+                await new Promise((resolve, reject) => {
                   writer.on('finish', resolve);
                   writer.on('error', reject);
+                }).catch((error) => {
+                  this.log.error(error);
                 });
               }
               this.log.debug('prepareEventNotification no data from ' + clipUrl);
@@ -459,11 +458,7 @@ class Frigate extends utils.Adapter {
               }
               this.log.warn(error);
             });
-          if (streamPromise) {
-            await streamPromise.catch((error) => {
-              this.log.error(error);
-            });
-          }
+
           this.sendNotification({
             source: camera,
             type: label,
