@@ -357,7 +357,7 @@ class Frigate extends utils.Adapter {
     //check if only end events should be notified or start and update events
     if ((this.config.notificationEventSnapshot && status === 'end') || this.config.notificationEventSnapshotStart) {
       let imageUrl = '';
-      let image = '';
+      let fileName = '';
       if (data.before.has_snapshot) {
         imageUrl = `http://${this.config.friurl}/api/events/${data.before.id}/snapshot.jpg`;
       } else {
@@ -375,17 +375,20 @@ class Frigate extends utils.Adapter {
         }
       }
       if (imageUrl) {
-        image = await this.requestClient({
+        const uuid = uuidv4();
+        fileName = `${this.tmpDir}${sep}${uuid}.jpg`;
+        await this.requestClient({
           url: imageUrl,
           method: 'get',
-          responseType: 'arraybuffer',
+          responseType: 'stream',
         })
           .then((response) => {
             if (response.data) {
-              return Buffer.from(response.data, 'binary').toString('base64');
+              response.data.pipe(fs.createWriteStream(fileName));
+              return;
             }
             this.log.debug('prepareEventNotification no data from ' + imageUrl);
-            return '';
+            return;
           })
           .catch((error) => {
             this.log.warn('prepareEventNotification error from ' + imageUrl);
@@ -393,7 +396,7 @@ class Frigate extends utils.Adapter {
               this.log.warn('Cannot reach server. You can ignore this after restarting the frigate server.');
             }
             this.log.warn(error);
-            return '';
+            return;
           });
       }
       this.sendNotification({
@@ -401,36 +404,40 @@ class Frigate extends utils.Adapter {
         type: label,
         state: state,
         status: status,
-        image: image,
+        image: fileName,
         score: score,
       });
-      image = '';
     }
     //check if clip should be notified and event is end
     if (this.config.notificationEventClip) {
       if (data.type === 'end') {
         if (data.before && data.before.has_clip) {
+          let fileName = '';
           this.log.debug(`Wait ${this.config.notificationEventClipWaitTime} seconds for clip`);
           await this.sleep(this.config.notificationEventClipWaitTime * 1000);
           let state = 'Event Before';
           score = data.before.top_score;
           let clipUrl = `http://${this.config.friurl}/api/events/${data.before.id}/clip.mp4`;
+
           if (data.after && data.after.has_clip) {
             state = 'Event After';
             score = data.after.top_score;
             clipUrl = `http://${this.config.friurl}/api/events/${data.after.id}/clip.mp4`;
           }
-          let clip = await this.requestClient({
+
+          const uuid = uuidv4();
+          fileName = `${this.tmpDir}${sep}${uuid}.jpg`;
+          await this.requestClient({
             url: clipUrl,
             method: 'get',
-            responseType: 'arraybuffer',
+            responseType: 'stream',
           })
             .then((response) => {
               if (response.data) {
-                return Buffer.from(response.data, 'binary').toString('base64');
+                response.data.pipe(fs.createWriteStream(fileName));
+                return;
               }
               this.log.debug('prepareEventNotification no data from ' + clipUrl);
-              return '';
             })
             .catch((error) => {
               this.log.warn('prepareEventNotification error from ' + clipUrl);
@@ -438,17 +445,15 @@ class Frigate extends utils.Adapter {
                 this.log.warn('Cannot reach server. You can ignore this after restarting the frigate server.');
               }
               this.log.warn(error);
-              return '';
             });
           this.sendNotification({
             source: camera,
             type: label,
             state: state,
             status: status,
-            clip: clip,
+            clip: fileName,
             score: score,
           });
-          clip = null;
         } else {
           this.log.info(`Clip sending active but no clip available `);
         }
@@ -515,18 +520,18 @@ class Frigate extends utils.Adapter {
     }
 
     if (this.config.notificationActive) {
-      let imageB64 = message.image;
+      let fileName = message.image;
       let ending = '.jpg';
       let type = 'photo';
       const uuid = uuidv4();
 
       if (message.clip != null) {
-        imageB64 = message.clip;
+        fileName = message.clip;
         ending = '.mp4';
         type = 'video';
       }
       this.log.debug(
-        `Notification score ${message.score} type ${message.type} state ${message.state} ${message.status} image/clip length ${imageB64.length} format ${type}`,
+        `Notification score ${message.score} type ${message.type} state ${message.state} ${message.status} image/clip file: ${fileName} format ${type}`,
       );
       const notificationMinScoreState = await this.getStateAsync(message.source + '.remote.notificationMinScore');
       if (notificationMinScoreState && notificationMinScoreState.val) {
@@ -544,7 +549,6 @@ class Frigate extends utils.Adapter {
       }
       this.log.debug(`Notification score ${message.score} is higher than ${this.config.notificationMinScore} type ${message.type}`);
 
-      let imgBuffer = Buffer.from(imageB64, 'base64');
       const sendInstances = this.config.notificationInstances.replace(/ /g, '').split(',');
       let sendUser = [];
       if (this.config.notificationUsers) {
@@ -572,10 +576,10 @@ class Frigate extends utils.Adapter {
                 this.log.info('Pushover does not support video.');
                 return;
               }
-              fs.writeFileSync(`${this.tmpDir}${sep}${uuid}${ending}`, imageB64, 'base64');
+
               await this.sendToAsync(sendInstance, {
                 device: user,
-                file: `${this.tmpDir}${sep}${uuid}${ending}`,
+                file: fileName,
                 message: messageText,
               });
               try {
@@ -591,7 +595,7 @@ class Frigate extends utils.Adapter {
             } else {
               await this.sendToAsync(sendInstance, {
                 user: user,
-                text: imgBuffer,
+                text: fileName,
                 type: type,
                 caption: messageText,
               });
@@ -604,30 +608,25 @@ class Frigate extends utils.Adapter {
               return;
             }
 
-            fs.writeFileSync(`${this.tmpDir}${sep}${uuid}${ending}`, imageB64, 'base64');
             await this.sendToAsync(sendInstance, {
-              file: `${this.tmpDir}${sep}${uuid}${ending}`,
+              file: fileName,
               message: messageText,
             });
-            try {
-              fs.unlinkSync(`${this.tmpDir}${sep}${uuid}${ending}`);
-            } catch (error) {
-              this.log.error(error);
-            }
           } else if (sendInstance.includes('signal-cmb')) {
             await this.sendToAsync(sendInstance, 'send', {
               text: messageText,
             });
           } else {
-            await this.sendToAsync(sendInstance, { text: imgBuffer, type: type, caption: messageText });
+            await this.sendToAsync(sendInstance, { text: fileName, type: type, caption: messageText });
           }
         }
       }
-      imageB64 = null;
-      imgBuffer = null;
+      try {
+        fs.unlinkSync(fileName);
+      } catch (error) {
+        this.log.error(error);
+      }
     }
-    message.image = null;
-    message.clip = null;
   }
   /**
    * Is called when adapter shuts down - callback has to be called under any circumstances!
