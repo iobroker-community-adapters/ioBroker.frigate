@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "frigate",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "news": {
+      "1.0.2": {
+        "en": "reduce memory usage for clip notifications",
+        "de": "speichernutzung für Clip Benachrichtigungen reduziert.",
+        "ru": "сокращение использования памяти для клиповых уведомлений",
+        "pt": "reduzir o uso de memória para notificações de clip",
+        "nl": "geheugengebruik voor clipnotificaties verminderen",
+        "fr": "réduire l'utilisation de la mémoire pour les notifications de clip",
+        "it": "ridurre l'utilizzo della memoria per le notifiche clip",
+        "es": "reducir el uso de memoria para notificaciones de clip",
+        "pl": "ograniczenie korzystania z pamięci dla powiadomień klipów",
+        "uk": "зменшити використання пам'яті для повідомлення про кліп",
+        "zh-cn": "减少剪辑通知的内存使用"
+      },
       "1.0.1": {
         "en": "fix frigate v12 camera fetching\nfix pushover notifications",
         "de": "fix für frigate v12 kamera erstellung \npushover benachrichtigungen gefixt.",
