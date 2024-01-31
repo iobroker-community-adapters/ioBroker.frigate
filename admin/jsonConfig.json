@@ -189,16 +189,34 @@
     "notificationEventSnapshotStart": {
       "type": "checkbox",
       "label": {
-        "en": "Send snapshot from event start/update",
-        "de": "Snapshot vom Event Start/Update senden",
-        "ru": "Отправить снимок с начала / обновления события",
-        "pt": "Enviar instantâneo do início / atualização do evento",
-        "nl": "Snapshot van evenement start / update verzenden",
-        "fr": "Envoyer un instantané du début / mise à jour de l'événement",
-        "it": "Invia snapshot dall'inizio / aggiornamento dell'evento",
-        "es": "Enviar instantánea desde el inicio / actualización del evento",
-        "pl": "Wyślij migawkę z początku / aktualizacji wydarzenia",
-        "uk": "Надіслати знімок з початку / оновлення події",
+        "en": "Send snapshot from event start",
+        "de": "Snapshot vom Event Start senden",
+        "ru": "Отправить снимок с начала  события",
+        "pt": "Enviar instantâneo do início  do evento",
+        "nl": "Snapshot van evenement start verzenden",
+        "fr": "Envoyer un instantané du début à jour de l'événement",
+        "it": "Invia snapshot dall'inizio dell'evento",
+        "es": "Enviar instantánea desde el inicio  del evento",
+        "pl": "Wyślij migawkę z początku wydarzenia",
+        "uk": "Надіслати знімок з початку  події",
+        "zh-cn": "从事件开始/更新发送快照"
+      },
+      "newLine": true,
+      "sm": 3
+    },
+    "notificationEventSnapshotUpdate": {
+      "type": "checkbox",
+      "label": {
+        "en": "Send snapshot from event update",
+        "de": "Snapshot vom Event Update senden",
+        "ru": "Отправить снимок с обновления события",
+        "pt": "Enviar instantâneo do  atualização do evento",
+        "nl": "Snapshot van evenement update verzenden",
+        "fr": "Envoyer un instantané du  mise à jour de l'événement",
+        "it": "Invia snapshot  aggiornamento dell'evento",
+        "es": "Enviar instantánea desde el  actualización del evento",
+        "pl": "Wyślij migawkę z aktualizacji wydarzenia",
+        "uk": "Надіслати знімок з  оновлення події",
         "zh-cn": "从事件开始/更新发送快照"
       },
       "newLine": true,
@@ -218,6 +236,23 @@
         "pl": "Wyślij klip z wydarzenia",
         "uk": "Надіслати кліп з події",
         "zh-cn": "从事件发送剪辑"
+      },
+      "newLine": true,
+      "sm": 3
+    },
+    "notificationEventClipLink": {
+      "type": "checkbox",
+      "label": {
+        "en": "Send only Clip Url from event end",
+        "de": "Nur Clip Url vom Event Ende senden",
+        "ru": "Отправить только URL-адрес клипа с события",
+        "pt": "Enviar apenas Clip Url do evento",
+        "nl": "Alleen Clip Url van evenement verzenden",
+        "fr": "Envoyer uniquement Clip Url de l'événement",
+        "it": "Invia solo Clip Url dall'evento",
+        "es": "Enviar solo Clip Url del evento",
+        "pl": "Wyślij tylko adres URL klipu z wydarzenia",
+        "uk": "Надіслати лише URL-адресу кліпу з події"
       },
       "newLine": true,
       "sm": 3
@@ -320,6 +355,24 @@
         "zh-cn": "从通知中排除摄像机(逗号分隔)"
       },
       "placeholder": "camera1,camera2",
+      "newLine": true,
+      "sm": 3
+    },
+    "notificationExcludeZoneList": {
+      "type": "text",
+      "label": {
+        "en": "Exclude zones from notification (comma separated)",
+        "de": "Zonen von der Benachrichtigung ausschließen (durch Komma getrennt)",
+        "ru": "Исключить зоны из уведомления (через запятую)",
+        "pt": "Excluir zonas da notificação (separadas por vírgula)",
+        "nl": "Zones uitsluiten van melding (gescheiden door komma's)",
+        "fr": "Exclure les zones de la notification (séparées par des virgules)",
+        "it": "Escludi le zone dalla notifica (separate da virgola)",
+        "es": "Excluir zonas de la notificación (separadas por comas)",
+        "pl": "Wyklucz strefy z powiadomienia (oddzielone przecinkami)",
+        "uk": "Виключити зони з повідомлення (через кому)"
+      },
+      "placeholder": "zone1,zone2",
       "newLine": true,
       "sm": 3
     },

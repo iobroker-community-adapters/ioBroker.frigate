@@ -151,10 +151,13 @@
     "notificationCamera": false,
     "notificationEventSnapshot": true,
     "notificationEventSnapshotStart": false,
+    "notificationEventSnapshotUpdate": false,
     "notificationEventClip": true,
+    "notificationEventClipLink": false,
     "notificationEventClipWaitTime": 5,
     "notificationTextTemplate": "{{source}} {{type}} erkannt {{status}} {{score}}",
-    "notificationExcludeList": ""
+    "notificationExcludeList": "",
+    "notificationExcludeZoneList": ""
   },
   "objects": [],
   "instanceObjects": [

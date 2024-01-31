@@ -355,9 +355,14 @@ class Frigate extends utils.Adapter {
     let camera = data.before.camera;
     let label = data.before.label;
     let score = data.before.top_score;
+    let zones = data.before.current_zones;
     const status = data.type;
     //check if only end events should be notified or start and update events
-    if ((this.config.notificationEventSnapshot && status === 'end') || this.config.notificationEventSnapshotStart) {
+    if (
+      (this.config.notificationEventSnapshot && status === 'end') ||
+      (this.config.notificationEventSnapshotStart && status === 'start') ||
+      (this.config.notificationEventSnapshotUpdate && status === 'update')
+    ) {
       let imageUrl = '';
       let fileName = '';
       if (data.before.has_snapshot) {
@@ -371,6 +376,7 @@ class Frigate extends utils.Adapter {
         camera = data.after.camera;
         label = data.after.label;
         score = data.after.top_score;
+        zones = data.after.current_zones;
 
         if (data.after.has_snapshot) {
           imageUrl = `http://${this.config.friurl}/api/events/${data.after.id}/snapshot.jpg`;
@@ -414,61 +420,78 @@ class Frigate extends utils.Adapter {
         status: status,
         image: fileName,
         score: score,
+        zones: zones,
       });
     }
     //check if clip should be notified and event is end
-    if (this.config.notificationEventClip) {
+    if (this.config.notificationEventClip || this.config.notificationEventClipLink) {
       if (data.type === 'end') {
         if (data.before && data.before.has_clip) {
           let fileName = '';
-          this.log.debug(`Wait ${this.config.notificationEventClipWaitTime} seconds for clip`);
-          await this.sleep(this.config.notificationEventClipWaitTime * 1000);
           let state = 'Event Before';
           score = data.before.top_score;
+          zones = data.before.current_zones;
           let clipUrl = `http://${this.config.friurl}/api/events/${data.before.id}/clip.mp4`;
 
           if (data.after && data.after.has_clip) {
             state = 'Event After';
             score = data.after.top_score;
+            zones = data.after.current_zones;
             clipUrl = `http://${this.config.friurl}/api/events/${data.after.id}/clip.mp4`;
           }
-
-          const uuid = uuidv4();
-          fileName = `${this.tmpDir}${sep}${uuid}.mp4`;
-          await this.requestClient({
-            url: clipUrl,
-            method: 'get',
-            responseType: 'stream',
-          })
-            .then(async (response) => {
-              if (response.data) {
-                const writer = fs.createWriteStream(fileName);
-                response.data.pipe(writer);
-                await new Promise((resolve, reject) => {
-                  writer.on('finish', resolve);
-                  writer.on('error', reject);
-                }).catch((error) => {
-                  this.log.error(error);
-                });
-              }
-              this.log.debug('prepareEventNotification no data from ' + clipUrl);
-            })
-            .catch((error) => {
-              this.log.warn('prepareEventNotification error from ' + clipUrl);
-              if (error.response && error.response.status >= 500) {
-                this.log.warn('Cannot reach server. You can ignore this after restarting the frigate server.');
-              }
-              this.log.warn(error);
+          if (this.config.notificationEventClipLink) {
+            this.sendNotification({
+              source: camera,
+              type: label,
+              state: state,
+              status: status,
+              clipUrl: clipUrl,
+              score: score,
+              zones: zones,
             });
+          }
+          if (this.config.notificationEventClip) {
+            const uuid = uuidv4();
+            fileName = `${this.tmpDir}${sep}${uuid}.mp4`;
 
-          this.sendNotification({
-            source: camera,
-            type: label,
-            state: state,
-            status: status,
-            clip: fileName,
-            score: score,
-          });
+            this.log.debug(`Wait ${this.config.notificationEventClipWaitTime} seconds for clip`);
+            await this.sleep(this.config.notificationEventClipWaitTime * 1000);
+            await this.requestClient({
+              url: clipUrl,
+              method: 'get',
+              responseType: 'stream',
+            })
+              .then(async (response) => {
+                if (response.data) {
+                  const writer = fs.createWriteStream(fileName);
+                  response.data.pipe(writer);
+                  await new Promise((resolve, reject) => {
+                    writer.on('finish', resolve);
+                    writer.on('error', reject);
+                  }).catch((error) => {
+                    this.log.error(error);
+                  });
+                }
+                this.log.debug('prepareEventNotification no data from ' + clipUrl);
+              })
+              .catch((error) => {
+                this.log.warn('prepareEventNotification error from ' + clipUrl);
+                if (error.response && error.response.status >= 500) {
+                  this.log.warn('Cannot reach server. You can ignore this after restarting the frigate server.');
+                }
+                this.log.warn(error);
+              });
+
+            this.sendNotification({
+              source: camera,
+              type: label,
+              state: state,
+              status: status,
+              clip: fileName,
+              score: score,
+              zones: zones,
+            });
+          }
         } else {
           this.log.info(`Clip sending active but no clip available `);
         }
@@ -534,6 +557,18 @@ class Frigate extends utils.Adapter {
       return;
     }
 
+    if (this.config.notificationExcludeZoneList) {
+      const excludeZones = this.config.notificationExcludeZoneList.replace(/ /g, '').split(',');
+      if (message.zones) {
+        for (const zone of message.zones) {
+          if (excludeZones.includes(zone)) {
+            this.log.debug('Notification for zone ' + zone + ' is excluded');
+            return;
+          }
+        }
+      }
+    }
+
     if (this.config.notificationActive) {
       let fileName = message.image;
       let ending = '.jpg';
@@ -576,12 +611,17 @@ class Frigate extends utils.Adapter {
           messageTextTemplate = notificationTextState.val.toString();
         }
       }
-      const messageText = messageTextTemplate
+      let messageText = messageTextTemplate
         .replace(/{{source}}/g, message.source)
         .replace(/{{type}}/g, message.type)
         .replace(/{{state}}/g, message.state)
         .replace(/{{score}}/g, message.score)
         .replace(/{{status}}/g, message.status);
+      if (message.clipUrl) {
+        messageText = message.clipUrl;
+        fileName = '';
+        type = 'typing';
+      }
       this.log.debug('Notification message ' + messageText);
       for (const sendInstance of sendInstances) {
         if (sendUser.length > 0) {
