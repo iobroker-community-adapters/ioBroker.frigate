@@ -443,7 +443,7 @@ class Frigate extends utils.Adapter {
               type: label,
               state: state,
               status: status,
-              clip: clipUrl,
+              clipUrl: clipUrl,
               score: score,
               zones: zones,
             });
