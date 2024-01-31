@@ -172,10 +172,6 @@ class Frigate extends utils.Adapter {
       if (client) {
         try {
           let pathArray = packet.topic.split('/');
-          if (pathArray[0] === 'frigate') {
-            //remove first element
-            pathArray.shift();
-          }
           let data = packet.payload.toString();
           let write = false;
           try {
@@ -183,38 +179,43 @@ class Frigate extends utils.Adapter {
           } catch (error) {
             //do nothing
           }
-          //convert snapshot jpg to base64 with data url
-          if (pathArray[pathArray.length - 1] === 'snapshot') {
-            data = 'data:image/jpeg;base64,' + packet.payload.toString('base64');
-            if (this.config.notificationCamera) {
-              this.sendNotification({
-                source: pathArray[0],
-                type: pathArray[1],
-                state: pathArray[pathArray.length - 1],
-                image: packet.payload.toString('base64'),
-              });
+          if (pathArray[0] === 'frigate') {
+            //remove first element
+            pathArray.shift();
+
+            //convert snapshot jpg to base64 with data url
+            if (pathArray[pathArray.length - 1] === 'snapshot') {
+              data = 'data:image/jpeg;base64,' + packet.payload.toString('base64');
+              if (this.config.notificationCamera) {
+                this.sendNotification({
+                  source: pathArray[0],
+                  type: pathArray[1],
+                  state: pathArray[pathArray.length - 1],
+                  image: packet.payload.toString('base64'),
+                });
+              }
             }
-          }
-          //if last path state then make it writable
-          if (pathArray[pathArray.length - 1] === 'state') {
-            write = true;
-          }
-          // events topic trigger history fetching
-          if (pathArray[pathArray.length - 1] === 'events') {
-            this.prepareEventNotification(data);
-            this.fetchEventHistory();
-          }
-          // join every path item except the first one to create a flat hierarchy
-          if (pathArray[0] !== 'stats' && pathArray[0] !== 'events' && pathArray[0] !== 'available') {
-            const cameraId = pathArray.shift();
-            pathArray = [cameraId, pathArray.join('_')];
-          }
+            //if last path state then make it writable
+            if (pathArray[pathArray.length - 1] === 'state') {
+              write = true;
+            }
+            // events topic trigger history fetching
+            if (pathArray[pathArray.length - 1] === 'events') {
+              this.prepareEventNotification(data);
+              this.fetchEventHistory();
+            }
+            // join every path item except the first one to create a flat hierarchy
+            if (pathArray[0] !== 'stats' && pathArray[0] !== 'events' && pathArray[0] !== 'available') {
+              const cameraId = pathArray.shift();
+              pathArray = [cameraId, pathArray.join('_')];
+            }
 
-          //create devices state for cameras
-          if (pathArray[0] === 'stats') {
-            delete data['cpu_usages'];
+            //create devices state for cameras
+            if (pathArray[0] === 'stats') {
+              delete data['cpu_usages'];
 
-            this.createCameraDevices();
+              this.createCameraDevices();
+            }
           }
           //parse json to iobroker states
           await this.json2iob.parse(pathArray.join('.'), data, { write: write });
