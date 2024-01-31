@@ -163,6 +163,12 @@ class Frigate extends utils.Adapter {
       this.setState('available', 'offline', true);
     });
     aedes.on('publish', async (packet, client) => {
+      //republish all messages to all subscribed clients
+      aedes.publish(packet, (err) => {
+        if (err) {
+          this.log.error(err);
+        }
+      });
       if (packet.payload) {
         this.log.debug('publish' + ' ' + packet.topic + ' ' + packet.payload.toString());
       } else {
