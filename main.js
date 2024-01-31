@@ -169,6 +169,10 @@ class Frigate extends utils.Adapter {
           this.log.error(err);
         }
       });
+      //filter for frigate topics
+      if (!packet.topic.startsWith('frigate')) {
+        return;
+      }
       if (packet.payload) {
         this.log.debug('publish' + ' ' + packet.topic + ' ' + packet.payload.toString());
       } else {
