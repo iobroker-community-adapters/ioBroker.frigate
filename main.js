@@ -367,8 +367,6 @@ class Frigate extends utils.Adapter {
       let fileName = '';
       if (data.before.has_snapshot) {
         imageUrl = `http://${this.config.friurl}/api/events/${data.before.id}/snapshot.jpg`;
-      } else {
-        this.log.info(`Snapshot sending active but no snapshot available for event ${data.before.id}`);
       }
       if (data.after) {
         // image = data.after.snapshot;
