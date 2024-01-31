@@ -163,6 +163,11 @@ class Frigate extends utils.Adapter {
       this.setState('available', 'offline', true);
     });
     aedes.on('publish', async (packet, client) => {
+      if (packet.payload) {
+        this.log.debug('publish' + ' ' + packet.topic + ' ' + packet.payload.toString());
+      } else {
+        this.log.debug(JSON.stringify(packet));
+      }
       //republish all messages to all subscribed clients
       aedes.publish(packet, (err) => {
         if (err) {
@@ -173,12 +178,8 @@ class Frigate extends utils.Adapter {
       if (!packet.topic.startsWith('frigate')) {
         return;
       }
-      if (packet.payload) {
-        this.log.debug('publish' + ' ' + packet.topic + ' ' + packet.payload.toString());
-      } else {
-        this.log.debug(JSON.stringify(packet));
-      }
-      if (client && client.id === this.clientId) {
+
+      if (client) {
         try {
           let pathArray = packet.topic.split('/');
           //remove first element
