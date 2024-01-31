@@ -169,11 +169,11 @@ class Frigate extends utils.Adapter {
         this.log.debug(JSON.stringify(packet));
       }
       //republish all messages to all subscribed clients
-      aedes.publish(packet, (err) => {
-        if (err) {
-          this.log.error(err);
-        }
-      });
+      // aedes.publish(packet, (err) => {
+      //   if (err) {
+      //     this.log.error(err);
+      //   }
+      // });
       //filter for frigate topics
       if (!packet.topic.startsWith('frigate')) {
         return;
