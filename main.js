@@ -650,7 +650,7 @@ class Frigate extends utils.Adapter {
             } else {
               await this.sendToAsync(sendInstance, {
                 user: user,
-                text: fileName,
+                text: fileName || messageText,
                 type: type,
                 caption: messageText,
               });
@@ -672,7 +672,7 @@ class Frigate extends utils.Adapter {
               text: messageText,
             });
           } else {
-            await this.sendToAsync(sendInstance, { text: fileName, type: type, caption: messageText });
+            await this.sendToAsync(sendInstance, { text: fileName || messageText, type: type, caption: messageText });
           }
         }
       }
