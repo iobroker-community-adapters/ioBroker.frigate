@@ -446,7 +446,6 @@ class Frigate extends utils.Adapter {
               state: state,
               status: status,
               clip: clipUrl,
-              url: true,
               score: score,
               zones: zones,
             });
@@ -578,9 +577,6 @@ class Frigate extends utils.Adapter {
         fileName = message.clip;
         type = 'video';
       }
-      if (message.url) {
-        type = 'typing';
-      }
       this.log.debug(
         `Notification score ${message.score} type ${message.type} state ${message.state} ${message.status} image/clip file: ${fileName} format ${type}`,
       );
@@ -612,13 +608,17 @@ class Frigate extends utils.Adapter {
           messageTextTemplate = notificationTextState.val.toString();
         }
       }
-      const messageText = messageTextTemplate
+      let messageText = messageTextTemplate
         .replace(/{{source}}/g, message.source)
         .replace(/{{type}}/g, message.type)
         .replace(/{{state}}/g, message.state)
         .replace(/{{score}}/g, message.score)
         .replace(/{{status}}/g, message.status);
-
+      if (message.clipUrl) {
+        messageText = message.clipUrl;
+        fileName = '';
+        type = 'typing';
+      }
       this.log.debug('Notification message ' + messageText);
       for (const sendInstance of sendInstances) {
         if (sendUser.length > 0) {
