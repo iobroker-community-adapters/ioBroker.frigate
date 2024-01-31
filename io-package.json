@@ -72,6 +72,7 @@
     "authors": ["TA2k <tombox2020@gmail.com>"],
     "keywords": ["frigate", "ki", "detection"],
     "license": "MIT",
+    "licenseInformation": { "type": "free" },
     "platform": "Javascript/Node.js",
     "main": "main.js",
     "icon": "frigate.png",
