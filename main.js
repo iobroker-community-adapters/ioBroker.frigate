@@ -168,22 +168,14 @@ class Frigate extends utils.Adapter {
       } else {
         this.log.debug(JSON.stringify(packet));
       }
-      //republish all messages to all subscribed clients
-      // aedes.publish(packet, (err) => {
-      //   if (err) {
-      //     this.log.error(err);
-      //   }
-      // });
-      //filter for frigate topics
-      if (!packet.topic.startsWith('frigate')) {
-        return;
-      }
 
       if (client) {
         try {
           let pathArray = packet.topic.split('/');
-          //remove first element
-          pathArray.shift();
+          if (pathArray[0] === 'frigate') {
+            //remove first element
+            pathArray.shift();
+          }
           let data = packet.payload.toString();
           let write = false;
           try {
@@ -226,8 +218,6 @@ class Frigate extends utils.Adapter {
           }
           //parse json to iobroker states
           await this.json2iob.parse(pathArray.join('.'), data, { write: write });
-          data = null;
-          packet.payload = null;
         } catch (error) {
           this.log.warn(error);
         }
