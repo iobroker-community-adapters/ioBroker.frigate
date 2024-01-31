@@ -360,7 +360,7 @@ class Frigate extends utils.Adapter {
     //check if only end events should be notified or start and update events
     if (
       (this.config.notificationEventSnapshot && status === 'end') ||
-      (this.config.notificationEventSnapshotStart && status === 'start') ||
+      (this.config.notificationEventSnapshotStart && status === 'new') ||
       (this.config.notificationEventSnapshotUpdate && status === 'update')
     ) {
       let imageUrl = '';
@@ -637,11 +637,6 @@ class Frigate extends utils.Adapter {
                 file: fileName,
                 message: messageText,
               });
-              try {
-                fs.unlinkSync(`${this.tmpDir}${sep}${uuid}${ending}`);
-              } catch (error) {
-                this.log.error(error);
-              }
             } else if (sendInstance.includes('signal-cmb')) {
               await this.sendToAsync(sendInstance, 'send', {
                 text: messageText,
@@ -677,7 +672,7 @@ class Frigate extends utils.Adapter {
         }
       }
       try {
-        fs.unlinkSync(fileName);
+        fileName && fs.unlinkSync(fileName);
       } catch (error) {
         this.log.error(error);
       }
