@@ -355,7 +355,7 @@ class Frigate extends utils.Adapter {
     let camera = data.before.camera;
     let label = data.before.label;
     let score = data.before.top_score;
-    let zones = data.before.current_zones;
+    let zones = data.before.entered_zones;
     const status = data.type;
     //check if only end events should be notified or start and update events
     if (
@@ -374,7 +374,7 @@ class Frigate extends utils.Adapter {
         camera = data.after.camera;
         label = data.after.label;
         score = data.after.top_score;
-        zones = data.after.current_zones;
+        zones = data.after.entered_zones;
 
         if (data.after.has_snapshot) {
           imageUrl = `http://${this.config.friurl}/api/events/${data.after.id}/snapshot.jpg`;
