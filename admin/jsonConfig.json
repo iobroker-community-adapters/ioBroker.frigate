@@ -372,6 +372,18 @@
         "pl": "Wyklucz strefy z powiadomienia (oddzielone przecinkami)",
         "uk": "Виключити зони з повідомлення (через кому)"
       },
+      "help": {
+        "en": "Notification will only not send if all zones of the event are excluded",
+        "de": "Die Benachrichtigung wird nur dann nicht gesendet, wenn alle Zonen des Events ausgeschlossen sind",
+        "ru": "Уведомление не будет отправлено, если все зоны события исключены",
+        "pt": "A notificação só não será enviada se todas as zonas do evento forem excluídas",
+        "nl": "Melding wordt alleen niet verzonden als alle zones van het evenement zijn uitgesloten",
+        "fr": "La notification ne sera pas envoyée si toutes les zones de l'événement sont exclues",
+        "it": "La notifica non verrà inviata se tutte le zone dell'evento sono escluse",
+        "es": "La notificación solo no se enviará si todas las zonas del evento están excluidas",
+        "pl": "Powiadomienie nie zostanie wysłane, jeśli wszystkie strefy wydarzenia są wykluczone",
+        "uk": "Сповіщення не буде надіслано, якщо всі зони події виключені"
+      },
       "placeholder": "zone1,zone2",
       "newLine": true,
       "sm": 3

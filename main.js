@@ -398,6 +398,8 @@ class Frigate extends utils.Adapter {
               }).catch((error) => {
                 this.log.error(error);
               });
+              this.log.debug('prepareEventNotification saved image to ' + fileName);
+              return;
             }
             this.log.debug('prepareEventNotification no data from ' + imageUrl);
             return;
@@ -469,6 +471,8 @@ class Frigate extends utils.Adapter {
                   }).catch((error) => {
                     this.log.error(error);
                   });
+                  this.log.debug('prepareEventNotification saved clip to ' + fileName);
+                  return;
                 }
                 this.log.debug('prepareEventNotification no data from ' + clipUrl);
               })
@@ -557,12 +561,17 @@ class Frigate extends utils.Adapter {
 
     if (this.config.notificationExcludeZoneList) {
       const excludeZones = this.config.notificationExcludeZoneList.replace(/ /g, '').split(',');
-      if (message.zones) {
+      if (message.zones && message.zones.length > 0) {
+        //check if all zones are excluded
+        let allExcluded = true;
         for (const zone of message.zones) {
-          if (excludeZones.includes(zone)) {
-            this.log.debug('Notification for zone ' + zone + ' is excluded');
-            return;
+          if (!excludeZones.includes(zone)) {
+            allExcluded = false;
           }
+        }
+        if (allExcluded) {
+          this.log.debug('Notification for ' + message.source + ' is excluded because all zones are excluded');
+          return;
         }
       }
     }
