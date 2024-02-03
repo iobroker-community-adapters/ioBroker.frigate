@@ -186,12 +186,16 @@ class Frigate extends utils.Adapter {
             //convert snapshot jpg to base64 with data url
             if (pathArray[pathArray.length - 1] === 'snapshot') {
               data = 'data:image/jpeg;base64,' + packet.payload.toString('base64');
+
               if (this.config.notificationCamera) {
+                const uuid = uuidv4();
+                const fileName = `${this.tmpDir}${sep}${uuid}.jpg`;
+                fs.writeFileSync(fileName, packet.payload);
                 this.sendNotification({
                   source: pathArray[0],
                   type: pathArray[1],
                   state: pathArray[pathArray.length - 1],
-                  image: packet.payload.toString('base64'),
+                  image: fileName,
                 });
               }
             }
@@ -649,9 +653,11 @@ class Frigate extends utils.Adapter {
             } else {
               await this.sendToAsync(sendInstance, {
                 user: user,
+                message: fileName || messageText,
                 text: fileName || messageText,
                 type: type,
                 caption: messageText,
+                title: messageText,
               });
             }
           }
@@ -671,7 +677,13 @@ class Frigate extends utils.Adapter {
               text: messageText,
             });
           } else {
-            await this.sendToAsync(sendInstance, { text: fileName || messageText, type: type, caption: messageText });
+            await this.sendToAsync(sendInstance, {
+              message: fileName || messageText,
+              text: fileName || messageText,
+              type: type,
+              caption: messageText,
+              title: messageText,
+            });
           }
         }
       }
