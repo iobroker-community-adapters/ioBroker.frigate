@@ -620,11 +620,11 @@ class Frigate extends utils.Adapter {
         }
       }
       let messageText = messageTextTemplate
-        .replace(/{{source}}/g, message.source)
-        .replace(/{{type}}/g, message.type)
-        .replace(/{{state}}/g, message.state)
-        .replace(/{{score}}/g, message.score)
-        .replace(/{{status}}/g, message.status);
+        .replace(/{{source}}/g, message.source || '')
+        .replace(/{{type}}/g, message.type || '')
+        .replace(/{{state}}/g, message.state || '')
+        .replace(/{{score}}/g, message.score || '')
+        .replace(/{{status}}/g, message.status || '');
       if (message.clipUrl) {
         messageText = message.clipUrl;
         fileName = '';
