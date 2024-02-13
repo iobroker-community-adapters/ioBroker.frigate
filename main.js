@@ -568,9 +568,9 @@ class Frigate extends utils.Adapter {
       if (message.zones && message.zones.length > 0) {
         //check if all zones are excluded
         let allExcluded = true;
+        this.log.debug(`Check if all zones are excluded ${message.zones} from ${excludeZones}`);
         for (const zone of message.zones) {
           if (!excludeZones.includes(zone)) {
-            this.log.debug(excludeZones + ' does not include ' + JSON.stringify(message.zones));
             allExcluded = false;
           }
         }
@@ -631,7 +631,8 @@ class Frigate extends utils.Adapter {
         .replace(/{{type}}/g, message.type || '')
         .replace(/{{state}}/g, message.state || '')
         .replace(/{{score}}/g, message.score || '')
-        .replace(/{{status}}/g, message.status || '');
+        .replace(/{{status}}/g, message.status || '')
+        .replace(/{{zones}}/g, message.zones || '');
       if (message.clipUrl) {
         messageText = message.clipUrl;
         fileName = '';
