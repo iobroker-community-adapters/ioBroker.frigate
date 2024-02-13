@@ -580,6 +580,12 @@ class Frigate extends utils.Adapter {
         }
       }
     }
+    if (this.config.notificationExcludeEmptyZoneList) {
+      if (!message.zones || message.zones.length == 0) {
+        this.log.debug('Notification for ' + message.source + ' is excluded because no zones are entered');
+        return;
+      }
+    }
 
     if (this.config.notificationActive) {
       let fileName = message.image;

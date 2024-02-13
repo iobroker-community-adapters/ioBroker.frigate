@@ -388,6 +388,24 @@
       "newLine": true,
       "sm": 3
     },
+    "notificationExcludeEmptyZoneList": {
+      "type": "text",
+      "label": {
+        "en": "Don't send notification when zone list of the event is empty for this cameras (comma separated)",
+        "de": "Keine Benachrichtigung senden, wenn die Zonenliste des Events für diese Kameras leer ist (durch Komma getrennt)",
+        "ru": "Не отправлять уведомление, когда список зон события пуст для этой камеры (через запятую)",
+        "pt": "Não enviar notificação quando a lista de zonas do evento estiver vazia para essas câmeras (separadas por vírgula)",
+        "nl": "Geen melding verzenden wanneer de zone-lijst van het evenement leeg is voor deze camera's (gescheiden door komma's)",
+        "fr": "Ne pas envoyer de notification lorsque la liste des zones de l'événement est vide pour ces caméras (séparées par des virgules)",
+        "it": "Non inviare notifiche quando l'elenco delle zone dell'evento è vuoto per queste telecamere (separate da virgola)",
+        "es": "No enviar notificación cuando la lista de zonas del evento esté vacía para estas cámaras (separadas por comas)",
+        "pl": "Nie wysyłaj powiadomienia, gdy lista stref wydarzenia jest pusta dla tych kamer (oddzielone przecinkami)",
+        "uk": "Не надсилати сповіщення, коли список зон події порожній для цих камер (через кому)"
+      },
+      "placeholder": "camera1,camera2",
+      "newLine": true,
+      "sm": 3
+    },
     "notificationCamera": {
       "type": "checkbox",
       "label": {

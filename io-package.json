@@ -158,7 +158,8 @@
     "notificationEventClipWaitTime": 5,
     "notificationTextTemplate": "{{source}} {{type}} erkannt {{status}} {{score}}",
     "notificationExcludeList": "",
-    "notificationExcludeZoneList": ""
+    "notificationExcludeZoneList": "",
+    "notificationExcludeEmptyZoneList": ""
   },
   "objects": [],
   "instanceObjects": [
