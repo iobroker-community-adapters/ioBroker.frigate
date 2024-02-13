@@ -570,6 +570,7 @@ class Frigate extends utils.Adapter {
         let allExcluded = true;
         for (const zone of message.zones) {
           if (!excludeZones.includes(zone)) {
+            this.log.debug(excludeZones + ' does not include ' + JSON.stringify(message.zones));
             allExcluded = false;
           }
         }
