@@ -581,9 +581,12 @@ class Frigate extends utils.Adapter {
       }
     }
     if (this.config.notificationExcludeEmptyZoneList) {
-      if (!message.zones || message.zones.length == 0) {
-        this.log.debug('Notification for ' + message.source + ' is excluded because no zones are entered');
-        return;
+      const cameras = this.config.notificationExcludeEmptyZoneList.replace(/ /g, '').split(',');
+      if (cameras.includes(message.source)) {
+        if (!message.zones || message.zones.length == 0) {
+          this.log.debug('Notification for ' + message.source + ' is excluded because no zones are entered');
+          return;
+        }
       }
     }
 
