@@ -434,13 +434,13 @@ class Frigate extends utils.Adapter {
           let fileName = '';
           let state = 'Event Before';
           score = data.before.top_score;
-          zones = data.before.current_zones;
+          zones = data.before.entered_zones;
           let clipUrl = `http://${this.config.friurl}/api/events/${data.before.id}/clip.mp4`;
 
           if (data.after && data.after.has_clip) {
             state = 'Event After';
             score = data.after.top_score;
-            zones = data.after.current_zones;
+            zones = data.after.entered_zones;
             clipUrl = `http://${this.config.friurl}/api/events/${data.after.id}/clip.mp4`;
           }
           if (this.config.notificationEventClipLink) {
