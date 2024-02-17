@@ -637,7 +637,7 @@ class Frigate extends utils.Adapter {
         .replace(/{{status}}/g, message.status || '')
         .replace(/{{zones}}/g, message.zones || '');
       if (message.clipUrl) {
-        messageText = message.clipUrl;
+        messageText = message.source + ': ' + message.clipUrl;
         fileName = '';
         type = 'typing';
       }
