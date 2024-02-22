@@ -207,6 +207,14 @@ class Frigate extends utils.Adapter {
             if (pathArray[pathArray.length - 1] === 'events') {
               this.prepareEventNotification(data);
               this.fetchEventHistory();
+              if (data.before && data.before.start_time) {
+                data.before.start_time = data.before.start_time.split('.')[0];
+                data.before.end_time = data.before.end_time.split('.')[0];
+              }
+              if (data.after && data.after.start_time) {
+                data.after.start_time = data.after.start_time.split('.')[0];
+                data.after.end_time = data.after.end_time.split('.')[0];
+              }
             }
             // join every path item except the first one to create a flat hierarchy
             if (pathArray[0] !== 'stats' && pathArray[0] !== 'events' && pathArray[0] !== 'available') {
@@ -303,6 +311,43 @@ class Frigate extends utils.Adapter {
             type: 'channel',
             common: {
               name: 'Control camera',
+            },
+            native: {},
+          });
+          await this.extendObjectAsync(key + '.remote.createEvent', {
+            type: 'state',
+            common: {
+              name: 'Create Event with label',
+              type: 'string',
+              role: 'text',
+              def: 'Label',
+              read: true,
+              write: true,
+            },
+            native: {},
+          });
+          await this.extendObjectAsync(key + '.remote.createEventBody', {
+            type: 'state',
+            common: {
+              name: 'Body for create Event',
+              type: 'string',
+              role: 'json',
+              def: `{
+               // "sub_label": "some_string", // add sub label to event
+               // "duration": 30, // predetermined length of event (default: 30 seconds) or can be to null for indeterminate length event
+               // "include_recording": true, // whether the event should save recordings along with the snapshot that is taken
+               // "draw": {
+                //   "boxes": [
+                  //  {
+                    //   "box": [0.5, 0.5, 0.25, 0.25], // box consists of x, y, width, height which are on a scale between 0 - 1
+                    //   "color": [255, 0, 0], // color of the box, default is red
+                    //  "score": 100 // optional score associated with the box
+                    // }
+                    // ]
+                    // }
+              }`,
+              read: true,
+              write: true,
             },
             native: {},
           });
@@ -723,7 +768,7 @@ class Frigate extends utils.Adapter {
    * @param {string} id
    * @param {ioBroker.State | null | undefined} state
    */
-  onStateChange(id, state) {
+  async onStateChange(id, state) {
     if (state) {
       if (!state.ack) {
         if (id.endsWith('_state')) {
@@ -751,6 +796,33 @@ class Frigate extends utils.Adapter {
               }
             },
           );
+        }
+        if (id.endsWith('remote.createEvent')) {
+          //remove adapter name and instance from id
+          const cameraId = id.split('.')[2];
+          const label = state.val;
+          let body = '';
+          const createEventBodyState = await this.getStateAsync(id.replace('createEvent', 'createEventBody'));
+          if (createEventBodyState && createEventBodyState.val) {
+            try {
+              body = JSON.parse(createEventBodyState.val);
+            } catch (error) {
+              this.log.error(error);
+            }
+          }
+          this.requestClient({
+            url: 'http://' + this.config.friurl + '/api/events/' + cameraId + '/' + label + '/create',
+            method: 'post',
+            data: body,
+          })
+            .then((response) => {
+              this.log.info('Create event for ' + cameraId + ' with label ' + label);
+              this.log.info(JSON.stringify(response.data));
+            })
+            .catch((error) => {
+              this.log.warn('createEvent error from http://' + this.config.friurl + '/api/events');
+              this.log.error(error);
+            });
         }
       }
     } else {
