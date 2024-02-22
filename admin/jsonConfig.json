@@ -18,8 +18,7 @@
         "zh-cn": "常规设置"
       },
       "size": 1,
-      "newLine": true,
-      "sm": 3
+      "newLine": true
     },
     "_frigateHost": {
       "type": "header",
@@ -37,8 +36,7 @@
         "zh-cn": "在frigate配置中输入ioBroker IP地址->主机"
       },
       "size": 2,
-      "newLine": true,
-      "sm": 3
+      "newLine": true
     },
     "friurl": {
       "type": "text",
@@ -55,8 +53,7 @@
         "uk": "Фрегат Хостим:Порт (localhost:5000 або 192.168.178.100:5000)",
         "zh-cn": "护卫舰主机名:Port(localhost:5000或192.168.178.100:5000) 护卫舰主机名:Port(英语:"
       },
-      "newLine": true,
-      "sm": 3
+      "newLine": true
     },
     "mqttPort": {
       "type": "number",
@@ -73,8 +70,7 @@
         "uk": "Порт MQTT",
         "zh-cn": "MQTT端口"
       },
-      "newLine": true,
-      "sm": 3
+      "newLine": true
     },
     "webnum": {
       "type": "number",
@@ -91,8 +87,7 @@
         "uk": "Кількість останніх подій Історія frigate.0.events.history",
         "zh-cn": "最后事件历史frigate.0.events.history的数量"
       },
-      "newLine": true,
-      "sm": 3
+      "newLine": true
     },
     "_notificationText": {
       "type": "header",
@@ -110,8 +105,7 @@
         "zh-cn": "通知设置"
       },
       "size": 1,
-      "newLine": true,
-      "sm": 3
+      "newLine": true
     },
     "notificationActive": {
       "type": "checkbox",
@@ -128,8 +122,7 @@
         "uk": "Увімкнути сповіщення",
         "zh-cn": "启用通知"
       },
-      "newLine": true,
-      "sm": 3
+      "newLine": true
     },
     "notificationInstances": {
       "type": "text",
@@ -146,8 +139,7 @@
         "uk": "Екземпляри для сповіщення (через кому)",
         "zh-cn": "要通知的实例(逗号分隔)"
       },
-      "newLine": true,
-      "sm": 3
+      "newLine": true
     },
     "notificationUsers": {
       "type": "text",
@@ -164,8 +156,7 @@
         "uk": "Користувачі для сповіщення (через кому)",
         "zh-cn": "要通知的用户(逗号分隔)"
       },
-      "newLine": true,
-      "sm": 3
+      "newLine": true
     },
 
     "notificationEventSnapshot": {
@@ -183,8 +174,7 @@
         "uk": "Надіслати знімок з події",
         "zh-cn": "从事件发送快照"
       },
-      "newLine": true,
-      "sm": 3
+      "newLine": true
     },
     "notificationEventSnapshotStart": {
       "type": "checkbox",
@@ -201,8 +191,7 @@
         "uk": "Надіслати знімок з початку  події",
         "zh-cn": "从事件开始/更新发送快照"
       },
-      "newLine": true,
-      "sm": 3
+      "newLine": true
     },
     "notificationEventSnapshotUpdate": {
       "type": "checkbox",
@@ -219,8 +208,7 @@
         "uk": "Надіслати знімок з  оновлення події",
         "zh-cn": "从事件开始/更新发送快照"
       },
-      "newLine": true,
-      "sm": 3
+      "newLine": true
     },
     "notificationEventClip": {
       "type": "checkbox",
@@ -237,8 +225,7 @@
         "uk": "Надіслати кліп з події",
         "zh-cn": "从事件发送剪辑"
       },
-      "newLine": true,
-      "sm": 3
+      "newLine": true
     },
     "notificationEventClipLink": {
       "type": "checkbox",
@@ -254,8 +241,7 @@
         "pl": "Wyślij tylko adres URL klipu z wydarzenia",
         "uk": "Надіслати лише URL-адресу кліпу з події"
       },
-      "newLine": true,
-      "sm": 3
+      "newLine": true
     },
     "notificationEventClipWaitTime": {
       "type": "number",
@@ -272,8 +258,7 @@
         "uk": "Час очікування після закінчення подій для створення кліпів в секундах",
         "zh-cn": "事件结束后等待时间以秒为单位创建剪辑"
       },
-      "newLine": true,
-      "sm": 3
+      "newLine": true
     },
     "notificationMinScore": {
       "type": "number",
@@ -304,8 +289,7 @@
         "zh-cn": "最低事件分数0.1-1.0通知。 0 =禁用。 摄像机特定:frigate.0.remote.notificationMinScore"
       },
       "placeholder": "0.5",
-      "newLine": true,
-      "sm": 3
+      "newLine": true
     },
     "notificationTextTemplate": {
       "type": "text",
@@ -336,8 +320,7 @@
         "zh-cn": "通知文本模板。 摄像机特定:frigate.0.remote.notificationTextTemplate"
       },
       "placeholder": "{{source}} {{type}} erkannt {{status}} {{score}} {{state}}",
-      "newLine": true,
-      "sm": 3
+      "newLine": true
     },
     "notificationExcludeList": {
       "type": "text",
@@ -355,8 +338,7 @@
         "zh-cn": "从通知中排除摄像机(逗号分隔)"
       },
       "placeholder": "camera1,camera2",
-      "newLine": true,
-      "sm": 3
+      "newLine": true
     },
     "notificationExcludeZoneList": {
       "type": "text",
@@ -385,8 +367,7 @@
         "uk": "Сповіщення не буде надіслано, якщо всі зони події виключені"
       },
       "placeholder": "zone1,zone2",
-      "newLine": true,
-      "sm": 3
+      "newLine": true
     },
     "notificationExcludeEmptyZoneList": {
       "type": "text",
@@ -415,8 +396,7 @@
         "uk": "Не надсилати сповіщення, коли список зон події порожній для цих камер (через кому)"
       },
       "placeholder": "camera1,camera2",
-      "newLine": true,
-      "sm": 3
+      "newLine": true
     },
     "notificationCamera": {
       "type": "checkbox",
@@ -433,8 +413,7 @@
         "uk": "Надіслати детальний знімок об'єкта",
         "zh-cn": "发送详细的对象快照"
       },
-      "newLine": true,
-      "sm": 3
+      "newLine": true
     }
   }
 }
