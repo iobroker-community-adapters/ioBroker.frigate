@@ -139,11 +139,37 @@
         "uk": "Екземпляри для сповіщення (через кому)",
         "zh-cn": "要通知的实例(逗号分隔)"
       },
+      "help": {
+        "en": "Instances to notify (comma separated)",
+        "de": "Instanzen, die benachrichtigt werden sollen (durch Komma getrennt)",
+        "ru": "Экземпляры для уведомления (через запятую)",
+        "pt": "Instâncias para notificar (separadas por vírgula)",
+        "nl": "Instanties om op de hoogte te stellen (gescheiden door komma's)",
+        "fr": "Instances à notifier (séparées par des virgules)",
+        "it": "Istanze da notificare (separate da virgola)",
+        "es": "Instancias para notificar (separadas por comas)",
+        "pl": "Instancje do powiadomienia (oddzielone przecinkami)",
+        "uk": "Екземпляри для сповіщення (через кому)",
+        "zh-cn": "要通知的实例(逗号分隔)"
+      },
       "newLine": true
     },
     "notificationUsers": {
       "type": "text",
       "label": {
+        "en": "Optional: Users to notify (comma separated)",
+        "de": "Optional: Benutzer, die benachrichtigt werden sollen (durch Komma getrennt)",
+        "ru": "Пользователи для уведомления (через запятую)",
+        "pt": "Usuários para notificar (separados por vírgula)",
+        "nl": "Gebruikers om op de hoogte te stellen (gescheiden door komma's)",
+        "fr": "Utilisateurs à notifier (séparés par des virgules)",
+        "it": "Utenti da notificare (separati da virgola)",
+        "es": "Usuarios para notificar (separados por comas)",
+        "pl": "Użytkownicy do powiadomienia (oddzielone przecinkami)",
+        "uk": "Користувачі для сповіщення (через кому)",
+        "zh-cn": "要通知的用户(逗号分隔)"
+      },
+      "help": {
         "en": "Optional: Users to notify (comma separated)",
         "de": "Optional: Benutzer, die benachrichtigt werden sollen (durch Komma getrennt)",
         "ru": "Пользователи для уведомления (через запятую)",
