@@ -54,6 +54,7 @@ class Frigate extends utils.Adapter {
   async onReady() {
     this.setState('info.connection', false, true);
     this.subscribeStates('*_state');
+    this.subscribeStates('*.remote.*');
     if (!this.config.friurl) {
       this.log.warn('No Frigate url set');
     }
@@ -207,14 +208,14 @@ class Frigate extends utils.Adapter {
             if (pathArray[pathArray.length - 1] === 'events') {
               this.prepareEventNotification(data);
               this.fetchEventHistory();
-              if (data.before && data.before.start_time) {
-                data.before.start_time = data.before.start_time.split('.')[0];
-                data.before.end_time = data.before.end_time.split('.')[0];
-              }
-              if (data.after && data.after.start_time) {
-                data.after.start_time = data.after.start_time.split('.')[0];
-                data.after.end_time = data.after.end_time.split('.')[0];
-              }
+              // if (data.before && data.before.start_time) {
+              //   data.before.start_time = data.before.start_time.split('.')[0];
+              //   data.before.end_time = data.before.end_time.split('.')[0];
+              // }
+              // if (data.after && data.after.start_time) {
+              //   data.after.start_time = data.after.start_time.split('.')[0];
+              //   data.after.end_time = data.after.end_time.split('.')[0];
+              // }
             }
             // join every path item except the first one to create a flat hierarchy
             if (pathArray[0] !== 'stats' && pathArray[0] !== 'events' && pathArray[0] !== 'available') {
@@ -332,20 +333,7 @@ class Frigate extends utils.Adapter {
               name: 'Body for create Event',
               type: 'string',
               role: 'json',
-              def: `{
-               // "sub_label": "some_string", // add sub label to event
-               // "duration": 30, // predetermined length of event (default: 30 seconds) or can be to null for indeterminate length event
-               // "include_recording": true, // whether the event should save recordings along with the snapshot that is taken
-               // "draw": {
-                //   "boxes": [
-                  //  {
-                    //   "box": [0.5, 0.5, 0.25, 0.25], // box consists of x, y, width, height which are on a scale between 0 - 1
-                    //   "color": [255, 0, 0], // color of the box, default is red
-                    //  "score": 100 // optional score associated with the box
-                    // }
-                    // ]
-                    // }
-              }`,
+              def: `{}`,
               read: true,
               write: true,
             },
@@ -805,8 +793,11 @@ class Frigate extends utils.Adapter {
           const createEventBodyState = await this.getStateAsync(id.replace('createEvent', 'createEventBody'));
           if (createEventBodyState && createEventBodyState.val) {
             try {
-              body = JSON.parse(createEventBodyState.val);
+              body = JSON.parse(createEventBodyState.val.replace(/\n/g, '"'));
             } catch (error) {
+              this.log.error(
+                'Cannot parse createEventBody. Please use valid JSON https://docs.frigate.video/integrations/api/#post-apieventscamera_namelabelcreate',
+              );
               this.log.error(error);
             }
           }
