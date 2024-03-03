@@ -148,7 +148,7 @@ class Frigate extends utils.Adapter {
         this.log.error(
           'Please check if port ' +
             this.config.mqttPort +
-            ' is already in use. Use a different port in instance and frigate settings or restart ioBroker.'
+            ' is already in use. Use a different port in instance and frigate settings or restart ioBroker.',
         );
       });
     aedes.on('client', (client) => {
@@ -246,7 +246,7 @@ class Frigate extends utils.Adapter {
           ' ' +
           'from broker' +
           ' ' +
-          aedes.id
+          aedes.id,
       );
     });
     aedes.on('unsubscribe', (subscriptions, client) => {
@@ -258,7 +258,7 @@ class Frigate extends utils.Adapter {
           ' ' +
           'from broker' +
           ' ' +
-          aedes.id
+          aedes.id,
       );
     });
     aedes.on('clientError', (client, err) => {
@@ -632,19 +632,19 @@ class Frigate extends utils.Adapter {
         type = 'video';
       }
       this.log.debug(
-        `Notification score ${message.score} type ${message.type} state ${message.state} ${message.status} image/clip file: ${fileName} format ${type}`
+        `Notification score ${message.score} type ${message.type} state ${message.state} ${message.status} image/clip file: ${fileName} format ${type}`,
       );
       const notificationMinScoreState = await this.getStateAsync(message.source + '.remote.notificationMinScore');
       if (notificationMinScoreState && notificationMinScoreState.val) {
         if (notificationMinScoreState.val != null && notificationMinScoreState.val > 0 && message.score < notificationMinScoreState.val) {
           this.log.info(
-            `Notification skipped score ${message.score} is lower than ${notificationMinScoreState.val} state  ${message.state} type ${message.type}`
+            `Notification skipped score ${message.score} is lower than ${notificationMinScoreState.val} state  ${message.state} type ${message.type}`,
           );
           return;
         }
       } else if (message.score != null && this.notificationMinScore > 0 && message.score < this.config.notificationMinScore) {
         this.log.info(
-          `Notification skipped score ${message.score} is lower than ${this.config.notificationMinScore} state  ${message.state} type ${message.type}`
+          `Notification skipped score ${message.score} is lower than ${this.config.notificationMinScore} state  ${message.state} type ${message.type}`,
         );
         return;
       }
@@ -694,6 +694,13 @@ class Frigate extends utils.Adapter {
                 text: messageText,
                 phone: user,
               });
+            } else if (sendInstance.includes('mail')) {
+              await this.sendToAsync(sendInstance, 'send', {
+                subject: messageText,
+                to: user,
+                text: messageText,
+                attachments: fileName ? [{ path: fileName }] : [],
+              });
             } else {
               await this.sendToAsync(sendInstance, {
                 user: user,
@@ -719,6 +726,12 @@ class Frigate extends utils.Adapter {
           } else if (sendInstance.includes('signal-cmb')) {
             await this.sendToAsync(sendInstance, 'send', {
               text: messageText,
+            });
+          } else if (sendInstance.includes('mail')) {
+            await this.sendToAsync(sendInstance, 'send', {
+              subject: messageText,
+              text: messageText,
+              attachments: fileName ? [{ path: fileName }] : [],
             });
           } else {
             await this.sendToAsync(sendInstance, {
@@ -782,7 +795,7 @@ class Frigate extends utils.Adapter {
               } else {
                 this.log.info('published ' + topic + ' ' + state.val);
               }
-            }
+            },
           );
         }
         if (id.endsWith('remote.createEvent')) {
@@ -796,7 +809,7 @@ class Frigate extends utils.Adapter {
               body = JSON.parse(createEventBodyState.val);
             } catch (error) {
               this.log.error(
-                'Cannot parse createEventBody. Please use valid JSON https://docs.frigate.video/integrations/api/#post-apieventscamera_namelabelcreate'
+                'Cannot parse createEventBody. Please use valid JSON https://docs.frigate.video/integrations/api/#post-apieventscamera_namelabelcreate',
               );
               this.log.error(error);
             }
