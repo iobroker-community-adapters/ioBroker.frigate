@@ -71,6 +71,8 @@ Event history of the camera
 `frigate.0.camera_name.remote.notificationMinScore` custom notification min score for the camera
 `frigate.0.camera_name.remote.pauseNotifications`pause notification for the camera
 
+`frigate.0.camera_name.remote.ptz`send ptz commands https://docs.frigate.video/integrations/mqtt/#frigatecamera_nameptz
+
 ## Notifcations
 
 The adapter can send snapshots and clips from events and object detection to instances like telegram, pushover and signal-cbm

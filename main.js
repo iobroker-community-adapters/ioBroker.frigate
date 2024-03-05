@@ -378,10 +378,11 @@ class Frigate extends utils.Adapter {
           await this.extendObjectAsync(key + '.remote.ptz', {
             type: 'state',
             common: {
-              name: 'Send PTZ commands preset_x, MOVE_LEFT, ZOOM_IN, STOP etc See docu',
+              name: 'Send PTZ commands preset_preset1, MOVE_LEFT, ZOOM_IN, STOP etc See docu',
+              desc: 'https://docs.frigate.video/integrations/mqtt/#frigatecamera_nameptz',
               type: 'string',
               role: 'text',
-              def: 'preset_1',
+              def: 'preset_preset1',
               read: true,
               write: true,
             },
