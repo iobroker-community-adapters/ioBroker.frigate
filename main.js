@@ -375,6 +375,18 @@ class Frigate extends utils.Adapter {
             },
             native: {},
           });
+          await this.extendObjectAsync(key + '.remote.ptz', {
+            type: 'state',
+            common: {
+              name: 'Send PTZ commands preset_x, MOVE_LEFT, ZOOM_IN, STOP etc See docu',
+              type: 'string',
+              role: 'text',
+              def: 'preset_1',
+              read: true,
+              write: true,
+            },
+            native: {},
+          });
         }
       } else {
         this.log.warn('No cameras found');
@@ -827,6 +839,27 @@ class Frigate extends utils.Adapter {
               this.log.warn('createEvent error from http://' + this.config.friurl + '/api/events');
               this.log.error(error);
             });
+        }
+        if (id.endsWith('remote.ptz')) {
+          //remove adapter name and instance from id
+          const cameraId = id.split('.')[2];
+          const command = state.val;
+          aedes.publish(
+            {
+              cmd: 'publish',
+              qos: 0,
+              topic: `frigate/${cameraId}/ptz`,
+              payload: command,
+              retain: false,
+            },
+            (err) => {
+              if (err) {
+                this.log.error(err);
+              } else {
+                this.log.info('published ' + `frigate/${cameraId}/ptz` + ' ' + command);
+              }
+            },
+          );
         }
       }
     } else {
