@@ -77,6 +77,16 @@ class Frigate extends utils.Adapter {
     if (this.config.notificationExcludeList) {
       this.notificationExcludeArray = this.config.notificationExcludeList.replace(/ /g, '').split(',');
     }
+    if (this.config.notificationActive) {
+      this.log.debug('Clean old images and clips');
+      try {
+        fs.unlinkSync(this.tmpDir + sep + '*.jpg');
+        fs.unlinkSync(this.tmpDir + sep + '*.mp4');
+      } catch (error) {
+        this.log.warn('Cannot delete old images and clips');
+        this.log.warn(error);
+      }
+    }
 
     await this.cleanOldObjects();
     await this.extendObjectAsync('events', {
