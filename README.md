@@ -120,6 +120,11 @@ Event with Person: frigate.0.events.after.label = person
     ### **WORK IN PROGRESS**
 -->
 
+### **WORK IN PROGRESS**
+
+- fix deleting of notification files
+- add notification settings
+
 ### 1.0.2 (2024-01-29)
 
 - reduce memory usage for clip notifications
