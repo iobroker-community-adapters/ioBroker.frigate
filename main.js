@@ -80,8 +80,13 @@ class Frigate extends utils.Adapter {
     if (this.config.notificationActive) {
       this.log.debug('Clean old images and clips');
       try {
-        fs.unlinkSync(this.tmpDir + sep + '*.jpg');
-        fs.unlinkSync(this.tmpDir + sep + '*.mp4');
+        fs.readdirSync(this.tmpDir).forEach((file) => {
+          if (file.endsWith('.jpg') || file.endsWith('.mp4')) {
+            this.log.debug('Try to delete ' + file);
+            fs.unlinkSync(this.tmp + sep + file);
+            this.log.debug('Deleted ' + file);
+          }
+        });
       } catch (error) {
         this.log.warn('Cannot delete old images and clips');
         this.log.warn(error);
