@@ -493,16 +493,20 @@ class Frigate extends utils.Adapter {
             this.log.warn(error);
             return;
           });
+      } else {
+        this.log.debug(`Image sending active but no image available `);
       }
-      await this.sendNotification({
-        source: camera,
-        type: label,
-        state: state,
-        status: status,
-        image: fileName,
-        score: score,
-        zones: zones,
-      });
+      if (fileName) {
+        await this.sendNotification({
+          source: camera,
+          type: label,
+          state: state,
+          status: status,
+          image: fileName,
+          score: score,
+          zones: zones,
+        });
+      }
       try {
         if (fileName) {
           this.log.debug('Try to delete ' + fileName);
