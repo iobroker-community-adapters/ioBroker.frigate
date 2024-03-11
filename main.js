@@ -721,7 +721,7 @@ class Frigate extends utils.Adapter {
         fileName = '';
         type = 'typing';
       }
-      this.log.debug('Notification message ' + messageText);
+      this.log.debug('Notification message ' + messageText + ' file ' + fileName + ' type ' + type);
       for (const sendInstance of sendInstances) {
         if (sendUser.length > 0) {
           for (const user of sendUser) {
