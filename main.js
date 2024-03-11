@@ -83,7 +83,7 @@ class Frigate extends utils.Adapter {
         fs.readdirSync(this.tmpDir).forEach((file) => {
           if (file.endsWith('.jpg') || file.endsWith('.mp4')) {
             this.log.debug('Try to delete ' + file);
-            fs.unlinkSync(this.tmp + sep + file);
+            fs.unlinkSync(this.tmpDir + sep + file);
             this.log.debug('Deleted ' + file);
           }
         });
