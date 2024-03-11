@@ -165,7 +165,11 @@ class Frigate extends utils.Adapter {
     });
     aedes.on('publish', async (packet, client) => {
       if (packet.payload) {
-        this.log.debug('publish' + ' ' + packet.topic + ' ' + packet.payload.toString());
+        if (packet.topic === 'frigate/stats') {
+          this.log.silly('publish' + ' ' + packet.topic + ' ' + packet.payload.toString());
+        } else {
+          this.log.debug('publish' + ' ' + packet.topic + ' ' + packet.payload.toString());
+        }
       } else {
         this.log.debug(JSON.stringify(packet));
       }
