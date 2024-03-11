@@ -165,7 +165,7 @@ class Frigate extends utils.Adapter {
     });
     aedes.on('publish', async (packet, client) => {
       if (packet.payload) {
-        if (packet.topic === 'frigate/stats') {
+        if (packet.topic === 'frigate/stats' || packet.topic.endsWith('snapshot')) {
           this.log.silly('publish' + ' ' + packet.topic + ' ' + packet.payload.toString());
         } else {
           this.log.debug('publish' + ' ' + packet.topic + ' ' + packet.payload.toString());
@@ -195,6 +195,7 @@ class Frigate extends utils.Adapter {
               if (this.config.notificationCamera) {
                 const uuid = uuidv4();
                 const fileName = `${this.tmpDir}${sep}${uuid}.jpg`;
+                this.log.debug('Save ' + pathArray[pathArray.length - 1] + ' image to ' + fileName);
                 fs.writeFileSync(fileName, packet.payload);
                 this.sendNotification({
                   source: pathArray[0],
@@ -437,6 +438,7 @@ class Frigate extends utils.Adapter {
       if (imageUrl) {
         const uuid = uuidv4();
         fileName = `${this.tmpDir}${sep}${uuid}.jpg`;
+        this.log.debug('create uuid image to ' + fileName);
         await this.requestClient({
           url: imageUrl,
           method: 'get',
@@ -444,6 +446,7 @@ class Frigate extends utils.Adapter {
         })
           .then(async (response) => {
             if (response.data) {
+              this.log.debug('new writer for ' + fileName);
               const writer = fs.createWriteStream(fileName);
               response.data.pipe(writer);
               await new Promise((resolve, reject) => {
