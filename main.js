@@ -79,14 +79,17 @@ class Frigate extends utils.Adapter {
     }
     if (this.config.notificationActive) {
       this.log.debug('Clean old images and clips');
+      let count = 0;
       try {
         fs.readdirSync(this.tmpDir).forEach((file) => {
           if (file.endsWith('.jpg') || file.endsWith('.mp4')) {
             this.log.debug('Try to delete ' + file);
             fs.unlinkSync(this.tmpDir + sep + file);
+            count++;
             this.log.debug('Deleted ' + file);
           }
         });
+        count && this.log.info('Deleted ' + count + ' old images and clips in tmp folder');
       } catch (error) {
         this.log.warn('Cannot delete old images and clips');
         this.log.warn(error);
@@ -494,7 +497,7 @@ class Frigate extends utils.Adapter {
             return;
           });
       } else {
-        this.log.debug(`Image sending active but no image available `);
+        this.log.info(`Notification sending active but no image available for type ${label} state ${state}`);
       }
       if (fileName) {
         await this.sendNotification({
