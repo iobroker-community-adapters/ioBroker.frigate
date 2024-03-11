@@ -758,7 +758,11 @@ class Frigate extends utils.Adapter {
         }
       }
       try {
-        fileName && fs.unlinkSync(fileName);
+        if (fileName) {
+          this.log.debug('Try to delete ' + fileName);
+          fs.unlinkSync(fileName);
+          this.log.debug('Deleted ' + fileName);
+        }
       } catch (error) {
         this.log.error(error);
       }
