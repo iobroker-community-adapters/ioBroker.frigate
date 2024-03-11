@@ -197,12 +197,21 @@ class Frigate extends utils.Adapter {
                 const fileName = `${this.tmpDir}${sep}${uuid}.jpg`;
                 this.log.debug('Save ' + pathArray[pathArray.length - 1] + ' image to ' + fileName);
                 fs.writeFileSync(fileName, packet.payload);
-                this.sendNotification({
+                await this.sendNotification({
                   source: pathArray[0],
                   type: pathArray[1],
                   state: pathArray[pathArray.length - 1],
                   image: fileName,
                 });
+                try {
+                  if (fileName) {
+                    this.log.debug('Try to delete ' + fileName);
+                    fs.unlinkSync(fileName);
+                    this.log.debug('Deleted ' + fileName);
+                  }
+                } catch (error) {
+                  this.log.error(error);
+                }
               }
             }
             //if last path state then make it writable
@@ -470,7 +479,7 @@ class Frigate extends utils.Adapter {
             return;
           });
       }
-      this.sendNotification({
+      await this.sendNotification({
         source: camera,
         type: label,
         state: state,
@@ -479,6 +488,15 @@ class Frigate extends utils.Adapter {
         score: score,
         zones: zones,
       });
+      try {
+        if (fileName) {
+          this.log.debug('Try to delete ' + fileName);
+          fs.unlinkSync(fileName);
+          this.log.debug('Deleted ' + fileName);
+        }
+      } catch (error) {
+        this.log.error(error);
+      }
     }
     //check if clip should be notified and event is end
     if (this.config.notificationEventClip || this.config.notificationEventClipLink) {
@@ -541,7 +559,7 @@ class Frigate extends utils.Adapter {
                 this.log.warn(error);
               });
 
-            this.sendNotification({
+            await this.sendNotification({
               source: camera,
               type: label,
               state: state,
@@ -550,6 +568,15 @@ class Frigate extends utils.Adapter {
               score: score,
               zones: zones,
             });
+            try {
+              if (fileName) {
+                this.log.debug('Try to delete ' + fileName);
+                fs.unlinkSync(fileName);
+                this.log.debug('Deleted ' + fileName);
+              }
+            } catch (error) {
+              this.log.error(error);
+            }
           }
         } else {
           this.log.info(`Clip sending active but no clip available `);
@@ -763,15 +790,6 @@ class Frigate extends utils.Adapter {
             });
           }
         }
-      }
-      try {
-        if (fileName) {
-          this.log.debug('Try to delete ' + fileName);
-          fs.unlinkSync(fileName);
-          this.log.debug('Deleted ' + fileName);
-        }
-      } catch (error) {
-        this.log.error(error);
       }
     }
   }
