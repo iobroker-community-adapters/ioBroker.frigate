@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "frigate",
-    "version": "1.0.2",
+    "version": "1.1.0",
     "news": {
+      "1.1.0": {
+        "en": "fix deleting of notification files\nadd notification settings",
+        "de": "Löschen von Benachrichtigungsdateien beheben\nBenachrichtigungseinstellungen hinzugefügt.",
+        "ru": "исправление удаления файлов уведомлений\nдобавить настройки уведомлений",
+        "pt": "corrigir a exclusão de arquivos de notificação\nadicionar configurações de notificação",
+        "nl": "repareren verwijderen van notificatiebestanden\nnotificatie-instellingen toevoegen",
+        "fr": "corriger la suppression des fichiers de notification\najouter les paramètres de notification",
+        "it": "correzione della cancellazione dei file di notifica\naggiungere le impostazioni di notifica",
+        "es": "solucionar la eliminación de archivos de notificación\nañadir configuración de notificación",
+        "pl": "naprawić usuwanie plików notyfikacyjnych\ndodaj ustawienia powiadomień",
+        "uk": "фіксація видалення файлів повідомлень\nдодати налаштування повідомлень",
+        "zh-cn": "固定删除通知文件\n添加通知设置"
+      },
       "1.0.2": {
         "en": "reduce memory usage for clip notifications",
         "de": "speichernutzung für Clip Benachrichtigungen reduziert.",
@@ -72,7 +85,9 @@
     "authors": ["TA2k <tombox2020@gmail.com>"],
     "keywords": ["frigate", "ki", "detection"],
     "license": "MIT",
-    "licenseInformation": { "type": "free" },
+    "licenseInformation": {
+      "type": "free"
+    },
     "platform": "Javascript/Node.js",
     "main": "main.js",
     "icon": "frigate.png",

@@ -119,8 +119,7 @@ Event with Person: frigate.0.events.after.label = person
     Placeholder for the next version (at the beginning of the line):
     ### **WORK IN PROGRESS**
 -->
-
-### **WORK IN PROGRESS**
+### 1.1.0 (2024-03-11)
 
 - fix deleting of notification files
 - add notification settings
