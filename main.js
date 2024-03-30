@@ -848,6 +848,7 @@ class Frigate extends utils.Adapter {
   async onStateChange(id, state) {
     if (state) {
       if (!state.ack) {
+        this.log.debug('state ' + id + ' changed: ' + state.val + ' (ack = ' + state.ack + ')');
         if (id.endsWith('_state')) {
           //remove adapter name and instance from id
           id = id.replace(this.name + '.' + this.instance + '.', '');
