@@ -258,6 +258,23 @@
       },
       "newLine": true
     },
+    "notificationEventSnapshotUpdateOnce": {
+      "type": "checkbox",
+      "label": {
+        "en": "If no start snapshot send then send one update snapshot instead",
+        "de": "Wenn kein start Snapshot gesendet wird, senden stattdessen ein update Snapshot",
+        "ru": "Если не отправлять начальный снимок, то вместо этого отправить один обновленный снимок",
+        "pt": "Se não enviar instantâneo de início, envie um instantâneo de atualização em vez disso",
+        "nl": "Als er geen start-snapshot wordt verzonden, stuur dan in plaats daarvan een update-snapshot",
+        "fr": "Si aucun instantané de démarrage n'est envoyé, envoyez plutôt un instantané de mise à jour",
+        "it": "Se non viene inviato alcun snapshot di avvio, inviane uno di aggiornamento invece",
+        "es": "Si no se envía instantánea de inicio, envíe una instantánea de actualización en su lugar",
+        "pl": "Jeśli nie zostanie wysłany migawka startowa, wyślij jedną zamiast tego aktualizację migawki",
+        "uk": "Якщо не відправляти початковий знімок, то надішліть один оновлений замість цього",
+        "zh-cn": "如果不发送开始快照，则发送一个更新快照"
+      },
+      "newLine": true
+    },
     "notificationEventSnapshotUpdate": {
       "type": "checkbox",
       "label": {
@@ -275,6 +292,7 @@
       },
       "newLine": true
     },
+
     "notificationEventClip": {
       "type": "checkbox",
       "label": {

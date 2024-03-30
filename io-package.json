@@ -169,6 +169,7 @@
     "notificationEventSnapshot": true,
     "notificationEventSnapshotStart": false,
     "notificationEventSnapshotUpdate": false,
+    "notificationEventSnapshotUpdateOnce": false,
     "notificationEventClip": true,
     "notificationEventClipLink": false,
     "notificationEventClipWaitTime": 5,

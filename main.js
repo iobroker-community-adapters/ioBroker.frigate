@@ -134,6 +134,18 @@ class Frigate extends utils.Adapter {
       },
       native: {},
     });
+    await this.extendObjectAsync('remote.pauseNotificationsForTime', {
+      type: 'state',
+      common: {
+        name: 'Pause All notifications for time in minutes',
+        type: 'number',
+        role: 'value',
+        def: 10,
+        read: true,
+        write: true,
+      },
+      native: {},
+    });
     await this.initMqtt();
   }
   async cleanOldObjects(vin) {
@@ -911,6 +923,18 @@ class Frigate extends utils.Adapter {
                 this.log.info('published ' + `frigate/${cameraId}/ptz` + ' ' + command);
               }
             },
+          );
+        }
+        if (id.endsWith('remote.pauseNotificationsForTime')) {
+          const pauseTime = state.val || 10;
+          this.setState('remote.pauseNotifications', true, true);
+          this.log.info('Pause All notifications for ' + pauseTime + ' minutes');
+          this.setTimeout(
+            () => {
+              this.setState('remote.pauseNotifications', false, true);
+              this.log.info('Pause All notifications ended');
+            },
+            pauseTime * 60 * 1000,
           );
         }
       }
