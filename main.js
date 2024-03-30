@@ -55,6 +55,7 @@ class Frigate extends utils.Adapter {
     this.setState('info.connection', false, true);
     this.subscribeStates('*_state');
     this.subscribeStates('*.remote.*');
+    this.subscribeStates('remote.*');
     if (!this.config.friurl) {
       this.log.warn('No Frigate url set');
     }
