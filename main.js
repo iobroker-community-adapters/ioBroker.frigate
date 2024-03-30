@@ -46,6 +46,7 @@ class Frigate extends utils.Adapter {
     this.notificationMinScore = null;
     this.firstStart = true;
     this.deviceArray = [''];
+    this.notificationsLog = {};
   }
 
   /**
@@ -468,7 +469,8 @@ class Frigate extends utils.Adapter {
     if (
       (this.config.notificationEventSnapshot && status === 'end') ||
       (this.config.notificationEventSnapshotStart && status === 'new') ||
-      (this.config.notificationEventSnapshotUpdate && status === 'update')
+      (this.config.notificationEventSnapshotUpdate && status === 'update') ||
+      (this.config.notificationEventSnapshotUpdateOnce && status === 'update' && !this.notificationsLog[data.before.id])
     ) {
       let imageUrl = '';
       let fileName = '';
@@ -533,6 +535,7 @@ class Frigate extends utils.Adapter {
           image: fileName,
           score: score,
           zones: zones,
+          id: data.before.id,
         });
       }
       try {
@@ -769,6 +772,7 @@ class Frigate extends utils.Adapter {
         type = 'typing';
       }
       this.log.debug('Notification message ' + messageText + ' file ' + fileName + ' type ' + type);
+      this.notificationsLog[message.id] = true;
       for (const sendInstance of sendInstances) {
         if (sendUser.length > 0) {
           for (const user of sendUser) {
