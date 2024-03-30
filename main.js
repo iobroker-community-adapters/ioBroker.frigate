@@ -947,7 +947,11 @@ class Frigate extends utils.Adapter {
           const pauseTime = state.val || 10;
           const pauseId = id.replace('pauseNotificationsForTime', 'pauseNotifications').replace(this.name + '.' + this.instance + '.', '');
           this.setState(pauseId, true, true);
-          this.log.info('Pause All notifications for ' + pauseTime + ' minutes');
+          let deviceId = id.split('.')[0];
+          if (deviceId === 'remote') {
+            deviceId = 'all';
+          }
+          this.log.info('Pause ' + deviceId + ' notifications for ' + pauseTime + ' minutes');
           this.setTimeout(
             () => {
               this.setState(pauseId, false, true);

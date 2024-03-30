@@ -262,7 +262,7 @@
       "type": "checkbox",
       "label": {
         "en": "If no start snapshot send then send one update snapshot instead",
-        "de": "Wenn kein start Snapshot gesendet wird, senden stattdessen ein update Snapshot",
+        "de": "Wenn kein start Snapshot gesendet wird, senden stattdessen den ersten update Snapshot",
         "ru": "Если не отправлять начальный снимок, то вместо этого отправить один обновленный снимок",
         "pt": "Se não enviar instantâneo de início, envie um instantâneo de atualização em vez disso",
         "nl": "Als er geen start-snapshot wordt verzonden, stuur dan in plaats daarvan een update-snapshot",
