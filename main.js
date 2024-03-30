@@ -396,6 +396,18 @@ class Frigate extends utils.Adapter {
             },
             native: {},
           });
+          await this.extendObjectAsync('remote.pauseNotificationsForTime', {
+            type: 'state',
+            common: {
+              name: 'Pause All notifications for time in minutes',
+              type: 'number',
+              role: 'value',
+              def: 10,
+              read: true,
+              write: true,
+            },
+            native: {},
+          });
           await this.extendObjectAsync(key + '.remote.notificationText', {
             type: 'state',
             common: {
@@ -929,11 +941,12 @@ class Frigate extends utils.Adapter {
         }
         if (id.endsWith('remote.pauseNotificationsForTime')) {
           const pauseTime = state.val || 10;
-          this.setState('remote.pauseNotifications', true, true);
+          const pauseId = id.replace('pauseNotificationsForTime', 'pauseNotifications').replace(this.name + '.' + this.instance + '.', '');
+          this.setState(pauseId, true, true);
           this.log.info('Pause All notifications for ' + pauseTime + ' minutes');
           this.setTimeout(
             () => {
-              this.setState('remote.pauseNotifications', false, true);
+              this.setState(pauseId, false, true);
               this.log.info('Pause All notifications ended');
             },
             pauseTime * 60 * 1000,
