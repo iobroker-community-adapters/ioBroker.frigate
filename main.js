@@ -396,7 +396,7 @@ class Frigate extends utils.Adapter {
             },
             native: {},
           });
-          await this.extendObjectAsync('remote.pauseNotificationsForTime', {
+          await this.extendObjectAsync(key + '.remote.pauseNotificationsForTime', {
             type: 'state',
             common: {
               name: 'Pause All notifications for time in minutes',
