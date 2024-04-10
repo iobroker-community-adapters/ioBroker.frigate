@@ -774,6 +774,10 @@ class Frigate extends utils.Adapter {
       this.log.debug('Notification message ' + messageText + ' file ' + fileName + ' type ' + type);
       this.notificationsLog[message.id] = true;
       for (const sendInstance of sendInstances) {
+        if (!sendInstance) {
+          this.log.warn('No notification instance set');
+          continue;
+        }
         if (sendUser.length > 0) {
           for (const user of sendUser) {
             if (sendInstance.includes('pushover')) {
