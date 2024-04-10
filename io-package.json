@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "frigate",
-    "version": "1.1.0",
+    "version": "1.2.0",
     "news": {
+      "1.2.0": {
+        "en": "add new notifications sending\nadd pauseNotifications For Time",
+        "de": "neue Benachrichtigungoption hinzugefügt\npauseNotifications Für Zeit hinzugefügt",
+        "ru": "добавить новые уведомления\nдобавить паузы Время",
+        "pt": "adicionar novas notificações enviando\nadicionar pauseNotificações Pelo tempo",
+        "nl": "nieuwe meldingen versturen toevoegen\npauzenotificaties toevoegen Voor tijd",
+        "fr": "ajouter de nouvelles notifications\najouter pauseNotifications Pour le temps",
+        "it": "aggiungere nuove notifiche inviando\naggiungere pausaNotifiche Per il tempo",
+        "es": "añadir nuevas notificaciones enviando\nañadir pausaNotificaciones Para el tiempo",
+        "pl": "dodaj nowe powiadomienia wysyłające\ndodaj pauseNotifications Na czas",
+        "uk": "додати нові повідомлення\nдодати паузаПовідомлення За час",
+        "zh-cn": "添加新通知发送\n添加暂停 时间"
+      },
       "1.1.0": {
         "en": "fix deleting of notification files\nadd notification settings",
         "de": "Löschen von Benachrichtigungsdateien beheben\nBenachrichtigungseinstellungen hinzugefügt.",
@@ -84,7 +97,6 @@
     },
     "authors": ["TA2k <tombox2020@gmail.com>"],
     "keywords": ["frigate", "ki", "detection"],
-
     "licenseInformation": {
       "type": "free",
       "license": "MIT"
