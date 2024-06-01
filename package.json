@@ -29,7 +29,7 @@
     "@iobroker/adapter-core": "^3.1.4",
     "aedes": "^0.51.1",
     "axios": "^1.6.8",
-    "json2iob": "^2.6.11",
+    "json2iob": "^2.6.12",
     "uuid": "^9.0.1"
   },
   "devDependencies": {
