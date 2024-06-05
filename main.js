@@ -397,6 +397,18 @@ class Frigate extends utils.Adapter {
             },
             native: {},
           });
+          await this.extendObjectAsync(key + '.remote.restart', {
+            type: 'state',
+            common: {
+              name: 'Restart Frigate',
+              type: 'boolean',
+              role: 'button',
+              def: false,
+              read: true,
+              write: true,
+            },
+            native: {},
+          });
           await this.extendObjectAsync(key + '.remote.pauseNotificationsForTime', {
             type: 'state',
             common: {
@@ -925,6 +937,25 @@ class Frigate extends utils.Adapter {
               this.log.warn('createEvent error from http://' + this.config.friurl + '/api/events');
               this.log.error(error);
             });
+        }
+        if (id.endsWith('remote.restart') && state.val) {
+          //remove adapter name and instance from id
+
+          aedes.publish(
+            {
+              cmd: 'publish',
+              qos: 0,
+              topic: `frigate/restart`,
+              retain: false,
+            },
+            (err) => {
+              if (err) {
+                this.log.error(err);
+              } else {
+                this.log.info('published ' + `frigate/restart`);
+              }
+            },
+          );
         }
         if (id.endsWith('remote.ptz')) {
           //remove adapter name and instance from id
