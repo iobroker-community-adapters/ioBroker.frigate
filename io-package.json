@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "frigate",
-    "version": "1.2.0",
+    "version": "1.2.1",
     "news": {
+      "1.2.1": {
+        "en": "add remote to restart frigate",
+        "de": "remote hinzugefügt, um frigate neu zu starten",
+        "ru": "добавить удаленный перезапуск фрегата",
+        "pt": "adicionar remoto para reiniciar fragata",
+        "nl": "toe te voegen aan fregat herstarten",
+        "fr": "ajouter la télécommande pour redémarrer la frégate",
+        "it": "aggiungere il telecomando per riavviare la fregata",
+        "es": "añadir remoto para reiniciar fragata",
+        "pl": "dodaj zdalny do ponownego uruchomienia fregaty",
+        "uk": "додати віддалений для перезавантаження фригату",
+        "zh-cn": "添加远程到重新启动护卫舰"
+      },
       "1.2.0": {
         "en": "add new notifications sending\nadd pauseNotifications For Time",
         "de": "neue Benachrichtigungoption hinzugefügt\npauseNotifications Für Zeit hinzugefügt",
