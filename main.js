@@ -124,6 +124,19 @@ class Frigate extends utils.Adapter {
       },
       native: {},
     });
+
+    await this.extendObjectAsync('remote.restart', {
+      type: 'state',
+      common: {
+        name: 'Restart Frigate',
+        type: 'boolean',
+        role: 'button',
+        def: false,
+        read: true,
+        write: true,
+      },
+      native: {},
+    });
     await this.extendObjectAsync('remote.pauseNotifications', {
       type: 'state',
       common: {
@@ -136,6 +149,7 @@ class Frigate extends utils.Adapter {
       },
       native: {},
     });
+
     await this.extendObjectAsync('remote.pauseNotificationsForTime', {
       type: 'state',
       common: {
@@ -391,18 +405,6 @@ class Frigate extends utils.Adapter {
               name: 'Pause Camera notifications',
               type: 'boolean',
               role: 'switch',
-              def: false,
-              read: true,
-              write: true,
-            },
-            native: {},
-          });
-          await this.extendObjectAsync(key + '.remote.restart', {
-            type: 'state',
-            common: {
-              name: 'Restart Frigate',
-              type: 'boolean',
-              role: 'button',
               def: false,
               read: true,
               write: true,
