@@ -278,7 +278,14 @@ class Frigate extends utils.Adapter {
               // }
             }
             // join every path item except the first one to create a flat hierarchy
-            if (pathArray[0] !== 'stats' && pathArray[0] !== 'events' && pathArray[0] !== 'available') {
+            if (
+              pathArray[0] !== 'stats' &&
+              pathArray[0] !== 'events' &&
+              pathArray[0] !== 'available' &&
+              pathArray[0] !== 'reviews' &&
+              pathArray[0] !== 'camera_activity' &&
+              pathArray.length > 1
+            ) {
               const cameraId = pathArray.shift();
               pathArray = [cameraId, pathArray.join('_')];
             }
@@ -892,7 +899,7 @@ class Frigate extends utils.Adapter {
           const pathArray = ['frigate', ...idArray, 'set'];
 
           const topic = pathArray.join('/');
-          this.log.debug('publish' + ' ' + topic + ' ' + state.val);
+          this.log.debug('publish sending to ' + ' ' + topic + ' ' + state.val);
           aedes.publish(
             {
               cmd: 'publish',
