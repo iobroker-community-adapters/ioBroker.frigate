@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "frigate",
-    "version": "1.2.1",
+    "version": "1.3.0",
     "news": {
+      "1.3.0": {
+        "en": "fix for frigate v0.14",
+        "de": "Fix für frigate v0.14",
+        "ru": "для фрегата v0.14",
+        "pt": "correção para fragata v0.14",
+        "nl": "fix voor fregat v0.14",
+        "fr": "correction pour la frégate v0,14",
+        "it": "correzione per fregata v0.14",
+        "es": "fijado para frigate v0.14",
+        "pl": "fix for fregate v0.14",
+        "uk": "фіксатор для фригату v0.14",
+        "zh-cn": "v0.14型护卫舰的固定装置"
+      },
       "1.2.1": {
         "en": "add remote to restart frigate",
         "de": "remote hinzugefügt, um frigate neu zu starten",
