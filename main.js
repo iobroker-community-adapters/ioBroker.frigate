@@ -164,10 +164,13 @@ class Frigate extends utils.Adapter {
     });
     await this.initMqtt();
   }
-  async cleanOldObjects(vin) {
+  async cleanOldObjects() {
+    await this.delObjectAsync('reviews.before.data.detections', { recursive: true });
+    await this.delObjectAsync('reviews.after.data.detections', { recursive: true });
+
     const remoteState = await this.getObjectAsync('lastidurl');
     if (remoteState) {
-      this.log.info('clean old states ' + vin);
+      this.log.info('clean old states ');
       await this.delObjectAsync('', { recursive: true });
     }
     await this.setObjectNotExistsAsync('info.connection', {
@@ -289,7 +292,10 @@ class Frigate extends utils.Adapter {
               const cameraId = pathArray.shift();
               pathArray = [cameraId, pathArray.join('_')];
             }
-
+            if (pathArray[0] === 'reviews') {
+              delete data.after.data.detections;
+              delete data.before.data.detections;
+            }
             //create devices state for cameras
             if (pathArray[0] === 'stats') {
               delete data['cpu_usages'];
