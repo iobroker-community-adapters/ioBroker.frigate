@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "frigate",
-    "version": "1.3.0",
+    "version": "1.3.1",
     "news": {
+      "1.3.1": {
+        "en": "fixed to much states",
+        "de": "Fix für zuviele States",
+        "ru": "фиксированные для многих государств",
+        "pt": "fixo em muitos estados",
+        "nl": "vast te stellen aan veel staten",
+        "fr": "fixé à beaucoup d'états",
+        "it": "fissi a molti stati",
+        "es": "fijos a muchos estados",
+        "pl": "stałe w wielu stanach",
+        "uk": "фіксований на багато штатів",
+        "zh-cn": "固定到许多州"
+      },
       "1.3.0": {
         "en": "fix for frigate v0.14",
         "de": "Fix für frigate v0.14",
@@ -80,19 +93,6 @@
         "pl": "naprawić pobieranie aparatu frigate v12\nnaprawić powiadomienia o przekierowaniu",
         "uk": "fix frigate v12 камера fetching\nфіксувати сповіщувач повідомлення",
         "zh-cn": "固定护卫舰 v12 摄像头\n固定推进通知"
-      },
-      "1.0.0": {
-        "en": "New Version with new state structure. Please check you vis and scripts. The new version doesn't need the mqtt adapter and can send directly notification to telegram. Ringpuffer is under events.history.",
-        "de": "Neue Version mit neuer State Struktur. Bitte überprüfe deine vis und Skripte. Die neue Version benötigt keinen mqtt Adapter mehr und kann direkt Benachrichtigungen an Telegramm senden. Ringspeicher ist unter events.history.",
-        "ru": "Новая версия с новой структурой состояния. Пожалуйста, проверяйте визу и скрипты. Новая версия не нуждается в адаптере mqtt и может отправлять непосредственное уведомление на телеграмму.",
-        "pt": "Nova versão com nova estrutura estatal. Por favor, verifique as vis e scripts. A nova versão não precisa do adaptador mqtt e pode enviar notificações diretamente para o telegrama.",
-        "nl": "Nieuwe versie met nieuwe staat structuur. Kijkt u alstublieft naar vis en scripts. De nieuwe versie heeft de mqtt adapter niet nodig en kan direct een melding naar het telegram sturen.",
-        "fr": "Nouvelle version avec nouvelle structure d'état. S'il vous plaît vérifiez vous vis et scripts. La nouvelle version n'a pas besoin de l'adaptateur mqtt et peut envoyer une notification directement au télégramme.",
-        "it": "Nuova versione con nuova struttura statale. Vi preghiamo di controllare vis e script. La nuova versione non ha bisogno dell'adattatore di mqtt e può inviare direttamente la notifica al telegramma.",
-        "es": "Nueva versión con nueva estructura estatal. Por favor, compruebe usted vis y scripts. La nueva versión no necesita el adaptador mqtt y puede enviar la notificación directa al telegrama.",
-        "pl": "Nowa wersja z nową strukturą stanu. Proszę sprawdzić, czy nie masz visa i scenariuszy. Nowa wersja nie potrzebuje adaptera mqtt i może wysłać bezpośrednie powiadomienie na telegram.",
-        "uk": "Нова версія з новою державною структурою. Будь ласка, перевірте вісь та сценарії. Нова версія не потребує адаптера mqtt і може надсилати повідомлення безпосередньо на телеграму.",
-        "zh-cn": "具有新状态结构的新版本. 请检查您的面部和脚本。 新版本不需要mqtt适配器,可以直接向电报发送通知."
       }
     },
     "titleLang": {
