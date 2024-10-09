@@ -120,7 +120,8 @@ Event with Person: frigate.0.events.after.label = person
     ### **WORK IN PROGRESS**
 -->
 ### **WORK IN PROGRESS**
-- (mcm1957) Adapter requires js-controller 5.0.19 as minimum now
+- (mcm1957) Adapter requires js-controller 5.0.19 as minimum now.
+- (mcm1957) Several issues reported by adapter chacker have been fixed.
   
 ### 1.3.1 (2024-08-30)
 
