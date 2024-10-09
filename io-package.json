@@ -128,7 +128,6 @@
       "license": "MIT"
     },
     "platform": "Javascript/Node.js",
-    "main": "main.js",
     "icon": "frigate.png",
     "enabled": true,
     "extIcon": "https://raw.githubusercontent.com/iobroker-community-adapters/ioBroker.frigate/main/admin/frigate.png",
