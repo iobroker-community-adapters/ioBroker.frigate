@@ -119,6 +119,9 @@ Event with Person: frigate.0.events.after.label = person
     Placeholder for the next version (at the beginning of the line):
     ### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+- (mcm1957) Adapter requires js-controller 5.0.19 as minimum now
+  
 ### 1.3.1 (2024-08-30)
 
 - fixed to much states
