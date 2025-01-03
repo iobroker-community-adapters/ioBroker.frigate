@@ -234,6 +234,7 @@ class Frigate extends utils.Adapter {
           try {
             data = JSON.parse(data);
           } catch (error) {
+            this.log.debug('Cannot parse ' + data + ' ' + error);
             //do nothing
           }
           if (pathArray[0] === 'frigate') {
@@ -887,6 +888,7 @@ class Frigate extends utils.Adapter {
       server.close();
       callback();
     } catch (e) {
+      this.log.error('Error onUnload: ' + e);
       callback();
     }
   }
