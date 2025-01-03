@@ -60,6 +60,9 @@ class Frigate extends utils.Adapter {
     if (!this.config.friurl) {
       this.log.warn('No Frigate url set');
     }
+    if (this.config.friurl.includes(':8971')) {
+      this.log.warn('You are using the UI port 8971. Please use the API port 5000');
+    }
     try {
       if (this.config.notificationMinScore) {
         this.notificationMinScore = parseFloat(this.config.notificationMinScore);
