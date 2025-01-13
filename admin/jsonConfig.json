@@ -18,6 +18,11 @@
         "zh-cn": "常规设置"
       },
       "size": 1,
+      "xs": 12,
+      "sm": 12,
+      "md": 12,
+      "lg": 12,
+      "xl": 12,
       "newLine": true
     },
     "_frigateHost": {
@@ -36,6 +41,11 @@
         "zh-cn": "在frigate配置中输入ioBroker IP地址->主机"
       },
       "size": 2,
+      "xs": 12,
+      "sm": 12,
+      "md": 12,
+      "lg": 12,
+      "xl": 12,
       "newLine": true
     },
     "friurl": {
@@ -66,6 +76,11 @@
         "uk": "Фрегат Хостим:Порт (localhost:5000 або 192.168.178.100:5000)",
         "zh-cn": "护卫舰主机名:Port(localhost:5000或192.168.178.100:5000) 护卫舰主机名:Port(英语:"
       },
+      "xs": 12,
+      "sm": 12,
+      "md": 6,
+      "lg": 4,
+      "xl": 4,
       "newLine": true
     },
     "mqttPort": {
@@ -96,6 +111,11 @@
         "uk": "Порт MQTT",
         "zh-cn": "MQTT端口"
       },
+      "xs": 12,
+      "sm": 12,
+      "md": 6,
+      "lg": 4,
+      "xl": 4,
       "newLine": true
     },
     "webnum": {
@@ -126,6 +146,11 @@
         "uk": "Кількість останніх подій Історія frigate.0.events.history",
         "zh-cn": "最后事件历史frigate.0.events.history的数量"
       },
+      "xs": 12,
+      "sm": 12,
+      "md": 6,
+      "lg": 4,
+      "xl": 4,
       "newLine": true
     },
     "_notificationText": {
@@ -144,6 +169,11 @@
         "zh-cn": "通知设置"
       },
       "size": 1,
+      "xs": 12,
+      "sm": 12,
+      "md": 12,
+      "lg": 12,
+      "xl": 12,
       "newLine": true
     },
     "notificationActive": {
@@ -161,6 +191,11 @@
         "uk": "Увімкнути сповіщення",
         "zh-cn": "启用通知"
       },
+      "xs": 12,
+      "sm": 12,
+      "md": 6,
+      "lg": 4,
+      "xl": 4,
       "newLine": true
     },
     "notificationInstances": {
@@ -191,6 +226,11 @@
         "uk": "Екземпляри для сповіщення (через кому)",
         "zh-cn": "要通知的实例(逗号分隔)"
       },
+      "xs": 12,
+      "sm": 12,
+      "md": 6,
+      "lg": 4,
+      "xl": 4,
       "newLine": true
     },
     "notificationUsers": {
@@ -221,9 +261,13 @@
         "uk": "Користувачі для сповіщення (через кому)",
         "zh-cn": "要通知的用户(逗号分隔)"
       },
+      "xs": 12,
+      "sm": 12,
+      "md": 6,
+      "lg": 4,
+      "xl": 4,
       "newLine": true
     },
-
     "notificationEventSnapshot": {
       "type": "checkbox",
       "label": {
@@ -239,6 +283,11 @@
         "uk": "Надіслати знімок з події",
         "zh-cn": "从事件发送快照"
       },
+      "xs": 12,
+      "sm": 12,
+      "md": 6,
+      "lg": 4,
+      "xl": 4,
       "newLine": true
     },
     "notificationEventSnapshotStart": {
@@ -256,6 +305,11 @@
         "uk": "Надіслати знімок з початку  події",
         "zh-cn": "从事件开始/更新发送快照"
       },
+      "xs": 12,
+      "sm": 12,
+      "md": 6,
+      "lg": 4,
+      "xl": 4,
       "newLine": true
     },
     "notificationEventSnapshotUpdateOnce": {
@@ -273,6 +327,11 @@
         "uk": "Якщо не відправляти початковий знімок, то надішліть один оновлений замість цього",
         "zh-cn": "如果不发送开始快照，则发送一个更新快照"
       },
+      "xs": 12,
+      "sm": 12,
+      "md": 6,
+      "lg": 4,
+      "xl": 4,
       "newLine": true
     },
     "notificationEventSnapshotUpdate": {
@@ -290,9 +349,13 @@
         "uk": "Надіслати знімок з  оновлення події",
         "zh-cn": "从事件开始/更新发送快照"
       },
+      "xs": 12,
+      "sm": 12,
+      "md": 6,
+      "lg": 4,
+      "xl": 4,
       "newLine": true
     },
-
     "notificationEventClip": {
       "type": "checkbox",
       "label": {
@@ -308,6 +371,11 @@
         "uk": "Надіслати кліп з події",
         "zh-cn": "从事件发送剪辑"
       },
+      "xs": 12,
+      "sm": 12,
+      "md": 6,
+      "lg": 4,
+      "xl": 4,
       "newLine": true
     },
     "notificationEventClipLink": {
@@ -324,6 +392,11 @@
         "pl": "Wyślij tylko adres URL klipu z wydarzenia",
         "uk": "Надіслати лише URL-адресу кліпу з події"
       },
+      "xs": 12,
+      "sm": 12,
+      "md": 6,
+      "lg": 4,
+      "xl": 4,
       "newLine": true
     },
     "notificationEventClipWaitTime": {
@@ -341,6 +414,11 @@
         "uk": "Час очікування після закінчення подій для створення кліпів в секундах",
         "zh-cn": "事件结束后等待时间以秒为单位创建剪辑"
       },
+      "xs": 12,
+      "sm": 12,
+      "md": 6,
+      "lg": 4,
+      "xl": 4,
       "newLine": true
     },
     "notificationMinScore": {
@@ -371,6 +449,11 @@
         "uk": "Мінімальний бал події 0,1-1,0 для сповіщення. 0 = Вимкнено. Конкретна камера: frigate.0.remote.notificationMinScore",
         "zh-cn": "最低事件分数0.1-1.0通知。 0 =禁用。 摄像机特定:frigate.0.remote.notificationMinScore"
       },
+      "xs": 12,
+      "sm": 12,
+      "md": 6,
+      "lg": 4,
+      "xl": 4,
       "placeholder": "0.5",
       "newLine": true
     },
@@ -402,6 +485,11 @@
         "uk": "Шаблон тексту сповіщення. Конкретна камера: frigate.0.remote.notificationTextTemplate",
         "zh-cn": "通知文本模板。 摄像机特定:frigate.0.remote.notificationTextTemplate"
       },
+      "xs": 12,
+      "sm": 12,
+      "md": 6,
+      "lg": 4,
+      "xl": 4,
       "placeholder": "{{source}} {{type}} erkannt {{status}} {{score}} {{state}}",
       "newLine": true
     },
@@ -433,6 +521,11 @@
         "uk": "Виключити камери з повідомлення (через кому)",
         "zh-cn": "从通知中排除摄像机(逗号分隔)"
       },
+      "xs": 12,
+      "sm": 12,
+      "md": 6,
+      "lg": 4,
+      "xl": 4,
       "placeholder": "camera1,camera2",
       "newLine": true
     },
@@ -462,6 +555,11 @@
         "pl": "Powiadomienie nie zostanie wysłane, jeśli wszystkie strefy wydarzenia są wykluczone",
         "uk": "Сповіщення не буде надіслано, якщо всі зони події виключені"
       },
+      "xs": 12,
+      "sm": 12,
+      "md": 6,
+      "lg": 4,
+      "xl": 4,
       "placeholder": "zone1,zone2",
       "newLine": true
     },
@@ -491,6 +589,11 @@
         "pl": "Nie wysyłaj powiadomienia, gdy lista stref wydarzenia jest pusta dla tych kamer (oddzielone przecinkami)",
         "uk": "Не надсилати сповіщення, коли список зон події порожній для цих камер (через кому)"
       },
+      "xs": 12,
+      "sm": 12,
+      "md": 6,
+      "lg": 4,
+      "xl": 4,
       "placeholder": "camera1,camera2",
       "newLine": true
     },
@@ -509,6 +612,11 @@
         "uk": "Надіслати детальний знімок об'єкта",
         "zh-cn": "发送详细的对象快照"
       },
+      "xs": 12,
+      "sm": 12,
+      "md": 6,
+      "lg": 4,
+      "xl": 4,
       "newLine": true
     }
   }
