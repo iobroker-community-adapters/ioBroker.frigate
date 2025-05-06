@@ -303,6 +303,12 @@ class Frigate extends utils.Adapter {
             if (pathArray[0] === 'events') {
               delete data.after.path_data;
               delete data.before.path_data;
+              if (data.after.snapshot) {
+                delete data.after.snapshot.path_data;
+              }
+              if (data.before.snapshot) {
+                delete data.before.snapshot.path_data;
+              }
             }
             //create devices state for cameras
             if (pathArray[0] === 'stats') {
