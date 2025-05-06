@@ -300,6 +300,10 @@ class Frigate extends utils.Adapter {
               delete data.after.data.detections;
               delete data.before.data.detections;
             }
+            if (pathArray[0] === 'events') {
+              delete data.after.path_data;
+              delete data.before.path_data;
+            }
             //create devices state for cameras
             if (pathArray[0] === 'stats') {
               delete data['cpu_usages'];
@@ -588,12 +592,14 @@ class Frigate extends utils.Adapter {
           score = data.before.top_score;
           zones = data.before.entered_zones;
           let clipUrl = `http://${this.config.friurl}/api/events/${data.before.id}/clip.mp4`;
+          let clipm3u8 = `http://${this.config.friurl}/vod/event/${data.before.id}/master.m3u8`;
 
           if (data.after && data.after.has_clip) {
             state = 'Event After';
             score = data.after.top_score;
             zones = data.after.entered_zones;
             clipUrl = `http://${this.config.friurl}/api/events/${data.after.id}/clip.mp4`;
+            clipm3u8 = `http://${this.config.friurl}/vod/event/${data.after.id}/master.m3u8`;
           }
           if (this.config.notificationEventClipLink) {
             this.sendNotification({
@@ -602,6 +608,7 @@ class Frigate extends utils.Adapter {
               state: state,
               status: status,
               clipUrl: clipUrl,
+              clipm3u8: clipm3u8,
               score: score,
               zones: zones,
             });
@@ -687,6 +694,7 @@ class Frigate extends utils.Adapter {
             for (const event of response.data) {
               event.websnap = 'http://' + this.config.friurl + '/api/events/' + event.id + '/snapshot.jpg';
               event.webclip = 'http://' + this.config.friurl + '/api/events/' + event.id + '/clip.mp4';
+              event.webm3u8 = 'http://' + this.config.friurl + '/vod/event/' + event.id + '/master.m3u8';
               event.thumbnail = 'data:image/jpeg;base64,' + event.thumbnail;
             }
             let path = 'events.history';
@@ -797,8 +805,8 @@ class Frigate extends utils.Adapter {
         .replace(/{{score}}/g, message.score || '')
         .replace(/{{status}}/g, message.status || '')
         .replace(/{{zones}}/g, message.zones || '');
-      if (message.clipUrl) {
-        messageText = message.source + ': ' + message.clipUrl;
+      if (message.clipm3u8) {
+        messageText = message.source + ': ' + message.clipm3u8;
         fileName = '';
         type = 'typing';
       }
