@@ -44,7 +44,7 @@
     "@tsconfig/node18": "^18.2.4",
     "@types/node": "^22.15.12",
     "eslint": "^9.26.0",
-    "eslint-config-prettier": "^9.1.0",
+    "eslint-config-prettier": "^10.1.2",
     "eslint-plugin-prettier": "^5.4.0",
     "globals": "^15.15.0",
     "prettier": "^3.5.3",
