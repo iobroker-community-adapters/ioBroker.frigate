@@ -887,6 +887,7 @@ class Frigate extends utils.Adapter {
               message: fileName || messageText,
               text: fileName || messageText,
               type: type,
+              parse_mode: 'MarkdownV2',
               caption: messageText,
               title: messageText,
             });
