@@ -813,7 +813,7 @@ class Frigate extends utils.Adapter {
         .replace(/{{zones}}/g, message.zones || '');
       if (message.clipm3u8) {
         //add clipm3u8 to messageText as a href link master.m3u8 and add clipUrl as a href mp4
-        messageText = `${message.source}: ![Clip Safari](${message.clipm3u8}) ![Clip MP4](${message.clipUrl})`;
+        messageText = `${message.source}: [Clip Safari](${message.clipm3u8}) [Clip MP4](${message.clipUrl})`;
 
         fileName = '';
         type = 'typing';
