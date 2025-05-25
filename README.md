@@ -121,8 +121,8 @@ Event with Person: frigate.0.events.after.label = person
 -->
 ### 1.3.2 (2025-05-06)
 
-- remove path_data from v0.16
-- move clip url from mp4 to m3u8
+- (ta2k) remove path_data from v0.16
+- (ta2k) move clip url from mp4 to m3u8
 - (mcm1957) Adapter requires js-controller 5.0.19 as minimum now.
 - (mcm1957) Several issues reported by adapter chacker have been fixed.
 
