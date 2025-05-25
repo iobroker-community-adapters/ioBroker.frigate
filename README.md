@@ -119,6 +119,10 @@ Event with Person: frigate.0.events.after.label = person
     Placeholder for the next version (at the beginning of the line):
     ### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+
+- (mcm1957) Adapter requires admin 6.17.14 as minimum now.
+
 ### 1.3.2 (2025-05-06)
 
 - (TA2k) remove path_data from v0.16
