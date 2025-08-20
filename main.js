@@ -309,6 +309,14 @@ class Frigate extends utils.Adapter {
               if (data.before.snapshot) {
                 delete data.before.snapshot.path_data;
               }
+              if (data.history) {
+                for (const item of data.history) {
+                  delete item.path_data;
+                  if (item.snapshot) {
+                    delete item.snapshot.path_data;
+                  }
+                }
+              }
             }
             //create devices state for cameras
             if (pathArray[0] === 'stats') {
