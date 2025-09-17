@@ -120,6 +120,13 @@ class Frigate extends utils.Adapter {
       },
       native: {},
     });
+    await this.extendObjectAsync('tracked_objects', {
+      type: 'channel',
+      common: {
+        name: 'Tracked Object Updates',
+      },
+      native: {},
+    });
     await this.extendObjectAsync('remote', {
       type: 'channel',
       common: {
@@ -138,6 +145,7 @@ class Frigate extends utils.Adapter {
         read: true,
         write: true,
       },
+
       native: {},
     });
     await this.extendObjectAsync('remote.pauseNotifications', {
@@ -240,6 +248,12 @@ class Frigate extends utils.Adapter {
           if (pathArray[0] === 'frigate') {
             //remove first element
             pathArray.shift();
+
+            // Handle tracked_object_update events
+            if (pathArray[0] === 'tracked_object_update') {
+              await this.handleTrackedObjectUpdate(data);
+              return;
+            }
 
             //convert snapshot jpg to base64 with data url
             if (pathArray[pathArray.length - 1] === 'snapshot') {
@@ -362,6 +376,57 @@ class Frigate extends utils.Adapter {
     aedes.on('connectionError', (client, err) => {
       this.log.warn('client error: ' + client + ' ' + err.message + ' ' + err.stack);
     });
+  }
+
+  /**
+   * Handle tracked object update events generically
+   * @param {object} data - The parsed JSON data from MQTT
+   */
+  async handleTrackedObjectUpdate(data) {
+    try {
+      if (!data || !data.id || !data.type) {
+        this.log.warn('Invalid tracked object update: missing id or type');
+        return;
+      }
+
+      const objectId = data.id;
+      const updateType = data.type;
+
+      this.log.debug(`Processing tracked object update: ${objectId}, type: ${updateType}`);
+
+      // Add timestamp if not present
+      if (!data.timestamp) {
+        data.timestamp = Date.now() / 1000;
+      }
+
+      // Use json2iob to create the state structure automatically
+      // This will create: tracked_objects.{objectId}.{updateType}.{all_data_fields}
+      const path = `tracked_objects.${objectId}.${updateType}`;
+      await this.json2iob.parse(path, data, {
+        write: false,
+        channelName: `${updateType.charAt(0).toUpperCase() + updateType.slice(1)} Update`,
+      });
+
+      // Also store the latest update at the object level for easy access
+      const latestPath = `tracked_objects.${objectId}.latest`;
+      await this.json2iob.parse(
+        latestPath,
+        {
+          type: updateType,
+          timestamp: data.timestamp,
+          ...data,
+        },
+        {
+          write: false,
+          channelName: 'Latest Update',
+        },
+      );
+
+      this.log.debug(`Stored tracked object update for ${objectId}: ${updateType}`);
+    } catch (error) {
+      this.log.error(`Error handling tracked object update: ${error.message}`);
+      this.log.error(error.stack);
+    }
   }
 
   async createCameraDevices() {
