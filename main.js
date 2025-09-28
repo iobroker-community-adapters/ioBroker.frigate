@@ -379,50 +379,71 @@ class Frigate extends utils.Adapter {
   }
 
   /**
-   * Handle tracked object update events generically
+   * Handle tracked object update events with rotating buffer (last 10 updates)
    * @param {object} data - The parsed JSON data from MQTT
    */
   async handleTrackedObjectUpdate(data) {
     try {
-      if (!data || !data.id || !data.type) {
-        this.log.warn('Invalid tracked object update: missing id or type');
+      if (!data) {
+        this.log.warn('Invalid tracked object update: no data');
         return;
       }
 
-      const objectId = data.id;
-      const updateType = data.type;
-
-      this.log.debug(`Processing tracked object update: ${objectId}, type: ${updateType}`);
+      this.log.debug(`Processing tracked object update: ${JSON.stringify(data).substring(0, 200)}...`);
 
       // Add timestamp if not present
       if (!data.timestamp) {
         data.timestamp = Date.now() / 1000;
       }
 
-      // Use json2iob to create the state structure automatically
-      // This will create: tracked_objects.{objectId}.{updateType}.{all_data_fields}
-      const path = `tracked_objects.${objectId}.${updateType}`;
-      await this.json2iob.parse(path, data, {
+      // Get existing entries to maintain rotating buffer
+      const existingEntries = [];
+      for (let i = 1; i <= 10; i++) {
+        const paddedIndex = i.toString().padStart(2, '0');
+        try {
+          const state = await this.getStateAsync(`tracked_objects.${paddedIndex}`);
+          if (state && state.val) {
+            existingEntries.push({
+              index: i,
+              timestamp: state.ts || 0,
+              data: typeof state.val === 'string' ? JSON.parse(state.val) : state.val,
+            });
+          }
+        } catch {
+          // Entry doesn't exist, continue
+        }
+      }
+
+      // Sort by timestamp (newest first) and keep only 9 entries to make room for new one
+      existingEntries.sort((a, b) => b.timestamp - a.timestamp);
+      const keepEntries = existingEntries.slice(0, 9);
+
+      // Clear all existing entries
+      for (let i = 1; i <= 10; i++) {
+        const paddedIndex = i.toString().padStart(2, '0');
+        try {
+          await this.delObjectAsync(`tracked_objects.${paddedIndex}`, { recursive: true });
+        } catch {
+          // Entry doesn't exist, continue
+        }
+      }
+
+      // Store new entry at position 01 (latest)
+      await this.json2iob.parse(`tracked_objects.01`, data, {
         write: false,
-        channelName: `${updateType.charAt(0).toUpperCase() + updateType.slice(1)} Update`,
+        channelName: 'Latest Tracked Object Update',
       });
 
-      // Also store the latest update at the object level for easy access
-      const latestPath = `tracked_objects.${objectId}.latest`;
-      await this.json2iob.parse(
-        latestPath,
-        {
-          type: updateType,
-          timestamp: data.timestamp,
-          ...data,
-        },
-        {
+      // Shift existing entries to positions 02-10
+      for (let i = 0; i < keepEntries.length && i < 9; i++) {
+        const newIndex = (i + 2).toString().padStart(2, '0');
+        await this.json2iob.parse(`tracked_objects.${newIndex}`, keepEntries[i].data, {
           write: false,
-          channelName: 'Latest Update',
-        },
-      );
+          channelName: `Tracked Object Update #${newIndex}`,
+        });
+      }
 
-      this.log.debug(`Stored tracked object update for ${objectId}: ${updateType}`);
+      this.log.debug(`Stored tracked object update at position 01, shifted ${keepEntries.length} existing entries`);
     } catch (error) {
       this.log.error(`Error handling tracked object update: ${error.message}`);
       this.log.error(error.stack);
