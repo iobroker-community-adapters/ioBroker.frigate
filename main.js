@@ -47,6 +47,7 @@ class Frigate extends utils.Adapter {
     this.firstStart = true;
     this.deviceArray = [''];
     this.notificationsLog = {};
+    this.trackedObjectsHistory = [];
   }
 
   /**
@@ -102,6 +103,7 @@ class Frigate extends utils.Adapter {
     }
 
     await this.cleanOldObjects();
+    await this.cleanTrackedObjects();
     await this.extendObjectAsync('events', {
       type: 'channel',
       common: {
@@ -124,6 +126,17 @@ class Frigate extends utils.Adapter {
       type: 'channel',
       common: {
         name: 'Tracked Object Updates',
+      },
+      native: {},
+    });
+    await this.extendObjectAsync('tracked_objects.history', {
+      type: 'state',
+      common: {
+        name: 'Tracked Objects History (Last 10)',
+        type: 'string',
+        role: 'json',
+        read: true,
+        write: false,
       },
       native: {},
     });
@@ -195,6 +208,43 @@ class Frigate extends utils.Adapter {
       },
       native: {},
     });
+  }
+
+  async cleanTrackedObjects() {
+    this.log.info('Cleaning old tracked objects');
+    try {
+      // Delete all existing tracked object entries (01-10 and any other numbered entries)
+      for (let i = 1; i <= 20; i++) {
+        const paddedIndex = i.toString().padStart(2, '0');
+        try {
+          await this.delObjectAsync(`tracked_objects.${paddedIndex}`, { recursive: true });
+        } catch {
+          // Entry doesn't exist, continue
+        }
+      }
+
+      // Also clean any other tracked object entries that might exist
+      const objects = await this.getObjectListAsync({
+        startkey: this.namespace + '.tracked_objects.',
+        endkey: this.namespace + '.tracked_objects.\u9999',
+      });
+
+      for (const obj of objects.rows) {
+        if (obj.id !== this.namespace + '.tracked_objects' && obj.id !== this.namespace + '.tracked_objects.history') {
+          try {
+            await this.delObjectAsync(obj.id.replace(this.namespace + '.', ''), { recursive: true });
+          } catch {
+            // Continue if deletion fails
+          }
+        }
+      }
+
+      // Reset the history array
+      this.trackedObjectsHistory = [];
+      this.log.info('Cleaned all tracked objects');
+    } catch (error) {
+      this.log.warn('Error cleaning tracked objects: ' + error.message);
+    }
   }
   async initMqtt() {
     server
@@ -379,7 +429,7 @@ class Frigate extends utils.Adapter {
   }
 
   /**
-   * Handle tracked object update events with rotating buffer (last 10 updates)
+   * Handle tracked object update events using JSON-based approach (last 10 updates)
    * @param {object} data - The parsed JSON data from MQTT
    */
   async handleTrackedObjectUpdate(data) {
@@ -396,54 +446,18 @@ class Frigate extends utils.Adapter {
         data.timestamp = Date.now() / 1000;
       }
 
-      // Get existing entries to maintain rotating buffer
-      const existingEntries = [];
-      for (let i = 1; i <= 10; i++) {
-        const paddedIndex = i.toString().padStart(2, '0');
-        try {
-          const state = await this.getStateAsync(`tracked_objects.${paddedIndex}`);
-          if (state && state.val) {
-            existingEntries.push({
-              index: i,
-              timestamp: state.ts || 0,
-              data: typeof state.val === 'string' ? JSON.parse(state.val) : state.val,
-            });
-          }
-        } catch {
-          // Entry doesn't exist, continue
-        }
+      // Add the new update to the beginning of the array (latest first)
+      this.trackedObjectsHistory.unshift(data);
+
+      // Keep only the last 10 entries
+      if (this.trackedObjectsHistory.length > 10) {
+        this.trackedObjectsHistory = this.trackedObjectsHistory.slice(0, 10);
       }
 
-      // Sort by timestamp (newest first) and keep only 9 entries to make room for new one
-      existingEntries.sort((a, b) => b.timestamp - a.timestamp);
-      const keepEntries = existingEntries.slice(0, 9);
+      // Write the JSON array to the ioBroker state
+      await this.setStateAsync('tracked_objects.history', JSON.stringify(this.trackedObjectsHistory), true);
 
-      // Clear all existing entries
-      for (let i = 1; i <= 10; i++) {
-        const paddedIndex = i.toString().padStart(2, '0');
-        try {
-          await this.delObjectAsync(`tracked_objects.${paddedIndex}`, { recursive: true });
-        } catch {
-          // Entry doesn't exist, continue
-        }
-      }
-
-      // Store new entry at position 01 (latest)
-      await this.json2iob.parse(`tracked_objects.01`, data, {
-        write: false,
-        channelName: 'Latest Tracked Object Update',
-      });
-
-      // Shift existing entries to positions 02-10
-      for (let i = 0; i < keepEntries.length && i < 9; i++) {
-        const newIndex = (i + 2).toString().padStart(2, '0');
-        await this.json2iob.parse(`tracked_objects.${newIndex}`, keepEntries[i].data, {
-          write: false,
-          channelName: `Tracked Object Update #${newIndex}`,
-        });
-      }
-
-      this.log.debug(`Stored tracked object update at position 01, shifted ${keepEntries.length} existing entries`);
+      this.log.debug(`Stored tracked object update. History now contains ${this.trackedObjectsHistory.length} entries`);
     } catch (error) {
       this.log.error(`Error handling tracked object update: ${error.message}`);
       this.log.error(error.stack);
