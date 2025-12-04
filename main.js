@@ -91,13 +91,13 @@ class Frigate extends utils.Adapter {
             try {
                 fs.readdirSync(this.tmpDir).forEach(file => {
                     if (file.endsWith('.jpg') || file.endsWith('.mp4')) {
-                        this.log.debug('Try to delete ' + file);
+                        this.log.debug(`Try to delete ${file}`);
                         fs.unlinkSync(this.tmpDir + sep + file);
                         count++;
-                        this.log.debug('Deleted ' + file);
+                        this.log.debug(`Deleted ${file}`);
                     }
                 });
-                count && this.log.info('Deleted ' + count + ' old images and clips in tmp folder');
+                count && this.log.info(`Deleted ${count} old images and clips in tmp folder`);
             } catch (error) {
                 this.log.warn('Cannot delete old images and clips');
                 this.log.warn(error);
@@ -233,11 +233,11 @@ class Frigate extends utils.Adapter {
 
             for (const obj of objects.rows) {
                 if (
-                    obj.id !== this.namespace + '.tracked_objects' &&
-                    obj.id !== this.namespace + '.tracked_objects.history'
+                    obj.id !== `${this.namespace}.tracked_objects` &&
+                    obj.id !== `${this.namespace}.tracked_objects.history`
                 ) {
                     try {
-                        await this.delObjectAsync(obj.id.replace(this.namespace + '.', ''), { recursive: true });
+                        await this.delObjectAsync(obj.id.replace(`${this.namespace}.`, ''), { recursive: true });
                     } catch {
                         // Continue if deletion fails
                     }
@@ -248,44 +248,42 @@ class Frigate extends utils.Adapter {
             this.trackedObjectsHistory = [];
             this.log.info('Cleaned all tracked objects');
         } catch (error) {
-            this.log.warn('Error cleaning tracked objects: ' + error.message);
+            this.log.warn(`Error cleaning tracked objects: ${error.message}`);
         }
     }
     async initMqtt() {
         server
             .listen(this.config.mqttPort, () => {
-                this.log.info('MQTT server started and listening on port ' + this.config.mqttPort);
+                this.log.info(`MQTT server started and listening on port ${this.config.mqttPort}`);
                 this.log.info(
-                    "Please enter host: '" + this.host + "' and port: '" + this.config.mqttPort + "' in frigate config",
+                    `Please enter host: '${this.host}' and port: '${this.config.mqttPort}' in frigate config`,
                 );
                 this.log.info("If you don't see a new client connected, please restart frigate and adapter.");
             })
             .once('error', err => {
-                this.log.error('MQTT server error: ' + err);
+                this.log.error(`MQTT server error: ${err}`);
                 this.log.error(
-                    'Please check if port ' +
-                        this.config.mqttPort +
-                        ' is already in use. Use a different port in instance and frigate settings or restart ioBroker.',
+                    `Please check if port ${this.config.mqttPort} is already in use. Use a different port in instance and frigate settings or restart ioBroker.`,
                 );
             });
         aedes.on('client', client => {
-            this.log.info('New client: ' + client.id);
-            this.log.info('Filter for message from client: ' + client.id);
+            this.log.info(`New client: ${client.id}`);
+            this.log.info(`Filter for message from client: ${client.id}`);
             this.clientId = client.id;
             this.setState('info.connection', true, true);
             this.fetchEventHistory();
         });
         aedes.on('clientDisconnect', client => {
-            this.log.info('client disconnected ' + client.id);
+            this.log.info(`client disconnected ${client.id}`);
             this.setState('info.connection', false, true);
             this.setState('available', 'offline', true);
         });
         aedes.on('publish', async (packet, client) => {
             if (packet.payload) {
                 if (packet.topic === 'frigate/stats' || packet.topic.endsWith('snapshot')) {
-                    this.log.silly('publish' + ' ' + packet.topic + ' ' + packet.payload.toString());
+                    this.log.silly(`publish ${packet.topic} ${packet.payload.toString()}`);
                 } else {
-                    this.log.debug('publish' + ' ' + packet.topic + ' ' + packet.payload.toString());
+                    this.log.debug(`publish ${packet.topic} ${packet.payload.toString()}`);
                 }
             } else {
                 this.log.debug(JSON.stringify(packet));
@@ -299,7 +297,7 @@ class Frigate extends utils.Adapter {
                     try {
                         data = JSON.parse(data);
                     } catch (error) {
-                        this.log.debug('Cannot parse ' + data + ' ' + error);
+                        this.log.debug(`Cannot parse ${data} ${error}`);
                         //do nothing
                     }
                     if (pathArray[0] === 'frigate') {
@@ -314,12 +312,12 @@ class Frigate extends utils.Adapter {
 
                         //convert snapshot jpg to base64 with data url
                         if (pathArray[pathArray.length - 1] === 'snapshot') {
-                            data = 'data:image/jpeg;base64,' + packet.payload.toString('base64');
+                            data = `data:image/jpeg;base64,${packet.payload.toString('base64')}`;
 
                             if (this.config.notificationCamera) {
                                 const uuid = uuidv4();
                                 const fileName = `${this.tmpDir}${sep}${uuid}.jpg`;
-                                this.log.debug('Save ' + pathArray[pathArray.length - 1] + ' image to ' + fileName);
+                                this.log.debug(`Save ${pathArray[pathArray.length - 1]} image to ${fileName}`);
                                 fs.writeFileSync(fileName, packet.payload);
                                 await this.sendNotification({
                                     source: pathArray[0],
@@ -329,9 +327,9 @@ class Frigate extends utils.Adapter {
                                 });
                                 try {
                                     if (fileName) {
-                                        this.log.debug('Try to delete ' + fileName);
+                                        this.log.debug(`Try to delete ${fileName}`);
                                         fs.unlinkSync(fileName);
-                                        this.log.debug('Deleted ' + fileName);
+                                        this.log.debug(`Deleted ${fileName}`);
                                     }
                                 } catch (error) {
                                     this.log.error(error);
@@ -405,33 +403,19 @@ class Frigate extends utils.Adapter {
         });
         aedes.on('subscribe', (subscriptions, client) => {
             this.log.info(
-                'MQTT client \x1b[32m' +
-                    (client ? client.id : client) +
-                    '\x1b[0m subscribed to topics: ' +
-                    subscriptions.map(s => s.topic).join('\n') +
-                    ' ' +
-                    'from broker' +
-                    ' ' +
-                    aedes.id,
+                `MQTT client \x1b[32m${client ? client.id : client}\x1b[0m subscribed to topics: ${subscriptions.map(s => s.topic).join('\n')} from broker ${aedes.id}`,
             );
         });
         aedes.on('unsubscribe', (subscriptions, client) => {
             this.log.info(
-                'MQTT client \x1b[32m' +
-                    (client ? client.id : client) +
-                    '\x1b[0m unsubscribed to topics: ' +
-                    subscriptions.join('\n') +
-                    ' ' +
-                    'from broker' +
-                    ' ' +
-                    aedes.id,
+                `MQTT client \x1b[32m${client ? client.id : client}\x1b[0m unsubscribed to topics: ${subscriptions.join('\n')} from broker ${aedes.id}`,
             );
         });
         aedes.on('clientError', (client, err) => {
-            this.log.warn('client error: ' + client.id + ' ' + err.message + ' ' + err.stack);
+            this.log.warn(`client error: ${client.id} ${err.message} ${err.stack}`);
         });
         aedes.on('connectionError', (client, err) => {
-            this.log.warn('client error: ' + client + ' ' + err.message + ' ' + err.stack);
+            this.log.warn(`client error: ${client} ${err.message} ${err.stack}`);
         });
     }
 
@@ -485,10 +469,9 @@ class Frigate extends utils.Adapter {
                     return response.data;
                 })
                 .catch(error => {
-                    this.log.warn('createCameraDevices error from http://' + this.config.friurl + '/api/config');
+                    this.log.warn(`createCameraDevices error from http://${this.config.friurl}/api/config`);
                     this.log.error(error);
                     error.response && this.log.error(JSON.stringify(error.response.data));
-                    return;
                 });
             if (!data) {
                 return;
@@ -497,29 +480,29 @@ class Frigate extends utils.Adapter {
             if (data.cameras) {
                 for (const key in data.cameras) {
                     this.deviceArray.push(key);
-                    this.log.info('Create device information for: ' + key);
+                    this.log.info(`Create device information for: ${key}`);
                     await this.extendObjectAsync(key, {
                         type: 'device',
                         common: {
-                            name: 'Camera ' + key,
+                            name: `Camera ${key}`,
                         },
                         native: {},
                     });
-                    await this.extendObjectAsync(key + '.history', {
+                    await this.extendObjectAsync(`${key}.history`, {
                         type: 'channel',
                         common: {
                             name: 'Event History',
                         },
                         native: {},
                     });
-                    await this.extendObjectAsync(key + '.remote', {
+                    await this.extendObjectAsync(`${key}.remote`, {
                         type: 'channel',
                         common: {
                             name: 'Control camera',
                         },
                         native: {},
                     });
-                    await this.extendObjectAsync(key + '.remote.createEvent', {
+                    await this.extendObjectAsync(`${key}.remote.createEvent`, {
                         type: 'state',
                         common: {
                             name: 'Create Event with label',
@@ -531,7 +514,7 @@ class Frigate extends utils.Adapter {
                         },
                         native: {},
                     });
-                    await this.extendObjectAsync(key + '.remote.createEventBody', {
+                    await this.extendObjectAsync(`${key}.remote.createEventBody`, {
                         type: 'state',
                         common: {
                             name: 'Body for create Event',
@@ -543,7 +526,7 @@ class Frigate extends utils.Adapter {
                         },
                         native: {},
                     });
-                    await this.extendObjectAsync(key + '.remote.pauseNotifications', {
+                    await this.extendObjectAsync(`${key}.remote.pauseNotifications`, {
                         type: 'state',
                         common: {
                             name: 'Pause Camera notifications',
@@ -555,7 +538,7 @@ class Frigate extends utils.Adapter {
                         },
                         native: {},
                     });
-                    await this.extendObjectAsync(key + '.remote.pauseNotificationsForTime', {
+                    await this.extendObjectAsync(`${key}.remote.pauseNotificationsForTime`, {
                         type: 'state',
                         common: {
                             name: 'Pause All notifications for time in minutes',
@@ -567,7 +550,7 @@ class Frigate extends utils.Adapter {
                         },
                         native: {},
                     });
-                    await this.extendObjectAsync(key + '.remote.notificationText', {
+                    await this.extendObjectAsync(`${key}.remote.notificationText`, {
                         type: 'state',
                         common: {
                             name: 'Overwrite the notification text',
@@ -579,7 +562,7 @@ class Frigate extends utils.Adapter {
                         },
                         native: {},
                     });
-                    await this.extendObjectAsync(key + '.remote.notificationMinScore', {
+                    await this.extendObjectAsync(`${key}.remote.notificationMinScore`, {
                         type: 'state',
                         common: {
                             name: 'Overwrite notification min score',
@@ -591,7 +574,7 @@ class Frigate extends utils.Adapter {
                         },
                         native: {},
                     });
-                    await this.extendObjectAsync(key + '.remote.ptz', {
+                    await this.extendObjectAsync(`${key}.remote.ptz`, {
                         type: 'state',
                         common: {
                             name: 'Send PTZ commands preset_preset1, MOVE_LEFT, ZOOM_IN, STOP etc See docu',
@@ -609,7 +592,7 @@ class Frigate extends utils.Adapter {
                 this.log.warn('No cameras found');
                 this.log.info(JSON.stringify(data));
             }
-            this.log.info('Fetch event history for ' + (this.deviceArray.length - 1) + ' cameras');
+            this.log.info(`Fetch event history for ${this.deviceArray.length - 1} cameras`);
             this.fetchEventHistory();
             this.firstStart = false;
             this.log.info('Device information created');
@@ -652,7 +635,7 @@ class Frigate extends utils.Adapter {
             if (imageUrl) {
                 const uuid = uuidv4();
                 fileName = `${this.tmpDir}${sep}${uuid}.jpg`;
-                this.log.debug('create uuid image to ' + fileName);
+                this.log.debug(`create uuid image to ${fileName}`);
                 await this.requestClient({
                     url: imageUrl,
                     method: 'get',
@@ -660,7 +643,7 @@ class Frigate extends utils.Adapter {
                 })
                     .then(async response => {
                         if (response.data) {
-                            this.log.debug('new writer for ' + fileName);
+                            this.log.debug(`new writer for ${fileName}`);
                             const writer = fs.createWriteStream(fileName);
                             response.data.pipe(writer);
                             await new Promise((resolve, reject) => {
@@ -669,21 +652,19 @@ class Frigate extends utils.Adapter {
                             }).catch(error => {
                                 this.log.error(error);
                             });
-                            this.log.debug('prepareEventNotification saved image to ' + fileName);
+                            this.log.debug(`prepareEventNotification saved image to ${fileName}`);
                             return;
                         }
-                        this.log.debug('prepareEventNotification no data from ' + imageUrl);
-                        return;
+                        this.log.debug(`prepareEventNotification no data from ${imageUrl}`);
                     })
                     .catch(error => {
-                        this.log.warn('prepareEventNotification error from ' + imageUrl);
+                        this.log.warn(`prepareEventNotification error from ${imageUrl}`);
                         if (error.response && error.response.status >= 500) {
                             this.log.warn(
                                 'Cannot reach server. You can ignore this after restarting the frigate server.',
                             );
                         }
                         this.log.warn(error);
-                        return;
                     });
             } else {
                 this.log.info(`Notification sending active but no image available for type ${label} state ${state}`);
@@ -702,15 +683,15 @@ class Frigate extends utils.Adapter {
             }
             try {
                 if (fileName) {
-                    this.log.debug('Try to delete ' + fileName);
+                    this.log.debug(`Try to delete ${fileName}`);
                     fs.unlinkSync(fileName);
-                    this.log.debug('Deleted ' + fileName);
+                    this.log.debug(`Deleted ${fileName}`);
                 }
             } catch (error) {
                 this.log.error(error);
             }
         }
-        //check if clip should be notified and event is end
+        // check if the clip should be notified and event is ended
         if (this.config.notificationEventClip || this.config.notificationEventClipLink) {
             if (data.type === 'end') {
                 if (data.before && data.before.has_clip) {
@@ -721,7 +702,7 @@ class Frigate extends utils.Adapter {
                     let clipUrl = `http://${this.config.friurl}/api/events/${data.before.id}/clip.mp4`;
                     let clipm3u8 = `http://${this.config.friurl}/vod/event/${data.before.id}/master.m3u8`;
 
-                    if (data.after && data.after.has_clip) {
+                    if (data.after?.has_clip) {
                         state = 'Event After';
                         score = data.after.top_score;
                         zones = data.after.entered_zones;
@@ -732,12 +713,12 @@ class Frigate extends utils.Adapter {
                         this.sendNotification({
                             source: camera,
                             type: label,
-                            state: state,
-                            status: status,
-                            clipUrl: clipUrl,
-                            clipm3u8: clipm3u8,
-                            score: score,
-                            zones: zones,
+                            state,
+                            status,
+                            clipUrl,
+                            clipm3u8,
+                            score,
+                            zones,
                         });
                     }
                     if (this.config.notificationEventClip) {
@@ -761,13 +742,13 @@ class Frigate extends utils.Adapter {
                                     }).catch(error => {
                                         this.log.error(error);
                                     });
-                                    this.log.debug('prepareEventNotification saved clip to ' + fileName);
+                                    this.log.debug(`prepareEventNotification saved clip to ${fileName}`);
                                     return;
                                 }
-                                this.log.debug('prepareEventNotification no data from ' + clipUrl);
+                                this.log.debug(`prepareEventNotification no data from ${clipUrl}`);
                             })
                             .catch(error => {
-                                this.log.warn('prepareEventNotification error from ' + clipUrl);
+                                this.log.warn(`prepareEventNotification error from ${clipUrl}`);
                                 if (error.response && error.response.status >= 500) {
                                     this.log.warn(
                                         'Cannot reach server. You can ignore this after restarting the frigate server.',
@@ -787,9 +768,9 @@ class Frigate extends utils.Adapter {
                         });
                         try {
                             if (fileName) {
-                                this.log.debug('Try to delete ' + fileName);
+                                this.log.debug(`Try to delete ${fileName}`);
                                 fs.unlinkSync(fileName);
-                                this.log.debug('Deleted ' + fileName);
+                                this.log.debug(`Deleted ${fileName}`);
                             }
                         } catch (error) {
                             this.log.error(error);
@@ -805,6 +786,7 @@ class Frigate extends utils.Adapter {
     async sleep(ms) {
         return new Promise(resolve => this.setTimeout(resolve, ms));
     }
+
     async fetchEventHistory() {
         for (const device of this.deviceArray) {
             const params = { limit: this.config.webnum };
@@ -812,31 +794,30 @@ class Frigate extends utils.Adapter {
                 params.cameras = device;
             }
             await this.requestClient({
-                url: 'http://' + this.config.friurl + '/api/events',
+                url: `http://${this.config.friurl}/api/events`,
                 method: 'get',
                 params: params,
             })
                 .then(async response => {
                     if (response.data) {
-                        this.log.debug('fetchEventHistory succesfull ' + device);
+                        this.log.debug(`fetchEventHistory successful ${device}`);
 
                         for (const event of response.data) {
-                            event.websnap =
-                                'http://' + this.config.friurl + '/api/events/' + event.id + '/snapshot.jpg';
-                            event.webclip = 'http://' + this.config.friurl + '/api/events/' + event.id + '/clip.mp4';
-                            event.webm3u8 = 'http://' + this.config.friurl + '/vod/event/' + event.id + '/master.m3u8';
-                            event.thumbnail = 'data:image/jpeg;base64,' + event.thumbnail;
+                            event.websnap = `http://${this.config.friurl}/api/events/${event.id}/snapshot.jpg`;
+                            event.webclip = `http://${this.config.friurl}/api/events/${event.id}/clip.mp4`;
+                            event.webm3u8 = `http://${this.config.friurl}/vod/event/${event.id}/master.m3u8`;
+                            event.thumbnail = `data:image/jpeg;base64,${event.thumbnail}`;
                         }
                         let path = 'events.history';
                         if (device) {
-                            path = device + '.history';
+                            path = `${device}.history`;
                         }
                         this.json2iob.parse(path, response.data, { forceIndex: true, channelName: 'Events history' });
                         this.setStateAsync('events.history.json', JSON.stringify(response.data), true);
                     }
                 })
                 .catch(error => {
-                    this.log.warn('fetchEventHistory error from http://' + this.config.friurl + '/api/events');
+                    this.log.warn(`fetchEventHistory error from http://${this.config.friurl}/api/events`);
                     if (error.response && error.response.status >= 500) {
                         this.log.warn('Cannot reach server. You can ignore this after restarting the frigate server.');
                     }
@@ -851,14 +832,14 @@ class Frigate extends utils.Adapter {
             this.log.debug('Notifications paused');
             return;
         }
-        const cameraPauseState = await this.getStateAsync(message.source + '.remote.pauseNotifications');
+        const cameraPauseState = await this.getStateAsync(`${message.source}.remote.pauseNotifications`);
         if (cameraPauseState && cameraPauseState.val) {
-            this.log.debug('Notifications paused for camera ' + message.source);
+            this.log.debug(`Notifications paused for camera ${message.source}`);
             return;
         }
 
         if (this.notificationExcludeArray && this.notificationExcludeArray.includes(message.source)) {
-            this.log.debug('Notification for ' + message.source + ' is excluded');
+            this.log.debug(`Notification for ${message.source} is excluded`);
             return;
         }
 
@@ -874,9 +855,7 @@ class Frigate extends utils.Adapter {
                     }
                 }
                 if (allExcluded) {
-                    this.log.debug(
-                        'Notification for ' + message.source + ' is excluded because all zones are excluded',
-                    );
+                    this.log.debug(`Notification for ${message.source} is excluded because all zones are excluded`);
                     return;
                 }
             }
@@ -885,7 +864,7 @@ class Frigate extends utils.Adapter {
             const cameras = this.config.notificationExcludeEmptyZoneList.replace(/ /g, '').split(',');
             if (cameras.includes(message.source)) {
                 if (!message.zones || message.zones.length == 0) {
-                    this.log.debug('Notification for ' + message.source + ' is excluded because no zones are entered');
+                    this.log.debug(`Notification for ${message.source} is excluded because no zones are entered`);
                     return;
                 }
             }
@@ -904,11 +883,7 @@ class Frigate extends utils.Adapter {
             );
             const notificationMinScoreState = await this.getStateAsync(message.source + '.remote.notificationMinScore');
             if (notificationMinScoreState && notificationMinScoreState.val) {
-                if (
-                    notificationMinScoreState.val != null &&
-                    notificationMinScoreState.val > 0 &&
-                    message.score < notificationMinScoreState.val
-                ) {
+                if (notificationMinScoreState.val > 0 && message.score < notificationMinScoreState.val) {
                     this.log.info(
                         `Notification skipped score ${message.score} is lower than ${notificationMinScoreState.val} state  ${message.state} type ${message.type}`,
                     );
@@ -949,12 +924,12 @@ class Frigate extends utils.Adapter {
                 .replace(/{{zones}}/g, message.zones || '');
             if (message.clipm3u8) {
                 // messageText = `${message.source}: [Clip Safari](${message.clipm3u8}) [Clip MP4](${message.clipUrl})`;
-                messageText = message.source + ': ' + message.clipm3u8 + '\n' + message.clipUrl;
+                messageText = `${message.source}: ${message.clipm3u8}\n${message.clipUrl}`;
 
                 fileName = '';
                 type = 'typing';
             }
-            this.log.debug('Notification message ' + messageText + ' file ' + fileName + ' type ' + type);
+            this.log.debug(`Notification message ${messageText} file ${fileName} type ${type}`);
             this.notificationsLog[message.id] = true;
             for (const sendInstance of sendInstances) {
                 if (!sendInstance) {
@@ -1040,7 +1015,7 @@ class Frigate extends utils.Adapter {
             server.close();
             callback();
         } catch (e) {
-            this.log.error('Error onUnload: ' + e);
+            this.log.error(`Error onUnload: ${e}`);
             callback();
         }
     }
@@ -1053,7 +1028,7 @@ class Frigate extends utils.Adapter {
     async onStateChange(id, state) {
         if (state) {
             if (!state.ack) {
-                this.log.debug('state ' + id + ' changed: ' + state.val + ' (ack = ' + state.ack + ')');
+                this.log.debug(`state ${id} changed: ${state.val} (ack = ${state.ack})`);
                 if (id.endsWith('_state')) {
                     //remove adapter name and instance from id
                     id = id.replace(this.name + '.' + this.instance + '.', '');
@@ -1062,7 +1037,7 @@ class Frigate extends utils.Adapter {
                     const pathArray = ['frigate', ...idArray, 'set'];
 
                     const topic = pathArray.join('/');
-                    this.log.debug('publish sending to ' + ' ' + topic + ' ' + state.val);
+                    this.log.debug(`publish sending to  ${topic} ${state.val}`);
                     aedes.publish(
                         {
                             cmd: 'publish',
@@ -1075,7 +1050,7 @@ class Frigate extends utils.Adapter {
                             if (err) {
                                 this.log.error(err);
                             } else {
-                                this.log.info('published ' + topic + ' ' + state.val);
+                                this.log.info(`published ${topic} ${state.val}`);
                             }
                         },
                     );
@@ -1086,7 +1061,7 @@ class Frigate extends utils.Adapter {
                     const label = state.val;
                     let body = '';
                     const createEventBodyState = await this.getStateAsync(id.replace('createEvent', 'createEventBody'));
-                    if (createEventBodyState && createEventBodyState.val) {
+                    if (createEventBodyState?.val) {
                         try {
                             body = JSON.parse(createEventBodyState.val);
                         } catch (error) {
@@ -1097,16 +1072,16 @@ class Frigate extends utils.Adapter {
                         }
                     }
                     this.requestClient({
-                        url: 'http://' + this.config.friurl + '/api/events/' + cameraId + '/' + label + '/create',
+                        url: `http://${this.config.friurl}/api/events/${cameraId}/${label}/create`,
                         method: 'post',
                         data: body,
                     })
                         .then(response => {
-                            this.log.info('Create event for ' + cameraId + ' with label ' + label);
+                            this.log.info(`Create event for ${cameraId} with label ${label}`);
                             this.log.info(JSON.stringify(response.data));
                         })
                         .catch(error => {
-                            this.log.warn('createEvent error from http://' + this.config.friurl + '/api/events');
+                            this.log.warn(`createEvent error from http://${this.config.friurl}/api/events`);
                             this.log.error(error);
                         });
                 }
@@ -1124,7 +1099,7 @@ class Frigate extends utils.Adapter {
                             if (err) {
                                 this.log.error(err);
                             } else {
-                                this.log.info('published ' + `frigate/restart`);
+                                this.log.info('published frigate/restart');
                             }
                         },
                     );
@@ -1145,7 +1120,7 @@ class Frigate extends utils.Adapter {
                             if (err) {
                                 this.log.error(err);
                             } else {
-                                this.log.info('published ' + `frigate/${cameraId}/ptz` + ' ' + command);
+                                this.log.info(`published frigate/${cameraId}/ptz ${command}`);
                             }
                         },
                     );
@@ -1154,13 +1129,13 @@ class Frigate extends utils.Adapter {
                     const pauseTime = state.val || 10;
                     const pauseId = id
                         .replace('pauseNotificationsForTime', 'pauseNotifications')
-                        .replace(this.name + '.' + this.instance + '.', '');
+                        .replace(`${this.name}.${this.instance}.`, '');
                     this.setState(pauseId, true, true);
                     let deviceId = id.split('.')[0];
                     if (deviceId === 'remote') {
                         deviceId = 'all';
                     }
-                    this.log.info('Pause ' + deviceId + ' notifications for ' + pauseTime + ' minutes');
+                    this.log.info(`Pause ${deviceId} notifications for ${pauseTime} minutes`);
                     this.setTimeout(
                         () => {
                             this.setState(pauseId, false, true);
