@@ -9,7 +9,7 @@ export default [
                     allow: ['*.js', '*.mjs'],
                 },
                 tsconfigRootDir: import.meta.dirname,
-                project: './tsconfig.json',
+                // project: './tsconfig.json',
             },
         },
     },
@@ -24,12 +24,8 @@ export default [
     {
         ignores: [
             'build/**/*',
-            'src/lib/**/*.js',
             'admin/**/*',
             'test/**/*',
-            'src-admin/**/*',
-            'src-rules/**/*',
-            'tasks.js',
             '**/*.mjs'
         ],
     },

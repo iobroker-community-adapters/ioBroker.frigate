@@ -1,0 +1,21 @@
+export interface FrigateAdapterConfig {
+    "friurl": string,
+    "mqttPort": number | string,
+    "webnum": number | string,
+    "notificationMinScore": number | string,
+    "notificationActive": boolean,
+    "notificationInstances": string,
+    "notificationUsers": string,
+    "notificationCamera": boolean,
+    "notificationEventSnapshot": boolean,
+    "notificationEventSnapshotStart": boolean,
+    "notificationEventSnapshotUpdate": boolean,
+    "notificationEventSnapshotUpdateOnce": boolean,
+    "notificationEventClip": boolean,
+    "notificationEventClipLink": boolean,
+    "notificationEventClipWaitTime": number | string,
+    "notificationTextTemplate": string,
+    "notificationExcludeList": string,
+    "notificationExcludeZoneList": string,
+    "notificationExcludeEmptyZoneList": string
+}

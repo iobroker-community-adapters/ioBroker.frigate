@@ -19,95 +19,87 @@ Adapter for Frigate Tool [Frigate Video](https://frigate.video/)
 
 ## Setup
 
-- Enter Frigate url e.g. localhost:5000 or 192.168.178.2:5000
+- Enter Frigate url e.g. `localhost:5000` or `192.168.178.2:5000`
 - Enter MQTT port: 1883 from the frigate config
-- Enter host or ip of iobroker sytem in the frigate config under
-  ```
-  mqtt:
+- Enter host or ip of iobroker system in the frigate config under
+```yaml
+mqtt:
     host: ioBrokerIP
-  ```
-  After Starting Frigate and the Adapter you should see a new client conntected in the log
+    port: ioBrokerPort
+```
+
+After Starting Frigate and the Adapter, you should see a new client connected in the log.
 
 ## Usage
 
 ### stats
 
-General Information about the system and cameras
+General Information about the system and cameras.
 
 ### remotes
 
-`frigate.0.remote.pauseNotifications`
-Pause Notification for all Cameras
+`frigate.0.remote.pauseNotifications` - Pause Notification for all Cameras.
 
 ### events
 
-Last Event with before and after information
+Last Event with before and after information.
 
-`frigate.0.events.history` History of the last X events
+`frigate.0.events.history` - History of the last X events.
 
-History event has a thumbnail of the event and url to the snapshot and clip
+History event has a thumbnail of the event and URL to the snapshot and clip.
 
 ### camera_name
 
-Status and settings of the camera
+Status and settings of the camera.
 
-Change state State to change the settings of the camera
+Change states to change the settings of the camera.
 
 [Detailed Information about all states](https://docs.frigate.video/integrations/mqtt/)
 
-`frigate.0.camera_name.motion`
+* `frigate.0.camera_name.motion` - Whether camera_name is currently detecting motion. Expected values are ON and OFF. NOTE: After motion is initially detected, ON will be set until no motion has been detected for mqtt_off_delay seconds (30 by default).
+* `frigate.0.camera_name.person_snapshot` - Publishes a jpeg encoded frame of the detected object type. When the object is no longer detected, the highest confidence image is published or the original image is published again.
+   The height and crop of snapshots can be configured in the config.
+* `frigate.0.camera_name.history` - Event history of the camera.
+* `frigate.0.camera_name.remote.notificationText` - custom notification text for the camera.
+* `frigate.0.camera_name.remote.notificationMinScore` - custom notification min score for the camera.
+* `frigate.0.camera_name.remote.pauseNotifications` - pause notification for the camera.
 
-Whether camera_name is currently detecting motion. Expected values are ON and OFF. NOTE: After motion is initially detected, ON will be set until no motion has been detected for mqtt_off_delay seconds (30 by default).
+* `frigate.0.camera_name.remote.ptz` - send ptz commands https://docs.frigate.video/integrations/mqtt/#frigatecamera_nameptz
 
-`frigate.0.camera_name.person_snapshot`
+## Notifications
 
-Publishes a jpeg encoded frame of the detected object type. When the object is no longer detected, the highest confidence image is published or the original image is published again.
-The height and crop of snapshots can be configured in the config.
+The adapter can send snapshots and clips from events and object detection to instances like `telegram`, `pushover` and `signal-cbm`.
 
-`frigate.0.camera_name.history`
-Event history of the camera
+You can specify multiple instance or user to send snapshots or clips.
 
-`frigate.0.camera_name.remote.notificationText` custom notification text for the camera
-`frigate.0.camera_name.remote.notificationMinScore` custom notification min score for the camera
-`frigate.0.camera_name.remote.pauseNotifications`pause notification for the camera
+Active the notification in the settings to receive the snapshots or clips.
 
-`frigate.0.camera_name.remote.ptz`send ptz commands https://docs.frigate.video/integrations/mqtt/#frigatecamera_nameptz
-
-## Notifcations
-
-The adapter can send snapshots and clips from events and object detection to instances like telegram, pushover and signal-cbm
-
-You can specify multiple instance or user to send snapshots or clips
-
-Active the notification in the settings to receive the snapshots or clips
-
-For Event can enter a minimum score before sending. 0 = Disabled
+For Event can enter a minimum score before sending. 0 = Disabled.
 
 Clips are send 5s (Instance settings) after event end.
 
-You can enter custom notification text with placeholder `{{source}} {{type}} erkannt {{status}} {{score}} {{state}}`
+You can enter custom notification text with placeholder `{{source}} {{type}} erkannt {{status}} {{score}} {{state}}`.
 
 ## Integrate in vis
 
 You can integrate snapshots and clips in the vis:
 
 Snapshot:
-
-Add a `String img src` and use as Object Id: `frigate.0.camera_name.person_snapshot`
-
-Add a `String img src` and use as Object Id: `frigate.0.events.history.01.thumbnail`
+- Add a `String img src` and use as Object ID: `frigate.0.camera_name.person_snapshot`
+- Add a `String img src` and use as Object ID: `frigate.0.events.history.01.thumbnail`
 
 Clips:
-
-Add a `HTML` add as HTML:
-
-```
+- Add a `HTML` add as HTML:
+```html
 <video width="100%" height="auto" src="{frigate.0.events.history.01.webclip}" autoplay muted>
 </video>
 ```
 
-Number of persons: frigate.0.camera.person
-Event with Person: frigate.0.events.after.label = person
+Number of persons: 
+- `frigate.0.camera.person`
+
+Event with Person: 
+- `frigate.0.events.after.label` = person
 
 ## Discussion and questions
 
@@ -128,11 +120,11 @@ Event with Person: frigate.0.events.after.label = person
 - (TA2k) remove path_data from v0.16
 - (TA2k) move clip url from mp4 to m3u8
 - (mcm1957) Adapter requires js-controller 5.0.19 as minimum now.
-- (mcm1957) Several issues reported by adapter chacker have been fixed.
+- (mcm1957) Several issues reported by adapter checker have been fixed.
 
 ### 1.3.1 (2024-08-30)
 
-- fixed to much states
+- fixed too many states
 
 ### 1.3.0 (2024-07-29)
 

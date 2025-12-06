@@ -134,6 +134,7 @@
         "readme": "https://github.com/iobroker-community-adapters/ioBroker.frigate/blob/main/README.md",
         "loglevel": "info",
         "tier": 3,
+        "nogit": true,
         "mode": "daemon",
         "type": "alarm",
         "compact": true,
@@ -235,6 +236,93 @@
                 "read": true,
                 "write": false,
                 "def": false
+            },
+            "native": {}
+        },
+        {
+            "_id": "events",
+            "type": "channel",
+            "common": {
+                "name": "Events current and history"
+            },
+            "native": {}
+        },
+        {
+            "_id": "events.history.json",
+            "type": "state",
+            "common": {
+                "name": "Events history",
+                "type": "json",
+                "read": true,
+                "write": false
+            },
+            "native": {}
+        },
+        {
+            "_id": "tracked_objects",
+            "type": "channel",
+            "common": {
+                "name": "Tracked Object Updates"
+            },
+            "native": {}
+        },
+        {
+            "_id": "tracked_objects.history",
+            "type": "state",
+            "common": {
+                "name": "Tracked Objects History (Last 10)",
+                "type": "json",
+                "read": true,
+                "write": false
+            },
+            "native": {}
+        },
+        {
+            "_id": "remote",
+            "type": "channel",
+            "common": {
+                "name": "Control adapter"
+            },
+            "native": {}
+        },
+        {
+            "_id": "remote.restart",
+            "type": "state",
+            "common": {
+                "name": "Restart Frigate",
+                "type": "boolean",
+                "role": "button",
+                "def": false,
+                "read": false,
+                "write": true
+            },
+
+            "native": {}
+        },
+        {
+            "_id": "remote.pauseNotifications",
+            "type": "state",
+            "common": {
+                "name": "Pause All notifications",
+                "type": "boolean",
+                "role": "switch",
+                "def": false,
+                "read": true,
+                "write": true
+            },
+            "native": {}
+        },
+
+        {
+            "_id": "remote.pauseNotificationsForTime",
+            "type": "state",
+            "common": {
+                "name": "Pause All notifications for time in minutes",
+                "type": "number",
+                "role": "level",
+                "def": 10,
+                "read": true,
+                "write": true
             },
             "native": {}
         }
