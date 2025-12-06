@@ -3,12 +3,14 @@ import { sep } from 'node:path';
 import { createServer, type Server } from 'node:net';
 import { tmpdir } from 'node:os';
 
-import { type AdapterOptions, Adapter } from '@iobroker/adapter-core';
 import Json2iob from 'json2iob';
 import { v4 as UUID } from 'uuid';
 import axios, { type AxiosInstance } from 'axios';
 import Aedes, { type Client } from 'aedes';
-import type { FrigateAdapterConfig } from './types';
+
+import { type AdapterOptions, Adapter } from '@iobroker/adapter-core';
+
+import { FrigateAdapterConfig } from './types';
 
 type FrigateMessage = {
     timestamp?: number; // in seconds till 1970
@@ -58,7 +60,6 @@ class FrigateAdapter extends Adapter {
     declare config: FrigateAdapterConfig;
     private server: Server;
     private requestClient: AxiosInstance;
-    private clientId = 'frigate';
     private json2iob: Json2iob;
     private tmpDir = tmpdir();
     private notificationMinScore: number | null = null;
@@ -97,9 +98,17 @@ class FrigateAdapter extends Adapter {
      */
     async onReady(): Promise<void> {
         await this.setStateAsync('info.connection', false, true);
-        this.subscribeStates('*_state');
-        this.subscribeStates('*.remote.*');
-        this.subscribeStates('remote.*');
+
+        this.config.dockerFrigate ||= {
+            enabled: false,
+        };
+        this.config.dockerFrigate.port = parseInt((this.config.dockerFrigate.port || '5000') as string, 10) || 5000;
+        this.config.mqttPort = this.config.dockerFrigate.port;
+        this.config.dockerFrigate.shmSize = parseInt((this.config.dockerFrigate.shmSize || '256') as string, 10) || 256;
+        if (this.config.dockerFrigate.location && !this.config.dockerFrigate.location.endsWith('/')) {
+            this.config.dockerFrigate.location += '/';
+        }
+
         if (!this.config.friurl) {
             this.log.warn('No Frigate url set');
         }
@@ -110,7 +119,7 @@ class FrigateAdapter extends Adapter {
         this.config.notificationEventClipWaitTime =
             parseFloat(this.config.notificationEventClipWaitTime as string) || 5;
         this.config.webnum = parseInt(this.config.webnum as string, 10) || 5;
-        this.config.mqttPort = parseInt(this.config.mqttPort as string, 10) || 1883;
+        this.config.mqttPort = parseInt((this.config.mqttPort || '1883') as string, 10) || 1883;
 
         try {
             if (this.config.notificationMinScore) {
@@ -154,6 +163,15 @@ class FrigateAdapter extends Adapter {
 
         await this.cleanOldObjects();
         await this.cleanTrackedObjects();
+
+        this.subscribeStates('*_state');
+        this.subscribeStates('*.remote.*');
+        this.subscribeStates('remote.*');
+
+        if (this.config.dockerFrigate.enabled) {
+            const dockerManager = this.getPluginInstance('docker')?.getDockerManager();
+            dockerManager?.instanceIsReady();
+        }
 
         this.initMqtt();
     }
@@ -224,7 +242,6 @@ class FrigateAdapter extends Adapter {
         this.aedes.on('client', async (client: Client): Promise<void> => {
             this.log.info(`New client: ${client.id}`);
             this.log.info(`Filter for message from client: ${client.id}`);
-            this.clientId = client.id;
             await this.setStateAsync('info.connection', true, true);
             await this.fetchEventHistory();
         });

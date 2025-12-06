@@ -6,9 +6,17 @@
             "type": "tab",
             "label": "General Settings",
             "items": {
+                "dockerFrigate.enabled": {
+                    "newLine": true,
+                    "type": "checkDocker",
+                    "label": "Use self-hosted Frigate in Docker",
+                    "help": "docker_explanation",
+                    "xs": 12
+                },
                 "_frigateHost": {
                     "type": "header",
                     "text": "Enter the ioBroker IP Address in the frigate config under mqtt->host",
+                    "hidden": "!!data.dockerMysql?.enabled",
                     "size": 2,
                     "xs": 12,
                     "sm": 12,
@@ -21,6 +29,7 @@
                     "type": "text",
                     "label": "Frigate Hostname:Port",
                     "help": "(localhost:5000 or 192.168.178.100:5000)",
+                    "hidden": "!!data.dockerMysql?.enabled",
                     "xs": 12,
                     "sm": 12,
                     "md": 6,
@@ -241,6 +250,63 @@
                     "lg": 4,
                     "xl": 4,
                     "newLine": true
+                }
+            }
+        },
+        "dockerFrigate": {
+            "type": "panel",
+            "label": "Frigate Docker",
+            "hidden": "!data.dockerFrigate.?enabled",
+            "items": {
+                "dockerFrigate.bind": {
+                    "newLine": true,
+                    "listenOnAllPorts": true,
+                    "type": "ip",
+                    "label": "Start container on IP",
+                    "sm": 12,
+                    "md": 8
+                },
+                "dockerFrigate.port": {
+                    "type": "port",
+                    "label": "Port",
+                    "help": "The port on which the container will be reachable on localhost",
+                    "default": 5000,
+                    "sm": 12,
+                    "md": 4
+                },
+                "dockerFrigate.stopIfInstanceStopped": {
+                    "newLine": true,
+                    "type": "checkbox",
+                    "label": "Stop container when instance stops",
+                    "sm": 12,
+                    "md": 6
+                },
+                "dockerFrigate.autoImageUpdate": {
+                    "type": "checkbox",
+                    "label": "Auto-update Docker image",
+                    "help": "If enabled, the latest Docker image will be pulled when the adapter starts.",
+                    "sm": 12,
+                    "md": 6
+                },
+                "dockerFrigate.shmSize": {
+                    "newLine": true,
+                    "type": "number",
+                    "label": "Temp directory size",
+                    "help": "MB",
+                    "xs": 12
+                },
+                "dockerFrigate.coral": {
+                    "newLine": true,
+                    "type": "checkbox",
+                    "label": "Use google Coral accelerator",
+                    "xs": 12
+                },
+                "dockerFrigate.location": {
+                    "newLine": true,
+                    "type": "text",
+                    "label": "Frigate directory location",
+                    "help": "As frigate saves a large amount of data, it is recommended to use a separate directory or disk for it.",
+                    "xs": 12
                 }
             }
         }

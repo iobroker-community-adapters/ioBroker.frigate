@@ -156,6 +156,9 @@
         "plugins": {
             "sentry": {
                 "dsn": "https://802f699c7aa84a62b0bcb54b31485352@sentry.iobroker.net/226"
+            },
+            "docker": {
+                "iobDockerComposeFiles": ["docker-compose.yaml"]
             }
         },
         "messages": [
@@ -214,7 +217,17 @@
         "notificationTextTemplate": "{{source}} {{type}} erkannt {{status}} {{score}}",
         "notificationExcludeList": "",
         "notificationExcludeZoneList": "",
-        "notificationExcludeEmptyZoneList": ""
+        "notificationExcludeEmptyZoneList": "",
+        "dockerFrigate": {
+            "enabled": false,
+            "bind": "0.0.0.0",
+            "stopIfInstanceStopped": false,
+            "port": 1883,
+            "autoImageUpdate": true,
+            "shmSize": 256,
+            "coral": false,
+            "location": "string"
+        }
     },
     "objects": [],
     "instanceObjects": [
