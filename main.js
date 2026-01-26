@@ -832,6 +832,9 @@ class Frigate extends utils.Adapter {
               event.webm3u8 = 'http://' + this.config.friurl + '/vod/event/' + event.id + '/master.m3u8';
               event.thumbnail = 'data:image/jpeg;base64,' + event.thumbnail;
               delete event.path_data;
+              if (event.data) {
+                delete event.data.path_data;
+              }
             }
             let path = 'events.history';
             if (device) {

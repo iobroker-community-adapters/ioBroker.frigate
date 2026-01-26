@@ -1,4 +1,8 @@
 # Older changes
+## 1.2.1 (2024-06-06)
+
+- add remote to restart frigate
+
 ## 1.2.0 (2024-04-10)
 
 - add new notifications sending
