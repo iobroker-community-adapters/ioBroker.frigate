@@ -157,9 +157,7 @@ class Frigate extends utils.Adapter {
         def: false,
         read: true,
         write: true,
-      },
-
-      native: {},
+      },      native: {},
     });
     await this.extendObjectAsync('remote.pauseNotifications', {
       type: 'state',
@@ -191,6 +189,7 @@ class Frigate extends utils.Adapter {
   async cleanOldObjects() {
     await this.delObjectAsync('reviews.before.data.detections', { recursive: true });
     await this.delObjectAsync('reviews.after.data.detections', { recursive: true });
+    await this.delObjectAsync('*.history.*.path_data*', { recursive: true });
 
     const remoteState = await this.getObjectAsync('lastidurl');
     if (remoteState) {
@@ -810,6 +809,7 @@ class Frigate extends utils.Adapter {
               event.webclip = 'http://' + this.config.friurl + '/api/events/' + event.id + '/clip.mp4';
               event.webm3u8 = 'http://' + this.config.friurl + '/vod/event/' + event.id + '/master.m3u8';
               event.thumbnail = 'data:image/jpeg;base64,' + event.thumbnail;
+              delete event.path_data;
             }
             let path = 'events.history';
             if (device) {
