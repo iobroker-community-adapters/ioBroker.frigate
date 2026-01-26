@@ -190,15 +190,26 @@ class Frigate extends utils.Adapter {
     await this.delObjectAsync('reviews.before.data.detections', { recursive: true });
     await this.delObjectAsync('reviews.after.data.detections', { recursive: true });
 
-    // Clean path_data objects - delete parent data folder if path_data01 exists
-    for (const device of this.deviceArray) {
-      if (!device) continue;
-      for (let i = 0; i < this.config.webnum; i++) {
-        const paddedIndex = i.toString().padStart(2, '0');
-        const pathDataState = await this.getObjectAsync(`${device}.history.${paddedIndex}.data.path_data01`);
-        if (pathDataState) {
-          await this.delObjectAsync(`${device}.history.${paddedIndex}.data`, { recursive: true });
+    // Clean path_data objects - find and delete parent data folder if path_data exists
+    const allObjects = await this.getObjectListAsync({
+      startkey: this.namespace + '.',
+      endkey: this.namespace + '.\u9999',
+    });
+    const dataFoldersToDelete = new Set();
+    for (const obj of allObjects.rows) {
+      if (obj.id.includes('.path_data')) {
+        // Extract parent data folder path (e.g., frigate.0.terasse.history.01.data)
+        const match = obj.id.match(/(.+\.history\.\d+\.data)/);
+        if (match) {
+          dataFoldersToDelete.add(match[1].replace(this.namespace + '.', ''));
         }
+      }
+    }
+    for (const dataFolder of dataFoldersToDelete) {
+      try {
+        await this.delObjectAsync(dataFolder, { recursive: true });
+      } catch {
+        // Continue if deletion fails
       }
     }
 
