@@ -189,7 +189,18 @@ class Frigate extends utils.Adapter {
   async cleanOldObjects() {
     await this.delObjectAsync('reviews.before.data.detections', { recursive: true });
     await this.delObjectAsync('reviews.after.data.detections', { recursive: true });
-    await this.delObjectAsync('*.history.*.path_data*', { recursive: true });
+
+    // Clean path_data objects - delete parent data folder if path_data01 exists
+    for (const device of this.deviceArray) {
+      if (!device) continue;
+      for (let i = 0; i < this.config.webnum; i++) {
+        const paddedIndex = i.toString().padStart(2, '0');
+        const pathDataState = await this.getObjectAsync(`${device}.history.${paddedIndex}.data.path_data01`);
+        if (pathDataState) {
+          await this.delObjectAsync(`${device}.history.${paddedIndex}.data`, { recursive: true });
+        }
+      }
+    }
 
     const remoteState = await this.getObjectAsync('lastidurl');
     if (remoteState) {
