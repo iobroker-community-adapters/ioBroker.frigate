@@ -225,14 +225,19 @@
       },
       "native": {
         "friurl": "localhost:5000",
-        "mqttPort": 1883,
+        "frigateProtocol": "http",
+        "frigatePort": 5000,
+        "frigateUsername": "",
+        "frigatePassword": "",
+        "frigateRejectUnauthorized": true,
         "webnum": 50,
         "mqttMode": "server",
+        "mqttTopicPrefix": "frigate",
+        "mqttPort": 1883,
         "mqttBrokerUrl": "",
         "mqttUsername": "",
         "mqttPassword": "",
         "mqttClientId": "",
-        "mqttTopicPrefix": "frigate",
         "mqttRejectUnauthorized": true
       }
     },

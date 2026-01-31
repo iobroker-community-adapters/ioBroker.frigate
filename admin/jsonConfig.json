@@ -25,20 +25,180 @@
       "xl": 12,
       "newLine": true
     },
-    "_mqttModeHeader": {
+    "_frigateHost": {
       "type": "header",
       "text": {
-        "en": "MQTT Settings (Server / Client)",
-        "de": "MQTT Einstellungen (Server / Client)",
-        "ru": "Настройки MQTT (Сервер / Клиент)",
-        "pt": "Configurações MQTT (Servidor / Cliente)",
-        "nl": "MQTT-instellingen (Server / Client)",
-        "fr": "Paramètres MQTT (Serveur / Client)",
-        "it": "Impostazioni MQTT (Server / Client)",
-        "es": "Configuración MQTT (Servidor / Cliente)",
-        "pl": "Ustawienia MQTT (Serwer / Klient)",
-        "uk": "Налаштування MQTT (Сервер / Клієнт)",
-        "zh-cn": "MQTT设置（服务器/客户端）"
+        "en": "Enter the ioBroker Ip Address in the frigate config under mqtt->host",
+        "de": "Geben Sie die ioBroker-IP-Adresse in der Frigate-Konfiguration unter mqtt->host ein",
+        "ru": "Введите IP-адрес ioBroker в конфигурации фрегата в разделе mqtt->host",
+        "pt": "Insira o endereço IP do ioBroker na configuração do frigate em mqtt->host",
+        "nl": "Voer het ioBroker IP-adres in in de frigate-configuratie onder mqtt->host",
+        "fr": "Entrez l'adresse IP ioBroker dans la configuration du frigate sous mqtt->host",
+        "it": "Inserisci l'indirizzo IP ioBroker nella configurazione del frigate in mqtt->host",
+        "es": "Ingrese la dirección IP de ioBroker en la configuración de frigate en mqtt->host",
+        "pl": "Wprowadź adres IP ioBroker w konfiguracji frigate w mqtt->host",
+        "uk": "Введіть IP-адресу ioBroker у конфігурації фрегата в розділі mqtt->host",
+        "zh-cn": "在frigate配置中输入ioBroker IP地址->主机"
+      },
+      "size": 2,
+      "xs": 12,
+      "sm": 12,
+      "md": 12,
+      "lg": 12,
+      "xl": 12,
+      "newLine": true
+    },
+    "_frigateApiHeader": {
+      "type": "header",
+      "text": {
+        "en": "Frigate API Connection",
+        "de": "Frigate API Verbindung",
+        "ru": "Подключение Frigate API",
+        "pt": "Conexão Frigate API",
+        "nl": "Frigate API-verbinding",
+        "fr": "Connexion API Frigate",
+        "it": "Connessione API Frigate",
+        "es": "Conexión API Frigate",
+        "pl": "Połączenie API Frigate",
+        "uk": "Підключення Frigate API",
+        "zh-cn": "Frigate API 连接"
+      },
+      "size": 2,
+      "xs": 12,
+      "sm": 12,
+      "md": 12,
+      "lg": 12,
+      "xl": 12,
+      "newLine": true
+    },
+    "friurl": {
+      "type": "text",
+      "label": {
+        "en": "Frigate Hostname or Hostname:Port (e.g. 192.168.1.10 or 192.168.1.10:5000)",
+        "de": "Frigate Hostname oder Hostname:Port (z.B. 192.168.1.10 oder 192.168.1.10:5000)",
+        "ru": "Frigate хост или хост:порт (например 192.168.1.10 или 192.168.1.10:5000)",
+        "pt": "Host Frigate ou Host:Porta (ex.: 192.168.1.10 ou 192.168.1.10:5000)",
+        "nl": "Frigate host of host:poort (bijv. 192.168.1.10 of 192.168.1.10:5000)",
+        "fr": "Hôte Frigate ou hôte:port (ex. 192.168.1.10 ou 192.168.1.10:5000)",
+        "it": "Host Frigate o host:porta (es. 192.168.1.10 o 192.168.1.10:5000)",
+        "es": "Host Frigate o host:puerto (p.ej. 192.168.1.10 o 192.168.1.10:5000)",
+        "pl": "Host Frigate lub host:port (np. 192.168.1.10 lub 192.168.1.10:5000)",
+        "uk": "Frigate хост або хост:порт (напр. 192.168.1.10 або 192.168.1.10:5000)",
+        "zh-cn": "Frigate 主机或主机:端口（例如 192.168.1.10 或 192.168.1.10:5000）"
+      },
+      "help": {
+        "en": "If you set protocol/port below, friurl can be just the host. Example: friurl=192.168.1.10, protocol=https, port=8971",
+        "de": "Wenn Sie unten Protokoll/Port setzen, kann friurl nur der Host sein. Beispiel: friurl=192.168.1.10, protocol=https, port=8971"
+      },
+      "xs": 12,
+      "sm": 12,
+      "md": 6,
+      "lg": 4,
+      "xl": 4,
+      "newLine": true
+    },
+    "frigateProtocol": {
+      "type": "select",
+      "label": {
+        "en": "Frigate Protocol",
+        "de": "Frigate Protokoll"
+      },
+      "help": {
+        "en": "Use https for UI/API on port 8971 (authentication required). Use http for API port 5000.",
+        "de": "Nutze https für UI/API auf Port 8971 (Login erforderlich). Nutze http für API Port 5000."
+      },
+      "options": [
+        {
+          "label": "http",
+          "value": "http"
+        },
+        {
+          "label": "https",
+          "value": "https"
+        }
+      ],
+      "xs": 12,
+      "sm": 12,
+      "md": 6,
+      "lg": 4,
+      "xl": 4,
+      "newLine": false
+    },
+    "frigatePort": {
+      "type": "number",
+      "label": {
+        "en": "Frigate Port",
+        "de": "Frigate Port"
+      },
+      "help": {
+        "en": "5000 = API (no login). 8971 = UI/API via https (login required).",
+        "de": "5000 = API (kein Login). 8971 = UI/API via https (Login erforderlich)."
+      },
+      "min": 1,
+      "max": 65535,
+      "xs": 12,
+      "sm": 12,
+      "md": 6,
+      "lg": 4,
+      "xl": 4,
+      "newLine": false
+    },
+    "frigateUsername": {
+      "type": "text",
+      "label": {
+        "en": "Frigate Username (HTTPS/8971)",
+        "de": "Frigate Benutzername (HTTPS/8971)"
+      },
+      "help": {
+        "en": "Required if you use https / port 8971",
+        "de": "Erforderlich bei https / Port 8971"
+      },
+      "xs": 12,
+      "sm": 12,
+      "md": 6,
+      "lg": 4,
+      "xl": 4,
+      "newLine": true
+    },
+    "frigatePassword": {
+      "type": "password",
+      "label": {
+        "en": "Frigate Password (HTTPS/8971)",
+        "de": "Frigate Passwort (HTTPS/8971)"
+      },
+      "help": {
+        "en": "Required if you use https / port 8971",
+        "de": "Erforderlich bei https / Port 8971"
+      },
+      "xs": 12,
+      "sm": 12,
+      "md": 6,
+      "lg": 4,
+      "xl": 4,
+      "newLine": false
+    },
+    "frigateRejectUnauthorized": {
+      "type": "checkbox",
+      "label": {
+        "en": "Verify TLS Certificate (HTTPS)",
+        "de": "TLS Zertifikat prüfen (HTTPS)"
+      },
+      "help": {
+        "en": "Disable if Frigate uses a self-signed certificate",
+        "de": "Deaktivieren bei Self-Signed Zertifikaten"
+      },
+      "xs": 12,
+      "sm": 12,
+      "md": 6,
+      "lg": 4,
+      "xl": 4,
+      "newLine": false
+    },
+    "_mqttHeader": {
+      "type": "header",
+      "text": {
+        "en": "MQTT Settings",
+        "de": "MQTT Einstellungen"
       },
       "size": 2,
       "xs": 12,
@@ -52,29 +212,11 @@
       "type": "select",
       "label": {
         "en": "MQTT Mode",
-        "de": "MQTT Modus",
-        "ru": "Режим MQTT",
-        "pt": "Modo MQTT",
-        "nl": "MQTT-modus",
-        "fr": "Mode MQTT",
-        "it": "Modalità MQTT",
-        "es": "Modo MQTT",
-        "pl": "Tryb MQTT",
-        "uk": "Режим MQTT",
-        "zh-cn": "MQTT模式"
+        "de": "MQTT Modus"
       },
       "help": {
-        "en": "server = ioBroker acts as MQTT broker (Frigate connects). client = ioBroker connects to external broker. both = use both.",
-        "de": "server = ioBroker ist MQTT Broker (Frigate verbindet sich). client = ioBroker verbindet sich zu externem Broker. both = beides.",
-        "ru": "server = ioBroker работает как MQTT-брокер (Frigate подключается). client = ioBroker подключается к внешнему брокеру. both = оба варианта.",
-        "pt": "server = ioBroker atua como broker MQTT (Frigate conecta). client = ioBroker conecta a um broker externo. both = ambos.",
-        "nl": "server = ioBroker is MQTT-broker (Frigate verbindt). client = ioBroker verbindt met externe broker. both = beide.",
-        "fr": "server = ioBroker agit comme broker MQTT (Frigate se connecte). client = ioBroker se connecte à un broker externe. both = les deux.",
-        "it": "server = ioBroker agisce come broker MQTT (Frigate si connette). client = ioBroker si connette a un broker esterno. both = entrambi.",
-        "es": "server = ioBroker actúa como broker MQTT (Frigate se conecta). client = ioBroker se conecta a un broker externo. both = ambos.",
-        "pl": "server = ioBroker działa jako broker MQTT (Frigate się łączy). client = ioBroker łączy się z zewnętrznym brokerem. both = oba.",
-        "uk": "server = ioBroker працює як MQTT-брокер (Frigate підключається). client = ioBroker підключається до зовнішнього брокера. both = обидва.",
-        "zh-cn": "server = ioBroker作为MQTT broker（Frigate连接）。client = ioBroker连接外部broker。both = 两者都用。"
+        "en": "server: ioBroker acts as MQTT broker (Frigate connects to ioBroker). client: ioBroker connects to external broker. both: both modes.",
+        "de": "server: ioBroker ist MQTT-Broker (Frigate verbindet sich zu ioBroker). client: ioBroker verbindet sich zu externem Broker. both: beides parallel."
       },
       "options": [
         {
@@ -90,7 +232,6 @@
           "value": "both"
         }
       ],
-      "default": "server",
       "xs": 12,
       "sm": 12,
       "md": 6,
@@ -98,149 +239,52 @@
       "xl": 4,
       "newLine": true
     },
-    "_frigateHost": {
-      "type": "header",
-      "text": {
-        "en": "If MQTT Mode is 'server' or 'both': Enter the ioBroker IP/host in the Frigate config under mqtt->host and use the port below.",
-        "de": "Wenn MQTT Modus 'server' oder 'both': Trage die ioBroker-IP/den Host in Frigate unter mqtt->host ein und nutze den Port unten.",
-        "ru": "Если режим MQTT 'server' или 'both': укажите IP/host ioBroker в конфигурации Frigate в mqtt->host и используйте порт ниже.",
-        "pt": "Se o modo MQTT for 'server' ou 'both': insira o IP/host do ioBroker na configuração do Frigate em mqtt->host e use a porta abaixo.",
-        "nl": "Als MQTT-modus 'server' of 'both' is: voer het ioBroker IP/host in bij Frigate onder mqtt->host en gebruik onderstaande poort.",
-        "fr": "Si le mode MQTT est 'server' ou 'both' : saisissez l’IP/host ioBroker dans Frigate sous mqtt->host et utilisez le port ci-dessous.",
-        "it": "Se la modalità MQTT è 'server' o 'both': inserisci l'IP/host di ioBroker in Frigate sotto mqtt->host e usa la porta qui sotto.",
-        "es": "Si el modo MQTT es 'server' o 'both': introduzca el IP/host de ioBroker en Frigate en mqtt->host y use el puerto de abajo.",
-        "pl": "Jeśli tryb MQTT to 'server' lub 'both': wpisz IP/host ioBroker w konfiguracji Frigate w mqtt->host i użyj portu poniżej.",
-        "uk": "Якщо режим MQTT 'server' або 'both': введіть IP/host ioBroker в конфігурації Frigate у mqtt->host та використайте порт нижче.",
-        "zh-cn": "如果MQTT模式为“server”或“both”：在Frigate配置mqtt->host中填写ioBroker IP/host，并使用下面的端口。"
-      },
-      "size": 2,
-      "xs": 12,
-      "sm": 12,
-      "md": 12,
-      "lg": 12,
-      "xl": 12,
-      "newLine": true
-    },
-    "friurl": {
+    "mqttTopicPrefix": {
       "type": "text",
       "label": {
-        "en": "Frigate Hostname:Port (localhost:5000 or 192.168.178.100:5000)",
-        "de": "Frigate Hostname:Port (localhost:5000 oder 192.168.178.100:5000)",
-        "ru": "Frigate Hostname:Port (localhost:5000 или 192.168.178.100:5000)",
-        "pt": "Nome do anfitrião:Port (localhost:5000 ou 192.168.178.100:5000)",
-        "nl": "Frigate Hostname:Port (localhost:5000 of 192.168.178.100:5000)",
-        "fr": "Frigate Nom d'hôte:Port (localhost:5000 ou 192.168.178.100:5000)",
-        "it": "Frigate Hostname:Port (localhost:5000 o 192.168.178.100:5000)",
-        "es": "Frigate Hostname:Port (localhost:5000 or 192.168.178.100:5000)",
-        "pl": "Frigate Hostname: Port (localhost:5000 lub 192.168.178.100:5000)",
-        "uk": "Фрегат Хостим:Порт (localhost:5000 або 192.168.178.100:5000)",
-        "zh-cn": "护卫舰主机名:Port(localhost:5000或192.168.178.100:5000) 护卫舰主机名:Port(英语:"
+        "en": "MQTT Topic Prefix",
+        "de": "MQTT Topic Prefix"
       },
       "help": {
-        "en": "Frigate Hostname:Port (localhost:5000 or 192.168.178.100:5000)",
-        "de": "Frigate Hostname:Port (localhost:5000 oder 192.168.178.100:5000)",
-        "ru": "Frigate Hostname:Port (localhost:5000 или 192.168.178.100:5000)",
-        "pt": "Nome do anfitrião:Port (localhost:5000 ou 192.168.178.100:5000)",
-        "nl": "Frigate Hostname:Port (localhost:5000 of 192.168.178.100:5000)",
-        "fr": "Frigate Nom d'hôte:Port (localhost:5000 ou 192.168.178.100:5000)",
-        "it": "Frigate Hostname:Port (localhost:5000 o 192.168.178.100:5000)",
-        "es": "Frigate Hostname:Port (localhost:5000 or 192.168.178.100:5000)",
-        "pl": "Frigate Hostname: Port (localhost:5000 lub 192.168.178.100:5000)",
-        "uk": "Фрегат Хостим:Порт (localhost:5000 або 192.168.178.100:5000)",
-        "zh-cn": "护卫舰主机名:Port(localhost:5000或192.168.178.100:5000) 护卫舰主机名:Port(英语:"
+        "en": "Default: frigate (topics like frigate/#).",
+        "de": "Standard: frigate (Topics wie frigate/#)."
       },
+      "placeholder": "frigate",
       "xs": 12,
       "sm": 12,
       "md": 6,
       "lg": 4,
       "xl": 4,
-      "newLine": true
+      "newLine": false
     },
     "mqttPort": {
       "type": "number",
       "label": {
-        "en": "MQTT Server Port in Frigate config",
-        "de": "MQTT Server Port in der Frigate Config",
-        "ru": "Порт MQTT",
-        "pt": "Porta MQTT",
-        "nl": "MQTT-poort",
-        "fr": "Port MQTT",
-        "it": "Porta MQTT",
-        "es": "Puerto MQTT",
-        "pl": "Port MQTT",
-        "uk": "Порт MQTT",
-        "zh-cn": "MQTT端口"
+        "en": "MQTT Server Port (when mode includes server)",
+        "de": "MQTT Server Port (wenn Modus server enthält)"
       },
       "help": {
-        "en": "MQTT Server Port used when MQTT Mode is 'server' or 'both'",
-        "de": "MQTT Server Port wird genutzt, wenn MQTT Modus 'server' oder 'both' ist",
-        "ru": "Порт MQTT используется при режиме 'server' или 'both'",
-        "pt": "A porta MQTT é usada quando o modo é 'server' ou 'both'",
-        "nl": "MQTT-poort gebruikt bij modus 'server' of 'both'",
-        "fr": "Port MQTT utilisé en mode 'server' ou 'both'",
-        "it": "Porta MQTT usata in modalità 'server' o 'both'",
-        "es": "Puerto MQTT usado en modo 'server' o 'both'",
-        "pl": "Port MQTT używany w trybie 'server' lub 'both'",
-        "uk": "Порт MQTT використовується в режимі 'server' або 'both'",
-        "zh-cn": "当模式为“server”或“both”时使用此端口"
+        "en": "Used only for server/both mode.",
+        "de": "Nur relevant für server/both Modus."
       },
+      "min": 1,
+      "max": 65535,
       "xs": 12,
       "sm": 12,
       "md": 6,
       "lg": 4,
       "xl": 4,
-      "newLine": true
-    },
-    "_mqttClientHeader": {
-      "type": "header",
-      "text": {
-        "en": "External MQTT Broker (Client)",
-        "de": "Externer MQTT Broker (Client)",
-        "ru": "Внешний MQTT брокер (Клиент)",
-        "pt": "Broker MQTT externo (Cliente)",
-        "nl": "Externe MQTT-broker (Client)",
-        "fr": "Broker MQTT externe (Client)",
-        "it": "Broker MQTT esterno (Client)",
-        "es": "Broker MQTT externo (Cliente)",
-        "pl": "Zewnętrzny broker MQTT (Klient)",
-        "uk": "Зовнішній MQTT брокер (Клієнт)",
-        "zh-cn": "外部MQTT broker（客户端）"
-      },
-      "size": 2,
-      "xs": 12,
-      "sm": 12,
-      "md": 12,
-      "lg": 12,
-      "xl": 12,
-      "newLine": true
+      "newLine": false
     },
     "mqttBrokerUrl": {
       "type": "text",
       "label": {
-        "en": "Broker URL",
-        "de": "Broker URL",
-        "ru": "URL брокера",
-        "pt": "URL do broker",
-        "nl": "Broker-URL",
-        "fr": "URL du broker",
-        "it": "URL del broker",
-        "es": "URL del broker",
-        "pl": "URL brokera",
-        "uk": "URL брокера",
-        "zh-cn": "Broker URL"
+        "en": "External MQTT Broker URL (when mode includes client)",
+        "de": "Externer MQTT Broker URL (wenn Modus client enthält)"
       },
       "help": {
-        "en": "Examples: mqtt://192.168.1.2:1883 or mqtts://broker.example.com:8883",
-        "de": "Beispiele: mqtt://192.168.1.2:1883 oder mqtts://broker.example.com:8883",
-        "ru": "Примеры: mqtt://192.168.1.2:1883 или mqtts://broker.example.com:8883",
-        "pt": "Exemplos: mqtt://192.168.1.2:1883 ou mqtts://broker.example.com:8883",
-        "nl": "Voorbeelden: mqtt://192.168.1.2:1883 of mqtts://broker.example.com:8883",
-        "fr": "Exemples : mqtt://192.168.1.2:1883 ou mqtts://broker.example.com:8883",
-        "it": "Esempi: mqtt://192.168.1.2:1883 o mqtts://broker.example.com:8883",
-        "es": "Ejemplos: mqtt://192.168.1.2:1883 o mqtts://broker.example.com:8883",
-        "pl": "Przykłady: mqtt://192.168.1.2:1883 lub mqtts://broker.example.com:8883",
-        "uk": "Приклади: mqtt://192.168.1.2:1883 або mqtts://broker.example.com:8883",
-        "zh-cn": "示例：mqtt://192.168.1.2:1883 或 mqtts://broker.example.com:8883"
+        "en": "Example: mqtt://broker:1883 or mqtts://broker:8883",
+        "de": "Beispiel: mqtt://broker:1883 oder mqtts://broker:8883"
       },
       "placeholder": "mqtt://192.168.1.2:1883",
       "xs": 12,
@@ -250,54 +294,16 @@
       "xl": 8,
       "newLine": true
     },
-    "mqttTopicPrefix": {
-      "type": "text",
-      "label": {
-        "en": "Topic prefix",
-        "de": "Topic-Präfix",
-        "ru": "Префикс топика",
-        "pt": "Prefixo do tópico",
-        "nl": "Topic-prefix",
-        "fr": "Préfixe du topic",
-        "it": "Prefisso topic",
-        "es": "Prefijo del topic",
-        "pl": "Prefiks tematu",
-        "uk": "Префікс топіка",
-        "zh-cn": "Topic前缀"
-      },
-      "help": {
-        "en": "Default is 'frigate'. The adapter subscribes to <prefix>/# and publishes commands under <prefix>/...",
-        "de": "Standard ist 'frigate'. Der Adapter subscribed <präfix>/# und published Befehle unter <präfix>/..."
-      },
-      "placeholder": "frigate",
-      "default": "frigate",
-      "xs": 12,
-      "sm": 12,
-      "md": 6,
-      "lg": 4,
-      "xl": 4,
-      "newLine": true
-    },
     "mqttClientId": {
       "type": "text",
       "label": {
-        "en": "Client ID (optional)",
-        "de": "Client ID (optional)",
-        "ru": "Client ID (необязательно)",
-        "pt": "Client ID (opcional)",
-        "nl": "Client-ID (optioneel)",
-        "fr": "Client ID (optionnel)",
-        "it": "Client ID (opzionale)",
-        "es": "Client ID (opcional)",
-        "pl": "Client ID (opcjonalnie)",
-        "uk": "Client ID (необов'язково)",
-        "zh-cn": "Client ID（可选）"
+        "en": "MQTT ClientId (optional)",
+        "de": "MQTT ClientId (optional)"
       },
       "help": {
-        "en": "If empty, a random client id will be generated.",
-        "de": "Wenn leer, wird eine zufällige Client-ID erzeugt."
+        "en": "If empty, a random id is generated.",
+        "de": "Wenn leer, wird eine zufällige ID generiert."
       },
-      "placeholder": "iobroker-frigate",
       "xs": 12,
       "sm": 12,
       "md": 6,
@@ -308,73 +314,45 @@
     "mqttUsername": {
       "type": "text",
       "label": {
-        "en": "Username (optional)",
-        "de": "Benutzername (optional)",
-        "ru": "Имя пользователя (необязательно)",
-        "pt": "Usuário (opcional)",
-        "nl": "Gebruikersnaam (optioneel)",
-        "fr": "Nom d'utilisateur (optionnel)",
-        "it": "Nome utente (opzionale)",
-        "es": "Usuario (opcional)",
-        "pl": "Nazwa użytkownika (opcjonalnie)",
-        "uk": "Ім'я користувача (необов'язково)",
-        "zh-cn": "用户名（可选）"
+        "en": "MQTT Username (external broker)",
+        "de": "MQTT Benutzername (externer Broker)"
       },
       "xs": 12,
       "sm": 12,
       "md": 6,
       "lg": 4,
       "xl": 4,
-      "newLine": true
+      "newLine": false
     },
     "mqttPassword": {
       "type": "password",
       "label": {
-        "en": "Password (optional)",
-        "de": "Passwort (optional)",
-        "ru": "Пароль (необязательно)",
-        "pt": "Senha (opcional)",
-        "nl": "Wachtwoord (optioneel)",
-        "fr": "Mot de passe (optionnel)",
-        "it": "Password (opzionale)",
-        "es": "Contraseña (opcional)",
-        "pl": "Hasło (opcjonalnie)",
-        "uk": "Пароль (необов'язково)",
-        "zh-cn": "密码（可选）"
+        "en": "MQTT Password (external broker)",
+        "de": "MQTT Passwort (externer Broker)"
       },
       "xs": 12,
       "sm": 12,
       "md": 6,
       "lg": 4,
       "xl": 4,
-      "newLine": true
+      "newLine": false
     },
     "mqttRejectUnauthorized": {
       "type": "checkbox",
       "label": {
-        "en": "Verify TLS certificate (mqtts://)",
-        "de": "TLS-Zertifikat prüfen (mqtts://)",
-        "ru": "Проверять TLS сертификат (mqtts://)",
-        "pt": "Verificar certificado TLS (mqtts://)",
-        "nl": "TLS-certificaat verifiëren (mqtts://)",
-        "fr": "Vérifier le certificat TLS (mqtts://)",
-        "it": "Verifica certificato TLS (mqtts://)",
-        "es": "Verificar certificado TLS (mqtts://)",
-        "pl": "Weryfikuj certyfikat TLS (mqtts://)",
-        "uk": "Перевіряти TLS сертифікат (mqtts://)",
-        "zh-cn": "验证TLS证书（mqtts://）"
+        "en": "Verify TLS Certificate (mqtts://)",
+        "de": "TLS Zertifikat prüfen (mqtts://)"
       },
       "help": {
-        "en": "Disable only if you use a self-signed certificate on the broker.",
-        "de": "Nur deaktivieren, wenn der Broker ein Self-Signed-Zertifikat nutzt."
+        "en": "Disable for self-signed certs (mqtts only).",
+        "de": "Deaktivieren bei Self-Signed Zertifikaten (nur mqtts)."
       },
-      "default": true,
       "xs": 12,
       "sm": 12,
       "md": 6,
       "lg": 4,
       "xl": 4,
-      "newLine": true
+      "newLine": false
     },
     "webnum": {
       "type": "number",
@@ -393,16 +371,7 @@
       },
       "help": {
         "en": "Number of last Events History frigate.0.events.history",
-        "de": "Anzahl der letzten Ereignisse History frigate.0.events.history",
-        "ru": "Количество последних событий History frigate.0.events.history",
-        "pt": "Número de eventos da última história frigate.0.events.history",
-        "nl": "Aantal laatste gebeurtenissen Geschiedenis frigate.0.events.history",
-        "fr": "Nombre des derniers événements Histoire frigate.0.events.history",
-        "it": "Numero degli ultimi eventi Storia frigate.0.events.history",
-        "es": "Número de los últimos eventos Historia frigate.0.events.history",
-        "pl": "Liczba ostatnich wydarzeń Historia frigate.0.events.history",
-        "uk": "Кількість останніх подій Історія frigate.0.events.history",
-        "zh-cn": "最后事件历史frigate.0.events.history的数量"
+        "de": "Anzahl der letzten Ereignisse History frigate.0.events.history"
       },
       "xs": 12,
       "sm": 12,
@@ -473,16 +442,7 @@
       },
       "help": {
         "en": "Instances to notify (comma separated)",
-        "de": "Instanzen, die benachrichtigt werden sollen (durch Komma getrennt)",
-        "ru": "Экземпляры для уведомления (через запятую)",
-        "pt": "Instâncias para notificar (separadas por vírgula)",
-        "nl": "Instanties om op de hoogte te stellen (gescheiden door komma's)",
-        "fr": "Instances à notifier (séparées par des virgules)",
-        "it": "Istanze da notificare (separate da virgola)",
-        "es": "Instancias para notificar (separadas por comas)",
-        "pl": "Instancje do powiadomienia (oddzielone przecinkami)",
-        "uk": "Екземпляri для сповіщення (через кому)",
-        "zh-cn": "要通知的实例(逗号分隔)"
+        "de": "Instanzen, die benachrichtigt werden sollen (durch Komma getrennt)"
       },
       "xs": 12,
       "sm": 12,
@@ -495,51 +455,24 @@
       "type": "text",
       "label": {
         "en": "Optional: Users to notify (comma separated)",
-        "de": "Optional: Benutzer, die benachrichtigt werden sollen (durch Komma getrennt)",
-        "ru": "Пользователи для уведомления (через запятую)",
-        "pt": "Usuários para notificar (separados por vírgula)",
-        "nl": "Gebruikers om op de hoogte te stellen (gescheiden door komma's)",
-        "fr": "Utilisateurs à notifier (séparés par des virgules)",
-        "it": "Utenti da notificare (separati da virgola)",
-        "es": "Usuarios para notificar (separados por comas)",
-        "pl": "Użytkownicy do powiadomienia (oddzielone przecinkami)",
-        "uk": "Користувачі для сповіщення (через кому)",
-        "zh-cn": "要通知的用户(逗号分隔)"
+        "de": "Optional: Benutzer, die benachrichtigt werden sollen (durch Komma getrennt)"
       },
       "help": {
         "en": "Optional: Users to notify (comma separated)",
-        "de": "Optional: Benutzer, die benachrichtigt werden sollen (durch Komma getrennt)",
-        "ru": "Пользователи для уведомления (через запятую)",
-        "pt": "Usuários para notificar (separados por vírgula)",
-        "nl": "Gebruikers om op de hoogte te stellen (gescheiden door komma's)",
-        "fr": "Utilisateurs à notifier (séparés par des virgules)",
-        "it": "Utenti da notificare (separati da virgola)",
-        "es": "Usuarios para notificar (separados por comas)",
-        "pl": "Użytkownicy do powiadomienia (oddzielone przecinkами)",
-        "uk": "Користувачі для сповіщення (через кому)",
-        "zh-cn": "要通知的用户(逗号分隔)"
+        "de": "Optional: Benutzer, die benachrichtigt werden sollen (durch Komma getrennt)"
       },
       "xs": 12,
       "sm": 12,
       "md": 6,
       "lg": 4,
       "xl": 4,
-      "newLine": true
+      "newLine": false
     },
     "notificationEventSnapshot": {
       "type": "checkbox",
       "label": {
         "en": "Send snapshot from event end",
-        "de": "Snapshot vom Event Ende senden",
-        "ru": "Отправить снимок с события",
-        "pt": "Enviar instantâneo do evento",
-        "nl": "Snapshot van evenement verzenden",
-        "fr": "Envoyer un instantané de l'événement",
-        "it": "Invia snapshot dall'evento",
-        "es": "Enviar instantánea del evento",
-        "pl": "Wyślij migawkę z wydarzenia",
-        "uk": "Надіслати знімок з події",
-        "zh-cn": "从事件发送快照"
+        "de": "Snapshot vom Event Ende senden"
       },
       "xs": 12,
       "sm": 12,
@@ -552,82 +485,46 @@
       "type": "checkbox",
       "label": {
         "en": "Send snapshot from event start",
-        "de": "Snapshot vom Event Start senden",
-        "ru": "Отправить снимок с начала  события",
-        "pt": "Enviar instantâneo do início  do evento",
-        "nl": "Snapshot van evenement start verzenden",
-        "fr": "Envoyer un instantané du début à jour de l'événement",
-        "it": "Invia snapshot dall'inizio dell'evento",
-        "es": "Enviar instantánea desde el inicio  del evento",
-        "pl": "Wyślij migawkę z początku wydarzenia",
-        "uk": "Надіслати знімок з початку  події",
-        "zh-cn": "从事件开始/更新发送快照"
+        "de": "Snapshot vom Event Start senden"
       },
       "xs": 12,
       "sm": 12,
       "md": 6,
       "lg": 4,
       "xl": 4,
-      "newLine": true
+      "newLine": false
     },
     "notificationEventSnapshotUpdateOnce": {
       "type": "checkbox",
       "label": {
         "en": "If no start snapshot send then send one update snapshot instead",
-        "de": "Wenn kein start Snapshot gesendet wird, senden stattdessen den ersten update Snapshot",
-        "ru": "Если не отправлять начальный снимок, то вместо этого отправить один обновленный снимок",
-        "pt": "Se não enviar instantâneo de início, envie um instantâneo de atualização em vez disso",
-        "nl": "Als er geen start-snapshot wordt verzonden, stuur dan in plaats daarvan een update-snapshot",
-        "fr": "Si aucun instantané de démarrage n'est envoyé, envoyez plutôt un instantané de mise à jour",
-        "it": "Se non viene inviato alcun snapshot di avvio, inviane uno di aggiornamento invece",
-        "es": "Si no se envía instantánea de inicio, envíe una instantánea de actualización en su lugar",
-        "pl": "Jeśli nie zostanie wysłany migawka startowa, wyślij jedną zamiast tego aktualizację migawki",
-        "uk": "Якщо не відправляти початковий знімок, то надішліть один оновлений замість цього",
-        "zh-cn": "如果不发送开始快照，则发送一个更新快照"
+        "de": "Wenn kein start Snapshot gesendet wird, senden stattdessen den ersten update Snapshot"
       },
       "xs": 12,
       "sm": 12,
       "md": 6,
       "lg": 4,
       "xl": 4,
-      "newLine": true
+      "newLine": false
     },
     "notificationEventSnapshotUpdate": {
       "type": "checkbox",
       "label": {
         "en": "Send snapshot from event update",
-        "de": "Snapshot vom Event Update senden",
-        "ru": "Отправить снимок с обновления события",
-        "pt": "Enviar instantâneo do  atualização do evento",
-        "nl": "Snapshot van evenement update verzenden",
-        "fr": "Envoyer un instantané du  mise à jour de l'événement",
-        "it": "Invia snapshot  aggiornamento dell'evento",
-        "es": "Enviar instantánea desde el  actualización del evento",
-        "pl": "Wyślij migawkę z aktualizacji wydarzenia",
-        "uk": "Надіслати знімок з  оновлення події",
-        "zh-cn": "从事件开始/更新发送快照"
+        "de": "Snapshot vom Event Update senden"
       },
       "xs": 12,
       "sm": 12,
       "md": 6,
       "lg": 4,
       "xl": 4,
-      "newLine": true
+      "newLine": false
     },
     "notificationEventClip": {
       "type": "checkbox",
       "label": {
         "en": "Send Clip from event end",
-        "de": "Clip vom Event Ende senden",
-        "ru": "Отправить клип с события",
-        "pt": "Enviar clipe do evento",
-        "nl": "Clip van evenement verzenden",
-        "fr": "Envoyer un clip de l'événement",
-        "it": "Invia clip dall'evento",
-        "es": "Enviar clip del evento",
-        "pl": "Wyślij klip z wydarzenia",
-        "uk": "Надіслати кліп з події",
-        "zh-cn": "从事件发送剪辑"
+        "de": "Clip vom Event Ende senden"
       },
       "xs": 12,
       "sm": 12,
@@ -640,72 +537,37 @@
       "type": "checkbox",
       "label": {
         "en": "Send only Clip Url from event end",
-        "de": "Nur Clip Url vom Event Ende senden",
-        "ru": "Отправить только URL-адрес клипа с события",
-        "pt": "Enviar apenas Clip Url do evento",
-        "nl": "Alleen Clip Url van evenement verzenden",
-        "fr": "Envoyer uniquement Clip Url de l'événement",
-        "it": "Invia solo Clip Url dall'evento",
-        "es": "Enviar solo Clip Url del evento",
-        "pl": "Wyślij tylko adres URL klipu z wydarzenia",
-        "uk": "Надіслати лише URL-адресу кліпу з події"
+        "de": "Nur Clip Url vom Event Ende senden"
       },
       "xs": 12,
       "sm": 12,
       "md": 6,
       "lg": 4,
       "xl": 4,
-      "newLine": true
+      "newLine": false
     },
     "notificationEventClipWaitTime": {
       "type": "number",
       "label": {
         "en": "Wait time after Events end for Clip creation in seconds",
-        "de": "Wartezeit nach Event Ende für Cliperstellung in Sekunden",
-        "ru": "Время ожидания после окончания событий для создания клипа в секундах",
-        "pt": "Tempo de espera após o término dos eventos para a criação de clipes em segundos",
-        "nl": "Wachttijd na het einde van de gebeurtenissen voor het maken van clips in seconden",
-        "fr": "Temps d'attente après la fin des événements pour la création de clips en secondes",
-        "it": "Tempo di attesa dopo la fine degli eventi per la creazione di clip in secondi",
-        "es": "Tiempo de espera después del final de los eventos para la creación de clips en segundos",
-        "pl": "Czas oczekiwania po zakończeniu wydarzeń na utworzenie klipów w sekundach",
-        "uk": "Час очікування після закінчення подій для створення кліпів в секундах",
-        "zh-cn": "事件结束后等待时间以秒为单位创建剪辑"
+        "de": "Wartezeit nach Event Ende für Cliperstellung in Sekunden"
       },
       "xs": 12,
       "sm": 12,
       "md": 6,
       "lg": 4,
       "xl": 4,
-      "newLine": true
+      "newLine": false
     },
     "notificationMinScore": {
       "type": "number",
       "label": {
         "en": "Minimum Event Score 0.1-1.0 to notify. 0 = Disabled.",
-        "de": "Minimale Ereignisbewertung 0,1-1,0 zum Benachrichtigen. 0 = Deaktiviert.",
-        "ru": "Минимальный балл события 0.1-1.0 для уведомления. 0 = Отключено.",
-        "pt": "Pontuação mínima do evento 0.1-1.0 para notificar. 0 = Desativado.",
-        "nl": "Minimale gebeurtenisscore 0.1-1.0 om te melden. 0 = Uitgeschakeld.",
-        "fr": "Score d'événement minimum 0.1-1.0 à notifier. 0 = Désactivé.",
-        "it": "Punteggio evento minimo 0.1-1.0 da notificare. 0 = Disabilitato.",
-        "es": "Puntuación mínima del evento 0.1-1.0 para notificar. 0 = Desactivado.",
-        "pl": "Minimalna ocena wydarzenia 0.1-1.0 do powiadomienia. 0 = Wyłączone.",
-        "uk": "Мінімальний бал події 0,1-1,0 для сповіщення. 0 = Вимкнено.",
-        "zh-cn": "最低事件分数0.1-1.0通知。 0 =禁用。"
+        "de": "Minimale Ereignisbewertung 0,1-1,0 zum Benachrichtigen. 0 = Deaktiviert."
       },
       "help": {
         "en": "Minimum Event Score 0.1-1.0 to notify. 0 = Disabled. Camera specific: frigate.0.remote.notificationMinScore",
-        "de": "Minimale Ereignisbewertung 0,1-1,0 zum Benachrichtigen. 0 = Deaktiviert. Kamera spezifisch: frigate.0.remote.notificationMinScore",
-        "ru": "Минимальный балл события 0.1-1.0 для уведомления. 0 = Отключено. Конкретная камера: frigate.0.remote.notificationMinScore",
-        "pt": "Pontuação mínima do evento 0.1-1.0 para notificar. 0 = Desativado. Câmera específica: frigate.0.remote.notificationMinScore",
-        "nl": "Minimale gebeurtenisscore 0.1-1.0 om te melden. 0 = Uitgeschakeld. Camera specifiek: frigate.0.remote.notificationMinScore",
-        "fr": "Score d'événement minimum 0.1-1.0 à notifier. 0 = Désactivé. Caméra spécifique: frigate.0.remote.notificationMinScore",
-        "it": "Punteggio evento minimo 0.1-1.0 da notificare. 0 = Disabilitato. Fotocamera specifica: frigate.0.remote.notificationMinScore",
-        "es": "Puntuación mínima del evento 0.1-1.0 para notificar. 0 = Desactivado. Cámara específica: frigate.0.remote.notificationMinScore",
-        "pl": "Minimalna ocena wydarzenia 0.1-1.0 do powiadomienia. 0 = Wyłączone. Konkretna kamera: frigate.0.remote.notificationMinScore",
-        "uk": "Мінімальний бал події 0,1-1,0 для сповіщення. 0 = Вимкнено. Конкретна камера: frigate.0.remote.notificationMinScore",
-        "zh-cn": "最低事件分数0.1-1.0通知。 0 =禁用。 摄像机特定:frigate.0.remote.notificationMinScore"
+        "de": "Minimale Ereignisbewertung 0,1-1,0 zum Benachrichtigen. 0 = Deaktiviert. Kamera spezifisch: frigate.0.remote.notificationMinScore"
       },
       "xs": 12,
       "sm": 12,
@@ -719,29 +581,11 @@
       "type": "text",
       "label": {
         "en": "Notification Text Template.",
-        "de": "Benachrichtigungs-Textvorlage",
-        "ru": "Шаблон текста уведомления",
-        "pt": "Modelo de texto de notificação",
-        "nl": "Meldingstekstsjabloon",
-        "fr": "Modèle de texte de notification",
-        "it": "Modello di testo di notifica",
-        "es": "Plantilla de texto de notificación",
-        "pl": "Szablon tekstu powiadomienia",
-        "uk": "Шаблон тексту сповіщення",
-        "zh-cn": "通知文本模板"
+        "de": "Benachrichtigungs-Textvorlage"
       },
       "help": {
         "en": "Notification Text Template. Camera specific: frigate.0.remote.notificationTextTemplate",
-        "de": "Benachrichtigungs-Texttemplate. Kamera spezifisch: frigate.0.remote.notificationTextTemplate",
-        "ru": "Шаблон текста уведомления. Конкретная камера: frigate.0.remote.notificationTextTemplate",
-        "pt": "Modelo de texto de notificação. Câmera específica: frigate.0.remote.notificationTextTemplate",
-        "nl": "Meldingstekstsjabloon. Camera specifiek: frigate.0.remote.notificationTextTemplate",
-        "fr": "Modèle de texte de notification. Caméra spécifique: frigate.0.remote.notificationTextTemplate",
-        "it": "Modello di testo di notifica. Fotocamera specifica: frigate.0.remote.notificationTextTemplate",
-        "es": "Plantilla de texto de notificación. Cámara específica: frigate.0.remote.notificationTextTemplate",
-        "pl": "Szablon tekstu powiadomienia. Konkretna kamera: frigate.0.remote.notificationTextTemplate",
-        "uk": "Шаблон тексту сповіщення. Конкретна камера: frigate.0.remote.notificationTextTemplate",
-        "zh-cn": "通知文本模板。 摄像机特定:frigate.0.remote.notificationTextTemplate"
+        "de": "Benachrichtigungs-Texttemplate. Kamera spezifisch: frigate.0.remote.notificationTextTemplate"
       },
       "xs": 12,
       "sm": 12,
@@ -749,35 +593,17 @@
       "lg": 4,
       "xl": 4,
       "placeholder": "{{source}} {{type}} erkannt {{status}} {{score}} {{state}}",
-      "newLine": true
+      "newLine": false
     },
     "notificationExcludeList": {
       "type": "text",
       "label": {
         "en": "Exclude cameras from notification (comma separated)",
-        "de": "Kameras von der Benachrichtigung ausschließen (durch Komma getrennt)",
-        "ru": "Исключить камеры из уведомления (через запятую)",
-        "pt": "Excluir câmeras da notificação (separadas por vírgula)",
-        "nl": "Camera's uitsluiten van melding (gescheiden door komma's)",
-        "fr": "Exclure les caméras de la notification (séparées par des virgules)",
-        "it": "Escludi le telecamere dalla notifica (separate da virgola)",
-        "es": "Excluir cámaras de la notificación (separadas por comas)",
-        "pl": "Wyklucz kamery z powiadomienia (oddzielone przecinkami)",
-        "uk": "Виключити камери з повідомлення (через кому)",
-        "zh-cn": "从通知中排除摄像机(逗号分隔)"
+        "de": "Kameras von der Benachrichtigung ausschließen (durch Komma getrennt)"
       },
       "help": {
         "en": "Exclude cameras from notification (comma separated)",
-        "de": "Kameras von der Benachrichtigung ausschließen (durch Komma getrennt)",
-        "ru": "Исключить камеры из уведомления (через запятую)",
-        "pt": "Excluir câmeras da notificação (separadas por vírgula)",
-        "nl": "Camera's uitsluiten van melding (gescheiden door komma's)",
-        "fr": "Exclure les caméras de la notification (séparées par des virgules)",
-        "it": "Escludi le telecamere dalla notifica (separate da virgola)",
-        "es": "Excluir cámaras de la notificación (separadas por comas)",
-        "pl": "Wyklucz kamery z powiadomienia (oddzielone przecinkami)",
-        "uk": "Виключити камери з повідомлення (через кому)",
-        "zh-cn": "从通知中排除摄像机(逗号分隔)"
+        "de": "Kameras von der Benachrichtigung ausschließen (durch Komma getrennt)"
       },
       "xs": 12,
       "sm": 12,
@@ -791,27 +617,11 @@
       "type": "text",
       "label": {
         "en": "Exclude zones from notification (comma separated)",
-        "de": "Zonen von der Benachrichtigung ausschließen (durch Komma getrennt)",
-        "ru": "Исключить зоны из уведомления (через запятую)",
-        "pt": "Excluir zonas da notificação (separadas por vírgula)",
-        "nl": "Zones uitsluiten van melding (gescheiden door komma's)",
-        "fr": "Exclure les zones de la notification (séparées par des virgules)",
-        "it": "Escludi le zone dalla notifica (separate da virgola)",
-        "es": "Excluir zonas de la notificación (separadas por comas)",
-        "pl": "Wyklucz strefy z powiadomienia (oddzielone przecinkami)",
-        "uk": "Виключити зони з повідомлення (через кому)"
+        "de": "Zonen von der Benachrichtigung ausschließen (durch Komma getrennt)"
       },
       "help": {
         "en": "Notification will only not send if all zones of the event are excluded",
-        "de": "Die Benachrichtigung wird nur dann nicht gesendet, wenn alle Zonen des Events ausgeschlossen sind",
-        "ru": "Уведомление не будет отправлено, если все зоны события исключены",
-        "pt": "A notificação só não será enviada se todas as zonas do evento forem excluídas",
-        "nl": "Melding wordt alleen niet verzonden als alle zones van het evenement zijn uitgesloten",
-        "fr": "La notification ne sera pas envoyée si toutes les zones de l'événement sont exclues",
-        "it": "La notifica non verrà inviata se tutte le zone dell'evento sono escluse",
-        "es": "La notificación solo no se enviará si todas las zonas del evento están excluidas",
-        "pl": "Powiadomienie nie zostanie wysłane, jeśli wszystkie strefy wydarzenia są wykluczone",
-        "uk": "Сповіщення не буде надіслано, якщо всі зони події виключені"
+        "de": "Die Benachrichtigung wird nur dann nicht gesendet, wenn alle Zonen des Events ausgeschlossen sind"
       },
       "xs": 12,
       "sm": 12,
@@ -819,33 +629,17 @@
       "lg": 4,
       "xl": 4,
       "placeholder": "zone1,zone2",
-      "newLine": true
+      "newLine": false
     },
     "notificationExcludeEmptyZoneList": {
       "type": "text",
       "label": {
         "en": "Don't send notification when zone list of the event is empty for this cameras (comma separated)",
-        "de": "Keine Benachrichtigung senden, wenn die Zonenliste des Events für diese Kameras leer ist (durch Komma getrennt)",
-        "ru": "Не отправлять уведомление, когда список зон события пуст для этой камеры (через запятую)",
-        "pt": "Não enviar notificação quando a lista de zonas do evento estiver vazia para essas câmeras (separadas por vírgula)",
-        "nl": "Geen melding verzenden wanneer de zone-lijst van het evenement leeg is voor deze camera's (gescheiden door komma's)",
-        "fr": "Ne pas envoyer de notification lorsque la liste des zones de l'événement est vide pour ces caméras (séparées par des virgules)",
-        "it": "Non inviare notifiche quando l'elenco delle zone dell'evento è vuoto per queste telecamere (separate da virgola)",
-        "es": "No enviar notificación cuando la lista de zonas del evento esté vacía para estas cámaras (separadas por comas)",
-        "pl": "Nie wysyłaj powiadomienia, gdy lista stref wydarzenia jest pusta dla tych kamer (oddzielone przecinkami)",
-        "uk": "Не надсилати сповіщення, коли список зон події порожній для цих камер (через кому)"
+        "de": "Keine Benachrichtigung senden, wenn die Zonenliste des Events für diese Kameras leer ist (durch Komma getrennt)"
       },
       "help": {
         "en": "Don't send notification when zone list of the event is empty for this cameras (comma separated)",
-        "de": "Keine Benachrichtigung senden, wenn die Zonenliste des Events für diese Kameras leer ist (durch Komma getrennt)",
-        "ru": "Не отправлять уведомление, когда список зон события пуст для этой камеры (через запятую)",
-        "pt": "Não enviar notificação quando a lista de zonas do evento estiver vazia para essas câmeras (separadas por vírgula)",
-        "nl": "Geen melding verzenden wanneer de zone-lijst van het evenement leeg is voor deze camera's (gescheiden door komma's)",
-        "fr": "Ne pas envoyer de notification lorsque la liste des zones de l'événement est vide pour ces caméras (séparées par des virgules)",
-        "it": "Non inviare notifiche quando l'elenco delle zone dell'evento is vuoto per queste telecamere (separate da virgola)",
-        "es": "No enviar notificación cuando la lista de zonas del evento esté vacía para estas cámaras (separadas por comas)",
-        "pl": "Nie wysyłaj powiadomienia, gdy lista stref wydarzenia jest pusta dla tych kamer (oddzielone przecinkami)",
-        "uk": "Не надсилати сповіщення, коли список зон події порожній для цих камер (через кому)"
+        "de": "Keine Benachrichtigung senden, wenn die Zonenliste des Events für diese Kameras leer ist (durch Komma getrennt)"
       },
       "xs": 12,
       "sm": 12,
@@ -853,29 +647,20 @@
       "lg": 4,
       "xl": 4,
       "placeholder": "camera1,camera2",
-      "newLine": true
+      "newLine": false
     },
     "notificationCamera": {
       "type": "checkbox",
       "label": {
         "en": "Send detailed object snapshot",
-        "de": "Detaillierten Objekt-Snapshot senden",
-        "ru": "Отправить подробный снимок объекта",
-        "pt": "Enviar instantâneo detalhado do objeto",
-        "nl": "Gedetailleerde objectopname verzenden",
-        "fr": "Envoyer un instantané détaillé de l'objet",
-        "it": "Invia snapshot dettagliato dell'oggetto",
-        "es": "Enviar instantánea detallada del objeto",
-        "pl": "Wyślij szczegółową migawkę obiektu",
-        "uk": "Надіслати детальний знімок об'єкта",
-        "zh-cn": "发送详细的对象快照"
+        "de": "Detaillierten Objekt-Snapshot senden"
       },
       "xs": 12,
       "sm": 12,
       "md": 6,
       "lg": 4,
       "xl": 4,
-      "newLine": true
+      "newLine": false
     }
   }
 }
