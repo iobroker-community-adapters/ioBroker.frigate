@@ -223,7 +223,18 @@
       "common": {
         "name": "Information"
       },
-      "native": {}
+      "native": {
+        "friurl": "localhost:5000",
+        "mqttPort": 1883,
+        "webnum": 50,
+        "mqttMode": "server",
+        "mqttBrokerUrl": "",
+        "mqttUsername": "",
+        "mqttPassword": "",
+        "mqttClientId": "",
+        "mqttTopicPrefix": "frigate",
+        "mqttRejectUnauthorized": true
+      }
     },
     {
       "_id": "info.connection",

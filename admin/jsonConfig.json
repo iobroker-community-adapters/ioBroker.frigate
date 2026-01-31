@@ -25,20 +25,93 @@
       "xl": 12,
       "newLine": true
     },
+    "_mqttModeHeader": {
+      "type": "header",
+      "text": {
+        "en": "MQTT Settings (Server / Client)",
+        "de": "MQTT Einstellungen (Server / Client)",
+        "ru": "Настройки MQTT (Сервер / Клиент)",
+        "pt": "Configurações MQTT (Servidor / Cliente)",
+        "nl": "MQTT-instellingen (Server / Client)",
+        "fr": "Paramètres MQTT (Serveur / Client)",
+        "it": "Impostazioni MQTT (Server / Client)",
+        "es": "Configuración MQTT (Servidor / Cliente)",
+        "pl": "Ustawienia MQTT (Serwer / Klient)",
+        "uk": "Налаштування MQTT (Сервер / Клієнт)",
+        "zh-cn": "MQTT设置（服务器/客户端）"
+      },
+      "size": 2,
+      "xs": 12,
+      "sm": 12,
+      "md": 12,
+      "lg": 12,
+      "xl": 12,
+      "newLine": true
+    },
+    "mqttMode": {
+      "type": "select",
+      "label": {
+        "en": "MQTT Mode",
+        "de": "MQTT Modus",
+        "ru": "Режим MQTT",
+        "pt": "Modo MQTT",
+        "nl": "MQTT-modus",
+        "fr": "Mode MQTT",
+        "it": "Modalità MQTT",
+        "es": "Modo MQTT",
+        "pl": "Tryb MQTT",
+        "uk": "Режим MQTT",
+        "zh-cn": "MQTT模式"
+      },
+      "help": {
+        "en": "server = ioBroker acts as MQTT broker (Frigate connects). client = ioBroker connects to external broker. both = use both.",
+        "de": "server = ioBroker ist MQTT Broker (Frigate verbindet sich). client = ioBroker verbindet sich zu externem Broker. both = beides.",
+        "ru": "server = ioBroker работает как MQTT-брокер (Frigate подключается). client = ioBroker подключается к внешнему брокеру. both = оба варианта.",
+        "pt": "server = ioBroker atua como broker MQTT (Frigate conecta). client = ioBroker conecta a um broker externo. both = ambos.",
+        "nl": "server = ioBroker is MQTT-broker (Frigate verbindt). client = ioBroker verbindt met externe broker. both = beide.",
+        "fr": "server = ioBroker agit comme broker MQTT (Frigate se connecte). client = ioBroker se connecte à un broker externe. both = les deux.",
+        "it": "server = ioBroker agisce come broker MQTT (Frigate si connette). client = ioBroker si connette a un broker esterno. both = entrambi.",
+        "es": "server = ioBroker actúa como broker MQTT (Frigate se conecta). client = ioBroker se conecta a un broker externo. both = ambos.",
+        "pl": "server = ioBroker działa jako broker MQTT (Frigate się łączy). client = ioBroker łączy się z zewnętrznym brokerem. both = oba.",
+        "uk": "server = ioBroker працює як MQTT-брокер (Frigate підключається). client = ioBroker підключається до зовнішнього брокера. both = обидва.",
+        "zh-cn": "server = ioBroker作为MQTT broker（Frigate连接）。client = ioBroker连接外部broker。both = 两者都用。"
+      },
+      "options": [
+        {
+          "label": "server",
+          "value": "server"
+        },
+        {
+          "label": "client",
+          "value": "client"
+        },
+        {
+          "label": "both",
+          "value": "both"
+        }
+      ],
+      "default": "server",
+      "xs": 12,
+      "sm": 12,
+      "md": 6,
+      "lg": 4,
+      "xl": 4,
+      "newLine": true
+    },
     "_frigateHost": {
       "type": "header",
       "text": {
-        "en": "Enter the ioBroker Ip Address in the frigate config under mqtt->host",
-        "de": "Geben Sie die ioBroker-IP-Adresse in der Frigate-Konfiguration unter mqtt->host ein",
-        "ru": "Введите IP-адрес ioBroker в конфигурации фрегата в разделе mqtt->host",
-        "pt": "Insira o endereço IP do ioBroker na configuração do frigate em mqtt->host",
-        "nl": "Voer het ioBroker IP-adres in in de frigate-configuratie onder mqtt->host",
-        "fr": "Entrez l'adresse IP ioBroker dans la configuration du frigate sous mqtt->host",
-        "it": "Inserisci l'indirizzo IP ioBroker nella configurazione del frigate in mqtt->host",
-        "es": "Ingrese la dirección IP de ioBroker en la configuración de frigate en mqtt->host",
-        "pl": "Wprowadź adres IP ioBroker w konfiguracji frigate w mqtt->host",
-        "uk": "Введіть IP-адресу ioBroker у конфігурації фрегата в розділі mqtt->host",
-        "zh-cn": "在frigate配置中输入ioBroker IP地址->主机"
+        "en": "If MQTT Mode is 'server' or 'both': Enter the ioBroker IP/host in the Frigate config under mqtt->host and use the port below.",
+        "de": "Wenn MQTT Modus 'server' oder 'both': Trage die ioBroker-IP/den Host in Frigate unter mqtt->host ein und nutze den Port unten.",
+        "ru": "Если режим MQTT 'server' или 'both': укажите IP/host ioBroker в конфигурации Frigate в mqtt->host и используйте порт ниже.",
+        "pt": "Se o modo MQTT for 'server' ou 'both': insira o IP/host do ioBroker na configuração do Frigate em mqtt->host e use a porta abaixo.",
+        "nl": "Als MQTT-modus 'server' of 'both' is: voer het ioBroker IP/host in bij Frigate onder mqtt->host en gebruik onderstaande poort.",
+        "fr": "Si le mode MQTT est 'server' ou 'both' : saisissez l’IP/host ioBroker dans Frigate sous mqtt->host et utilisez le port ci-dessous.",
+        "it": "Se la modalità MQTT è 'server' o 'both': inserisci l'IP/host di ioBroker in Frigate sotto mqtt->host e usa la porta qui sotto.",
+        "es": "Si el modo MQTT es 'server' o 'both': introduzca el IP/host de ioBroker en Frigate en mqtt->host y use el puerto de abajo.",
+        "pl": "Jeśli tryb MQTT to 'server' lub 'both': wpisz IP/host ioBroker w konfiguracji Frigate w mqtt->host i użyj portu poniżej.",
+        "uk": "Якщо режим MQTT 'server' або 'both': введіть IP/host ioBroker в конфігурації Frigate у mqtt->host та використайте порт нижче.",
+        "zh-cn": "如果MQTT模式为“server”或“both”：在Frigate配置mqtt->host中填写ioBroker IP/host，并使用下面的端口。"
       },
       "size": 2,
       "xs": 12,
@@ -99,18 +172,203 @@
         "zh-cn": "MQTT端口"
       },
       "help": {
-        "en": "MQTT Server Port in Frigate config",
-        "de": "MQTT Server Port in der Frigate Config",
-        "ru": "Порт MQTT",
-        "pt": "Porta MQTT",
-        "nl": "MQTT-poort",
-        "fr": "Port MQTT",
-        "it": "Porta MQTT",
-        "es": "Puerto MQTT",
-        "pl": "Port MQTT",
-        "uk": "Порт MQTT",
-        "zh-cn": "MQTT端口"
+        "en": "MQTT Server Port used when MQTT Mode is 'server' or 'both'",
+        "de": "MQTT Server Port wird genutzt, wenn MQTT Modus 'server' oder 'both' ist",
+        "ru": "Порт MQTT используется при режиме 'server' или 'both'",
+        "pt": "A porta MQTT é usada quando o modo é 'server' ou 'both'",
+        "nl": "MQTT-poort gebruikt bij modus 'server' of 'both'",
+        "fr": "Port MQTT utilisé en mode 'server' ou 'both'",
+        "it": "Porta MQTT usata in modalità 'server' o 'both'",
+        "es": "Puerto MQTT usado en modo 'server' o 'both'",
+        "pl": "Port MQTT używany w trybie 'server' lub 'both'",
+        "uk": "Порт MQTT використовується в режимі 'server' або 'both'",
+        "zh-cn": "当模式为“server”或“both”时使用此端口"
       },
+      "xs": 12,
+      "sm": 12,
+      "md": 6,
+      "lg": 4,
+      "xl": 4,
+      "newLine": true
+    },
+    "_mqttClientHeader": {
+      "type": "header",
+      "text": {
+        "en": "External MQTT Broker (Client)",
+        "de": "Externer MQTT Broker (Client)",
+        "ru": "Внешний MQTT брокер (Клиент)",
+        "pt": "Broker MQTT externo (Cliente)",
+        "nl": "Externe MQTT-broker (Client)",
+        "fr": "Broker MQTT externe (Client)",
+        "it": "Broker MQTT esterno (Client)",
+        "es": "Broker MQTT externo (Cliente)",
+        "pl": "Zewnętrzny broker MQTT (Klient)",
+        "uk": "Зовнішній MQTT брокер (Клієнт)",
+        "zh-cn": "外部MQTT broker（客户端）"
+      },
+      "size": 2,
+      "xs": 12,
+      "sm": 12,
+      "md": 12,
+      "lg": 12,
+      "xl": 12,
+      "newLine": true
+    },
+    "mqttBrokerUrl": {
+      "type": "text",
+      "label": {
+        "en": "Broker URL",
+        "de": "Broker URL",
+        "ru": "URL брокера",
+        "pt": "URL do broker",
+        "nl": "Broker-URL",
+        "fr": "URL du broker",
+        "it": "URL del broker",
+        "es": "URL del broker",
+        "pl": "URL brokera",
+        "uk": "URL брокера",
+        "zh-cn": "Broker URL"
+      },
+      "help": {
+        "en": "Examples: mqtt://192.168.1.2:1883 or mqtts://broker.example.com:8883",
+        "de": "Beispiele: mqtt://192.168.1.2:1883 oder mqtts://broker.example.com:8883",
+        "ru": "Примеры: mqtt://192.168.1.2:1883 или mqtts://broker.example.com:8883",
+        "pt": "Exemplos: mqtt://192.168.1.2:1883 ou mqtts://broker.example.com:8883",
+        "nl": "Voorbeelden: mqtt://192.168.1.2:1883 of mqtts://broker.example.com:8883",
+        "fr": "Exemples : mqtt://192.168.1.2:1883 ou mqtts://broker.example.com:8883",
+        "it": "Esempi: mqtt://192.168.1.2:1883 o mqtts://broker.example.com:8883",
+        "es": "Ejemplos: mqtt://192.168.1.2:1883 o mqtts://broker.example.com:8883",
+        "pl": "Przykłady: mqtt://192.168.1.2:1883 lub mqtts://broker.example.com:8883",
+        "uk": "Приклади: mqtt://192.168.1.2:1883 або mqtts://broker.example.com:8883",
+        "zh-cn": "示例：mqtt://192.168.1.2:1883 或 mqtts://broker.example.com:8883"
+      },
+      "placeholder": "mqtt://192.168.1.2:1883",
+      "xs": 12,
+      "sm": 12,
+      "md": 12,
+      "lg": 8,
+      "xl": 8,
+      "newLine": true
+    },
+    "mqttTopicPrefix": {
+      "type": "text",
+      "label": {
+        "en": "Topic prefix",
+        "de": "Topic-Präfix",
+        "ru": "Префикс топика",
+        "pt": "Prefixo do tópico",
+        "nl": "Topic-prefix",
+        "fr": "Préfixe du topic",
+        "it": "Prefisso topic",
+        "es": "Prefijo del topic",
+        "pl": "Prefiks tematu",
+        "uk": "Префікс топіка",
+        "zh-cn": "Topic前缀"
+      },
+      "help": {
+        "en": "Default is 'frigate'. The adapter subscribes to <prefix>/# and publishes commands under <prefix>/...",
+        "de": "Standard ist 'frigate'. Der Adapter subscribed <präfix>/# und published Befehle unter <präfix>/..."
+      },
+      "placeholder": "frigate",
+      "default": "frigate",
+      "xs": 12,
+      "sm": 12,
+      "md": 6,
+      "lg": 4,
+      "xl": 4,
+      "newLine": true
+    },
+    "mqttClientId": {
+      "type": "text",
+      "label": {
+        "en": "Client ID (optional)",
+        "de": "Client ID (optional)",
+        "ru": "Client ID (необязательно)",
+        "pt": "Client ID (opcional)",
+        "nl": "Client-ID (optioneel)",
+        "fr": "Client ID (optionnel)",
+        "it": "Client ID (opzionale)",
+        "es": "Client ID (opcional)",
+        "pl": "Client ID (opcjonalnie)",
+        "uk": "Client ID (необов'язково)",
+        "zh-cn": "Client ID（可选）"
+      },
+      "help": {
+        "en": "If empty, a random client id will be generated.",
+        "de": "Wenn leer, wird eine zufällige Client-ID erzeugt."
+      },
+      "placeholder": "iobroker-frigate",
+      "xs": 12,
+      "sm": 12,
+      "md": 6,
+      "lg": 4,
+      "xl": 4,
+      "newLine": true
+    },
+    "mqttUsername": {
+      "type": "text",
+      "label": {
+        "en": "Username (optional)",
+        "de": "Benutzername (optional)",
+        "ru": "Имя пользователя (необязательно)",
+        "pt": "Usuário (opcional)",
+        "nl": "Gebruikersnaam (optioneel)",
+        "fr": "Nom d'utilisateur (optionnel)",
+        "it": "Nome utente (opzionale)",
+        "es": "Usuario (opcional)",
+        "pl": "Nazwa użytkownika (opcjonalnie)",
+        "uk": "Ім'я користувача (необов'язково)",
+        "zh-cn": "用户名（可选）"
+      },
+      "xs": 12,
+      "sm": 12,
+      "md": 6,
+      "lg": 4,
+      "xl": 4,
+      "newLine": true
+    },
+    "mqttPassword": {
+      "type": "password",
+      "label": {
+        "en": "Password (optional)",
+        "de": "Passwort (optional)",
+        "ru": "Пароль (необязательно)",
+        "pt": "Senha (opcional)",
+        "nl": "Wachtwoord (optioneel)",
+        "fr": "Mot de passe (optionnel)",
+        "it": "Password (opzionale)",
+        "es": "Contraseña (opcional)",
+        "pl": "Hasło (opcjonalnie)",
+        "uk": "Пароль (необов'язково)",
+        "zh-cn": "密码（可选）"
+      },
+      "xs": 12,
+      "sm": 12,
+      "md": 6,
+      "lg": 4,
+      "xl": 4,
+      "newLine": true
+    },
+    "mqttRejectUnauthorized": {
+      "type": "checkbox",
+      "label": {
+        "en": "Verify TLS certificate (mqtts://)",
+        "de": "TLS-Zertifikat prüfen (mqtts://)",
+        "ru": "Проверять TLS сертификат (mqtts://)",
+        "pt": "Verificar certificado TLS (mqtts://)",
+        "nl": "TLS-certificaat verifiëren (mqtts://)",
+        "fr": "Vérifier le certificat TLS (mqtts://)",
+        "it": "Verifica certificato TLS (mqtts://)",
+        "es": "Verificar certificado TLS (mqtts://)",
+        "pl": "Weryfikuj certyfikat TLS (mqtts://)",
+        "uk": "Перевіряти TLS сертифікат (mqtts://)",
+        "zh-cn": "验证TLS证书（mqtts://）"
+      },
+      "help": {
+        "en": "Disable only if you use a self-signed certificate on the broker.",
+        "de": "Nur deaktivieren, wenn der Broker ein Self-Signed-Zertifikat nutzt."
+      },
+      "default": true,
       "xs": 12,
       "sm": 12,
       "md": 6,
@@ -223,7 +481,7 @@
         "it": "Istanze da notificare (separate da virgola)",
         "es": "Instancias para notificar (separadas por comas)",
         "pl": "Instancje do powiadomienia (oddzielone przecinkami)",
-        "uk": "Екземпляри для сповіщення (через кому)",
+        "uk": "Екземпляri для сповіщення (через кому)",
         "zh-cn": "要通知的实例(逗号分隔)"
       },
       "xs": 12,
@@ -257,7 +515,7 @@
         "fr": "Utilisateurs à notifier (séparés par des virgules)",
         "it": "Utenti da notificare (separati da virgola)",
         "es": "Usuarios para notificar (separados por comas)",
-        "pl": "Użytkownicy do powiadomienia (oddzielone przecinkami)",
+        "pl": "Użytkownicy do powiadomienia (oddzielone przecinkами)",
         "uk": "Користувачі для сповіщення (через кому)",
         "zh-cn": "要通知的用户(逗号分隔)"
       },
@@ -584,7 +842,7 @@
         "pt": "Não enviar notificação quando a lista de zonas do evento estiver vazia para essas câmeras (separadas por vírgula)",
         "nl": "Geen melding verzenden wanneer de zone-lijst van het evenement leeg is voor deze camera's (gescheiden door komma's)",
         "fr": "Ne pas envoyer de notification lorsque la liste des zones de l'événement est vide pour ces caméras (séparées par des virgules)",
-        "it": "Non inviare notifiche quando l'elenco delle zone dell'evento è vuoto per queste telecamere (separate da virgola)",
+        "it": "Non inviare notifiche quando l'elenco delle zone dell'evento is vuoto per queste telecamere (separate da virgola)",
         "es": "No enviar notificación cuando la lista de zonas del evento esté vacía para estas cámaras (separadas por comas)",
         "pl": "Nie wysyłaj powiadomienia, gdy lista stref wydarzenia jest pusta dla tych kamer (oddzielone przecinkami)",
         "uk": "Не надсилати сповіщення, коли список зон події порожній для цих камер (через кому)"
