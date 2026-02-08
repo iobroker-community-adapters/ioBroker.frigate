@@ -295,12 +295,6 @@
                     "help": "MB",
                     "xs": 12
                 },
-                "dockerFrigate.coral": {
-                    "newLine": true,
-                    "type": "checkbox",
-                    "label": "Use google Coral accelerator",
-                    "xs": 12
-                },
                 "dockerFrigate.location": {
                     "newLine": true,
                     "type": "text",

@@ -9,6 +9,7 @@ services:
             - 'iobEnabled=${config.dockerFrigate.enabled:-true}'
             - 'iobStopOnUnload=${config.dockerFrigate.stopIfInstanceStopped:-false}'
             - 'iobAutoImageUpdate=${config.dockerFrigate.autoImageUpdate:-true}'
+            - 'iobCopyVolumes=./config=>config'
             - 'iobBackup=frigate_data'
             - 'iobWaitForReady=true'
         ports:

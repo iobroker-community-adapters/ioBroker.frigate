@@ -1,5 +1,5 @@
-import fs from 'node:fs';
-import { sep } from 'node:path';
+import fs, { existsSync } from 'node:fs';
+import { join, sep } from 'node:path';
 import { createServer, type Server } from 'node:net';
 import { tmpdir } from 'node:os';
 
@@ -8,9 +8,9 @@ import { v4 as UUID } from 'uuid';
 import axios, { type AxiosInstance } from 'axios';
 import Aedes, { type Client } from 'aedes';
 
-import { type AdapterOptions, Adapter } from '@iobroker/adapter-core';
+import { type AdapterOptions, Adapter, getAbsoluteDefaultDataDir } from '@iobroker/adapter-core';
 
-import { FrigateAdapterConfig } from './types';
+import type { FrigateAdapterConfig } from './types';
 
 type FrigateMessage = {
     timestamp?: number; // in seconds till 1970
@@ -77,9 +77,9 @@ class FrigateAdapter extends Adapter {
         });
         this.aedes = new Aedes();
         this.server = createServer(this.aedes.handle);
-        this.on('ready', this.onReady.bind(this));
-        this.on('stateChange', this.onStateChange.bind(this));
-        this.on('unload', this.onUnload.bind(this));
+        this.on('ready', this.onReady);
+        this.on('stateChange', this.onStateChange);
+        this.on('unload', this.onUnload);
         this.requestClient = axios.create({
             withCredentials: true,
 
@@ -93,10 +93,80 @@ class FrigateAdapter extends Adapter {
         this.json2iob = new Json2iob(this);
     }
 
+    createFrigateConfigFile(): string {
+        const text = `mqtt:
+  host: 172.17.0.1
+  port: ${this.config.mqttPort}
+
+detectors:
+  coral:
+    type: edgetpu
+    device: usb
+
+face_recognition:
+  enabled: true
+  model_size: small        # Standard, läuft auf der Pi 5 CPU
+  min_area: 400       # Mindestgröße des Gesichts in Pixeln
+
+cameras:
+  inner:
+    ffmpeg:
+      hwaccel_args: preset-rpi-64-h265
+      inputs:
+        - path: rtsp://admin:ioBroker_1@192.168.1.159:554/h264Preview_01_sub
+          roles:
+            - detect
+            - record
+    detect:
+      width: 640
+      height: 368
+      fps: 5
+      enabled: true
+
+    snapshots:
+      enabled: true
+      timestamp: true        # Zeitstempel ins Bild drucken
+      bounding_box: true     # Roten Kasten um die Person malen
+      retain:
+        default: 3           # Bilder 3 Tage aufheben
+
+  cockpit:
+    ffmpeg:
+      hwaccel_args: preset-rpi-64-h265
+      inputs:
+        - path: rtsp://admin:ioBroker_1@192.168.1.224:554/h264Preview_01_sub
+          roles:
+            - detect
+            - record
+    detect:
+      width: 1536
+      height: 432
+      fps: 5
+      enabled: true
+
+    snapshots:
+      enabled: true
+      timestamp: true        # Zeitstempel ins Bild drucken
+      bounding_box: true     # Roten Kasten um die Person malen
+      retain:
+        default: 3           # Bilder 3 Tage aufheben
+
+# Optionale globale Einstellungen
+record:
+  enabled: true
+  retain:
+    days: 3
+detect:
+  enabled: true
+version: 0.16-0
+`;
+        return text;
+    }
+
     /**
      * Is called when databases are connected and adapter received configuration.
      */
-    async onReady(): Promise<void> {
+    onReady = async (): Promise<void> => {
         await this.setStateAsync('info.connection', false, true);
 
         this.config.dockerFrigate ||= {
@@ -170,11 +240,28 @@ class FrigateAdapter extends Adapter {
 
         if (this.config.dockerFrigate.enabled) {
             const dockerManager = this.getPluginInstance('docker')?.getDockerManager();
+            // Create config for docker
+            if (!this.config.dockerFrigate.location) {
+                const dataDir = getAbsoluteDefaultDataDir();
+                this.config.dockerFrigate.location = join(dataDir, this.namespace);
+            }
+            if (!existsSync(join(this.config.dockerFrigate.location, 'config'))) {
+                fs.mkdirSync(join(this.config.dockerFrigate.location, 'config'), { recursive: true });
+            }
+            if (!existsSync(join(this.config.dockerFrigate.location, 'recordings'))) {
+                fs.mkdirSync(join(this.config.dockerFrigate.location, 'recordings'), { recursive: true });
+            }
+            if (!existsSync(join(this.config.dockerFrigate.location, 'clips'))) {
+                fs.mkdirSync(join(this.config.dockerFrigate.location, 'clips'), { recursive: true });
+            }
+
+            // Create config file
+
             dockerManager?.instanceIsReady();
         }
 
         this.initMqtt();
-    }
+    };
 
     async cleanOldObjects(): Promise<void> {
         await this.delObjectAsync('reviews.before.data.detections', { recursive: true });
@@ -341,11 +428,11 @@ class FrigateAdapter extends Adapter {
                             // events topic trigger history fetching
                             await this.prepareEventNotification(data);
                             await this.fetchEventHistory();
-                            // if (data.before && data.before.start_time) {
+                            // if (data.before?.start_time) {
                             //   data.before.start_time = data.before.start_time.split('.')[0];
                             //   data.before.end_time = data.before.end_time.split('.')[0];
                             // }
-                            // if (data.after && data.after.start_time) {
+                            // if (data.after?.start_time) {
                             //   data.after.start_time = data.after.start_time.split('.')[0];
                             //   data.after.end_time = data.after.end_time.split('.')[0];
                             // }
@@ -373,7 +460,7 @@ class FrigateAdapter extends Adapter {
                             // create devices state for cameras
                             delete data.cpu_usages;
 
-                            this.createCameraDevices();
+                            await this.createCameraDevices();
                         }
 
                         if (
@@ -589,7 +676,7 @@ class FrigateAdapter extends Adapter {
                 this.log.info(JSON.stringify(data));
             }
             this.log.info(`Fetch event history for ${this.deviceArray.length - 1} cameras`);
-            this.fetchEventHistory();
+            await this.fetchEventHistory();
             this.firstStart = false;
             this.log.info('Device information created');
         }
@@ -704,7 +791,7 @@ class FrigateAdapter extends Adapter {
                         clipm3u8 = `http://${this.config.friurl}/vod/event/${data.after.id}/master.m3u8`;
                     }
                     if (this.config.notificationEventClipLink) {
-                        this.sendNotification({
+                        await this.sendNotification({
                             source: camera,
                             type: label,
                             state,
@@ -842,17 +929,17 @@ class FrigateAdapter extends Adapter {
         id?: string;
     }): Promise<void> {
         const pauseState = await this.getStateAsync('remote.pauseNotifications');
-        if (pauseState && pauseState.val) {
+        if (pauseState?.val) {
             this.log.debug('Notifications paused');
             return;
         }
         const cameraPauseState = await this.getStateAsync(`${message.source}.remote.pauseNotifications`);
-        if (cameraPauseState && cameraPauseState.val) {
+        if (cameraPauseState?.val) {
             this.log.debug(`Notifications paused for camera ${message.source}`);
             return;
         }
 
-        if (this.notificationExcludeArray && this.notificationExcludeArray.includes(message.source)) {
+        if (this.notificationExcludeArray?.includes(message.source)) {
             this.log.debug(`Notification for ${message.source} is excluded`);
             return;
         }
@@ -896,7 +983,7 @@ class FrigateAdapter extends Adapter {
                 `Notification score ${message.score} type ${message.type} state ${message.state} ${message.status} image/clip file: ${fileName} format ${type}`,
             );
             const notificationMinScoreState = await this.getStateAsync(`${message.source}.remote.notificationMinScore`);
-            if (notificationMinScoreState && notificationMinScoreState.val) {
+            if (notificationMinScoreState?.val) {
                 if (
                     notificationMinScoreState.val &&
                     (message.score as number) < (notificationMinScoreState.val as number)
@@ -927,10 +1014,8 @@ class FrigateAdapter extends Adapter {
             }
             let messageTextTemplate = this.config.notificationTextTemplate;
             const notificationTextState = await this.getStateAsync(`${message.source}.remote.notificationText`);
-            if (notificationTextState && notificationTextState.val) {
-                if (notificationTextState.val) {
-                    messageTextTemplate = notificationTextState.val.toString();
-                }
+            if (notificationTextState?.val) {
+                messageTextTemplate = notificationTextState.val.toString();
             }
             let messageText = messageTextTemplate
                 .replace(/{{source}}/g, message.source || '')
@@ -1027,25 +1112,20 @@ class FrigateAdapter extends Adapter {
     }
     /**
      * Is called when adapter shuts down - callback has to be called under any circumstances!
-     *
-     * @param callback
      */
-    onUnload(callback: () => void): void {
+    onUnload = (callback: () => void): void => {
         try {
             this.server.close(() => callback?.());
         } catch (e) {
             this.log.error(`Error onUnload: ${e}`);
             callback();
         }
-    }
+    };
 
     /**
      * Is called if a subscribed state changes
-     *
-     * @param id
-     * @param state
      */
-    async onStateChange(id: string, state: ioBroker.State | null | undefined): Promise<void> {
+    onStateChange = async (id: string, state: ioBroker.State | null | undefined): Promise<void> => {
         if (state) {
             if (!state.ack) {
                 this.log.debug(`state ${id} changed: ${state.val} (ack = ${state.ack})`);
@@ -1157,8 +1237,8 @@ class FrigateAdapter extends Adapter {
                     }
                     this.log.info(`Pause ${deviceId} notifications for ${pauseTime} minutes`);
                     this.setTimeout(
-                        () => {
-                            this.setState(pauseId, false, true);
+                        async () => {
+                            await this.setState(pauseId, false, true);
                             this.log.info('Pause All notifications ended');
                         },
                         pauseTime * 60 * 1000,
@@ -1169,7 +1249,7 @@ class FrigateAdapter extends Adapter {
             // The state was deleted
             // this.log.info(`state ${id} deleted`);
         }
-    }
+    };
 }
 
 if (require.main !== module) {

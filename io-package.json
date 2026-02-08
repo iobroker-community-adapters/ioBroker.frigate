@@ -212,8 +212,33 @@
             "port": 1883,
             "autoImageUpdate": true,
             "shmSize": 256,
-            "coral": false,
-            "location": "string"
+            "location": "",
+
+            "detectors" : {
+                "cpu": {
+                    "enabled": true
+                },
+                "coral": {
+                    "enabled": false,
+                    "type": "usb"
+                }
+            },
+            "face_recognition": {
+                "enabled": false,
+                "model_size": "small",
+                "min_area": 400
+            },
+            "record": {
+                "enabled": false,
+                "retain_days": 7
+            },
+            "detect": {
+                "enabled": false,
+                "width": 1280,
+                "height": 720,
+                "fps": 5
+            },
+            "cameras": []
         }
     },
     "objects": [],
