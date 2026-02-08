@@ -13,7 +13,7 @@ services:
             - 'iobBackup=frigate_data'
             - 'iobWaitForReady=true'
         ports:
-            - '${config.dockerFrigate.bind:-127.0.0.1}:${config_mqttPort:-5000}:5000'
+            - '${config.dockerFrigate.bind:-127.0.0.1}:${config.dockerFrigate.port:-5000}:5000'
             - '8554:8554'
             - '8555:8555/tcp'
             - '8555:8555/udp'
