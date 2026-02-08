@@ -20,7 +20,7 @@ type FrigateMessage = {
         camera: string;
         label: string;
         top_score: number;
-        entered_zones: string;
+        entered_zones: string[];
         data: {
             detections: any;
         };
@@ -36,7 +36,7 @@ type FrigateMessage = {
         camera: string;
         label: string;
         top_score: number;
-        entered_zones: string;
+        entered_zones: string[];
         data: {
             detections: any;
         };
@@ -173,7 +173,6 @@ version: 0.16-0
             enabled: false,
         };
         this.config.dockerFrigate.port = parseInt((this.config.dockerFrigate.port || '5000') as string, 10) || 5000;
-        this.config.mqttPort = this.config.dockerFrigate.port;
         this.config.dockerFrigate.shmSize = parseInt((this.config.dockerFrigate.shmSize || '256') as string, 10) || 256;
         if (this.config.dockerFrigate.location && !this.config.dockerFrigate.location.endsWith('/')) {
             this.config.dockerFrigate.location += '/';
@@ -922,7 +921,7 @@ version: 0.16-0
         status?: string;
         clip?: string;
         score?: number;
-        zones?: string;
+        zones?: string[];
         image?: string;
         clipm3u8?: string;
         clipUrl?: string;
@@ -947,9 +946,11 @@ version: 0.16-0
         if (this.config.notificationExcludeZoneList) {
             const excludeZones = this.config.notificationExcludeZoneList.replace(/ /g, '').split(',');
             if (message.zones?.length) {
-                //check if all zones are excluded
+                // check if all zones are excluded
                 let allExcluded = true;
-                this.log.debug(`Check if all zones are excluded ${message.zones} from ${excludeZones.join(', ')}`);
+                this.log.debug(
+                    `Check if all zones are excluded ${message.zones.join(', ')} from ${excludeZones.join(', ')}`,
+                );
                 for (const zone of message.zones) {
                     if (!excludeZones.includes(zone)) {
                         allExcluded = false;
@@ -964,7 +965,7 @@ version: 0.16-0
         if (this.config.notificationExcludeEmptyZoneList) {
             const cameras = this.config.notificationExcludeEmptyZoneList.replace(/ /g, '').split(',');
             if (cameras.includes(message.source)) {
-                if (!message.zones!.length) {
+                if (!message.zones?.length) {
                     this.log.debug(`Notification for ${message.source} is excluded because no zones are entered`);
                     return;
                 }
@@ -1023,7 +1024,7 @@ version: 0.16-0
                 .replace(/{{state}}/g, message.state || '')
                 .replace(/{{score}}/g, (message.score || 0).toString() || '')
                 .replace(/{{status}}/g, message.status || '')
-                .replace(/{{zones}}/g, message.zones || '');
+                .replace(/{{zones}}/g, (message.zones || [])?.join(', ') || '');
             if (message.clipm3u8) {
                 // messageText = `${message.source}: [Clip Safari](${message.clipm3u8}) [Clip MP4](${message.clipUrl})`;
                 messageText = `${message.source}: ${message.clipm3u8}\n${message.clipUrl}`;

@@ -213,16 +213,10 @@
             "autoImageUpdate": true,
             "shmSize": 256,
             "location": "",
+            "configType": "yaml",
 
-            "detectors" : {
-                "cpu": {
-                    "enabled": true
-                },
-                "coral": {
-                    "enabled": false,
-                    "type": "usb"
-                }
-            },
+            "detectors" : "cpu",
+            "detectorsCoralType" : "usb",
             "face_recognition": {
                 "enabled": false,
                 "model_size": "small",

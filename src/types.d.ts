@@ -27,15 +27,9 @@ export interface FrigateAdapterConfigTyped {
         shmSize?: number;
         coral?: boolean;
         location?: string;
-        detectors: {
-            cpu: {
-                enabled: boolean;
-            };
-            coral: {
-                enabled: boolean;
-                type: 'usb' | 'pci';
-            };
-        };
+        yaml?: string;
+        detectors: 'cpu' | 'coral' | 'auto';
+        detectorsCoralType: 'usb' | 'pci';
         face_recognition: {
             enabled: boolean;
             model_size: 'small' | 'medium' | 'large';
@@ -52,27 +46,19 @@ export interface FrigateAdapterConfigTyped {
             fps: number;
         };
         cameras: {
-            ffmpeg: {
-                hwaccel_args: string;
-            };
-            inputs: {
-                path: string;
-                roles: ('detect' | 'record' | 'snapshots')[];
-            };
-            detect: {
-                width: number;
-                height: number;
-                fps: number;
-                enabled: boolean;
-            };
-            snapshots: {
-                enabled: boolean;
-                timestamp: boolean;
-                bounding_box: boolean;
-                retain: {
-                    default: number;
-                };
-            };
+            ffmpeg_hwaccel_args: string;
+            inputs_path: string;
+            inputs_roles_detect: boolean;
+            inputs_roles_record: boolean;
+            inputs_roles_snapshots: boolean;
+            detect_width: number;
+            detect_height: number;
+            detect_fps: number;
+            detect_enabled: boolean;
+            snapshots_enabled: boolean;
+            snapshots_timestamp: boolean;
+            snapshots_bounding_box: boolean;
+            snapshots_retain_default: number;
         }[];
     };
 }
