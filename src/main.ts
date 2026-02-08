@@ -179,6 +179,28 @@ class FrigateAdapter extends Adapter {
     async cleanOldObjects(): Promise<void> {
         await this.delObjectAsync('reviews.before.data.detections', { recursive: true });
         await this.delObjectAsync('reviews.after.data.detections', { recursive: true });
+        // Clean path_data objects - find and delete parent data folder if path_data exists
+        const allObjects = await this.getObjectListAsync({
+            startkey: `${this.namespace}.`,
+            endkey: `${this.namespace}.\u9999`,
+        });
+        const dataFoldersToDelete = new Set<string>();
+        for (const obj of allObjects.rows) {
+            if (obj.id.includes('.path_data')) {
+                // Extract parent data folder path (e.g., frigate.0.terasse.history.01.data)
+                const match = obj.id.match(/(.+\.history\.\d+\.data)/);
+                if (match) {
+                    dataFoldersToDelete.add(match[1].replace(`${this.namespace}.`, ''));
+                }
+            }
+        }
+        for (const dataFolder of dataFoldersToDelete) {
+            try {
+                await this.delObjectAsync(dataFolder, { recursive: true });
+            } catch {
+                // Continue if deletion fails
+            }
+        }
 
         // Migration script
         const remoteState = await this.getObjectAsync('lastidurl');
@@ -783,6 +805,7 @@ class FrigateAdapter extends Adapter {
                             event.webclip = `http://${this.config.friurl}/api/events/${event.id}/clip.mp4`;
                             event.webm3u8 = `http://${this.config.friurl}/vod/event/${event.id}/master.m3u8`;
                             event.thumbnail = `data:image/jpeg;base64,${event.thumbnail}`;
+                            delete event.path_data;
                         }
                         let path = 'events.history';
                         if (device) {
