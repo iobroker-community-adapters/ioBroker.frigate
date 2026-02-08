@@ -72,7 +72,7 @@ The adapter can send snapshots and clips from events and object detection to ins
 
 You can specify multiple instance or user to send snapshots or clips.
 
-Active the notification in the settings to receive the snapshots or clips.
+Activate notifications in the settings to receive snapshots or clips.
 
 For Event can enter a minimum score before sending. 0 = Disabled.
 
