@@ -256,7 +256,7 @@
         "dockerFrigate": {
             "type": "panel",
             "label": "Frigate Docker",
-            "hidden": "!data.dockerFrigate.?enabled",
+            "hidden": "!data.dockerFrigate?.enabled",
             "items": {
                 "dockerFrigate.bind": {
                     "newLine": true,
@@ -302,11 +302,32 @@
                     "help": "As frigate saves a large amount of data, it is recommended to use a separate directory or disk for it.",
                     "xs": 12
                 },
+                "dockerFrigate.configType": {
+                    "type": "select",
+                    "label": "Frigate configuration type",
+                    "options": [
+                        {
+                            "value": "yaml",
+                            "label": "YAML configuration file"
+                        },
+                        {
+                            "value": "ui",
+                            "label": "Configure via UI"
+                        }
+                    ],
+                    "help": "Choose how to configure Frigate. The YAML configuration file option allows you to provide a custom configuration file, while the UI option provides a user-friendly interface for configuring Frigate without needing to edit YAML files directly.",
+                    "xs": 12
+                },
                 "dockerFrigate.detectors": {
+                    "hidden": "data.dockerFrigate.configType !== 'ui'",
                     "newLine": true,
                     "type": "select",
                     "label": "Detectors",
                     "options": [
+                        {
+                            "value": "auto",
+                            "label": "Auto-detect (recommended)"
+                        },
                         {
                             "value": "cpu",
                             "label": "CPU"
@@ -334,10 +355,11 @@
                         }
                     ],
                     "help": "The type of Google Coral accelerator to use. USB is the most common and compatible option, while PCIe may offer better performance but requires a compatible motherboard and additional setup.",
-                    "hidden": "data.dockerFrigate.detectors !== 'coral'",
+                    "hidden": "data.dockerFrigate.configType !== 'ui' || data.dockerFrigate.detectors !== 'coral'",
                     "xs": 12
                 },
                 "dockerFrigate.face_recognition.enabled": {
+                    "hidden": "data.dockerFrigate.configType !== 'ui'",
                     "newLine": true,
                     "type": "checkbox",
                     "label": "Enable face recognition",
@@ -362,7 +384,7 @@
                         }
                     ],
                     "tooltip": "The size of the face recognition model to use. Small is faster but less accurate, while large is slower but more accurate. Medium is a balanced option that may work well for most users.",
-                    "hidden": "!data.dockerFrigate.face_recognition.enabled",
+                    "hidden": "data.dockerFrigate.configType !== 'ui' || !data.dockerFrigate.face_recognition.enabled",
                     "xs": 12,
                     "md": 4
                 },
@@ -370,11 +392,12 @@
                     "type": "number",
                     "label": "Minimum area for face recognition",
                     "tooltip": "The minimum area (in pixels) of a detected object for face recognition to be applied. Setting this can help reduce false positives by ignoring small objects that are unlikely to be faces.",
-                    "hidden": "!data.dockerFrigate.face_recognition.enabled",
+                    "hidden": "data.dockerFrigate.configType !== 'ui' || !data.dockerFrigate.face_recognition.enabled",
                     "xs": 12,
                     "md": 4
                 },
                 "dockerFrigate.record.enabled": {
+                    "hidden": "data.dockerFrigate.configType !== 'ui'",
                     "newLine": true,
                     "type": "checkbox",
                     "label": "Enable recording",
@@ -385,7 +408,7 @@
                     "type": "number",
                     "label": "Pre-capture recording time in seconds",
                     "tooltip": "The amount of time (in seconds) to include in the recording before the event is triggered. This can help capture important context leading up to the event.",
-                    "hidden": "!data.dockerFrigate.record.enabled",
+                    "hidden": "data.dockerFrigate.configType !== 'ui' || !data.dockerFrigate.record.enabled",
                     "xs": 12,
                     "md": 4
                 },
@@ -393,7 +416,7 @@
                     "type": "number",
                     "label": "Post-capture recording time in seconds",
                     "tooltip": "The amount of time (in seconds) to include in the recording after the event is triggered. This can help capture important context following the event.",
-                    "hidden": "!data.dockerFrigate.record.enabled",
+                    "hidden": "data.dockerFrigate.configType !== 'ui' || !data.dockerFrigate.record.enabled",
                     "xs": 12,
                     "md": 4
                 },
@@ -401,7 +424,7 @@
                     "type": "number",
                     "label": "Maximum clip length in seconds",
                     "tooltip": "The maximum length of recorded clips in seconds. Setting this can help manage storage usage by limiting the duration of recorded events.",
-                    "hidden": "!data.dockerFrigate.record.enabled",
+                    "hidden": "data.dockerFrigate.configType !== 'ui' || !data.dockerFrigate.record.enabled",
                     "xs": 12,
                     "md": 4
                 },
@@ -409,11 +432,12 @@
                     "type": "number",
                     "label": "Days to retain recordings",
                     "tooltip": "The number of days to retain recorded clips. Setting this can help manage storage usage by automatically deleting older recordings.",
-                    "hidden": "!data.dockerFrigate.record.enabled",
+                    "hidden": "data.dockerFrigate.configType !== 'ui' || !data.dockerFrigate.record.enabled",
                     "xs": 12,
                     "md": 4
                 },
                 "dockerFrigate.detect.enabled": {
+                    "hidden": "data.dockerFrigate.configType !== 'ui'",
                     "newLine": true,
                     "type": "checkbox",
                     "label": "Enable object detection",
@@ -424,7 +448,7 @@
                     "type": "number",
                     "label": "Detection width",
                     "tooltip": "The width (in pixels) to which the input frames will be resized for object detection. Setting this can help improve performance by reducing the resolution of the input frames, but may also reduce detection accuracy if set too low.",
-                    "hidden": "!data.dockerFrigate.detect.enabled",
+                    "hidden": "data.dockerFrigate.configType !== 'ui' || !data.dockerFrigate.detect.enabled",
                     "xs": 12,
                     "md": 4
                 },
@@ -432,7 +456,7 @@
                     "type": "number",
                     "label": "Detection height",
                     "tooltip": "The height (in pixels) to which the input frames will be resized for object detection. Setting this can help improve performance by reducing the resolution of the input frames, but may also reduce detection accuracy if set too low.",
-                    "hidden": "!data.dockerFrigate.detect.enabled",
+                    "hidden": "data.dockerFrigate.configType !== 'ui' || !data.dockerFrigate.detect.enabled",
                     "xs": 12,
                     "md": 4
                 },
@@ -440,7 +464,7 @@
                     "type": "number",
                     "label": "Detection confidence threshold",
                     "tooltip": "The confidence threshold for object detection. Setting this can help reduce false positives by ignoring detections with low confidence scores.",
-                    "hidden": "!data.dockerFrigate.detect.enabled",
+                    "hidden": "data.dockerFrigate.configType !== 'ui' || !data.dockerFrigate.detect.enabled",
                     "xs": 12,
                     "md": 4
                 },
@@ -448,7 +472,7 @@
                     "type": "number",
                     "label": "Detection NMS threshold",
                     "tooltip": "The non-maximum suppression (NMS) threshold for object detection. Setting this can help reduce false positives by suppressing overlapping detections of the same object.",
-                    "hidden": "!data.dockerFrigate.detect.enabled",
+                    "hidden": "data.dockerFrigate.configType !== 'ui' || !data.dockerFrigate.detect.enabled",
                     "xs": 12,
                     "md": 4
                 },
@@ -456,7 +480,7 @@
                     "type": "number",
                     "label": "Maximum number of objects to detect per frame",
                     "tooltip": "The maximum number of objects that will be detected in each frame. Setting this can help manage performance by limiting the number of detections, but may also result in missed detections if set too low.",
-                    "hidden": "!data.dockerFrigate.detect.enabled",
+                    "hidden": "data.dockerFrigate.configType !== 'ui' || !data.dockerFrigate.detect.enabled",
                     "xs": 12,
                     "md": 4
                 },
@@ -464,25 +488,9 @@
                     "type": "number",
                     "label": "Detection FPS",
                     "tooltip": "The target frames per second (FPS) for object detection. Setting this can help manage performance by controlling the frequency of detection, but may also result in missed detections if set too low.",
-                    "hidden": "!data.dockerFrigate.detect.enabled",
+                    "hidden": "data.dockerFrigate.configType !== 'ui' || !data.dockerFrigate.detect.enabled",
                     "xs": 12,
                     "md": 4
-                },
-                "dockerFrigate.configType": {
-                    "type": "select",
-                    "label": "Frigate configuration type",
-                    "options": [
-                        {
-                            "value": "yaml",
-                            "label": "YAML configuration file"
-                            },
-                        {
-                            "value": "ui",
-                            "label": "Configure via UI"
-                        }
-                    ],
-                    "help": "Choose how to configure Frigate. The YAML configuration file option allows you to provide a custom configuration file, while the UI option provides a user-friendly interface for configuring Frigate without needing to edit YAML files directly.",
-                    "xs": 12
                 },
                 "dockerFrigate.yaml": {
                     "hidden": "data.dockerFrigate.configType !== 'yaml'",
@@ -497,6 +505,11 @@
                     "label": "Cameras configuration",
                     "xs": 12,
                     "items": [
+                        {
+                            "attr": "enabled",
+                            "label": "Enabled",
+                            "type": "checkbox"
+                        },
                         {
                             "attr": "name",
                             "label": "Name",
@@ -526,6 +539,46 @@
                             "attr": "inputs_roles_snapshots",
                             "label": "Snapshots",
                             "type": "checkbox"
+                        },
+                        {
+                            "attr": "detect_enabled",
+                            "label": "Detection",
+                            "type": "number"
+                        },
+                        {
+                            "attr": "detect_width",
+                            "label": "Detection Width",
+                            "type": "number"
+                        },
+                        {
+                            "attr": "detect_height",
+                            "label": "Detection Height",
+                            "type": "number"
+                        },
+                        {
+                            "attr": "detect_fps",
+                            "label": "Detection Confidence Threshold",
+                            "type": "number"
+                        },
+                        {
+                            "attr": "snapshots_enabled",
+                            "label": "Snapshots",
+                            "type": "checkbox"
+                        },
+                        {
+                            "attr": "snapshots_timestamp",
+                            "label": "Snapshot Timestamp",
+                            "type": "checkbox"
+                        },
+                        {
+                            "attr": "snapshots_bounding_box",
+                            "label": "Snapshot Bounding Box",
+                            "type": "checkbox"
+                        },
+                        {
+                            "attr": "snapshots_retain_default",
+                            "label": "Retain Default Snapshots",
+                            "type": "number"
                         }
                     ]
                 }

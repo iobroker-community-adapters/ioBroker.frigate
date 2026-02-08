@@ -94,70 +94,70 @@ class FrigateAdapter extends Adapter {
     }
 
     createFrigateConfigFile(): string {
+        if (this.config.dockerFrigate.configType === 'yaml' && this.config.dockerFrigate.yaml) {
+            return this.config.dockerFrigate.yaml;
+        }
+        const cameras: string[] = [];
+        for (const camera of this.config.dockerFrigate.cameras || []) {
+            if (camera.enabled && camera.name && camera.inputs_path) {
+                cameras.push(`  ${camera.name}:
+    ffmpeg:
+      ${camera.ffmpeg_hwaccel_args ? `hwaccel_args: ${camera.ffmpeg_hwaccel_args}` : ''}
+      inputs:
+        - path: ${camera.inputs_path}
+          roles:
+${camera.inputs_roles_detect ? '            - detect' : ''}
+${camera.inputs_roles_record ? '            - record' : ''}
+${camera.inputs_roles_snapshots ? '            - snapshots' : ''}
+    detect:
+      enabled: ${camera.detect_enabled ? 'true' : 'false'}
+${camera.detect_width ? `      width: ${camera.detect_width}` : ''}
+${camera.detect_height ? `      height: ${camera.detect_height}` : ''}
+${camera.detect_fps ? `      fps: ${camera.detect_fps}` : ''}
+    snapshots:
+      enabled: ${camera.snapshots_enabled ? 'true' : 'false'}
+      timestamp: ${camera.snapshots_timestamp ? 'true' : 'false'}
+      bounding_box: ${camera.snapshots_bounding_box ? 'true' : 'false'}
+      retain:
+        default: ${camera.snapshots_retain_default || 10}
+`);
+            }
+        }
         const text = `mqtt:
   host: 172.17.0.1
   port: ${this.config.mqttPort}
 
 detectors:
-  coral:
+  ${
+      this.config.dockerFrigate.detectors === 'cpu'
+          ? `cpu:
+    type: cpu
+`
+          : this.config.dockerFrigate.detectors === 'coral'
+            ? `coral:
     type: edgetpu
     device: usb
-
+`
+            : `standard_detector:
+    type: auto
+`
+  }
 face_recognition:
-  enabled: true
-  model_size: small        # Standard, läuft auf der Pi 5 CPU
-  min_area: 400       # Mindestgröße des Gesichts in Pixeln
+  enabled: ${this.config.dockerFrigate.face_recognition?.enabled ? 'true' : 'false'}
+  model_size: ${this.config.dockerFrigate.face_recognition?.model_size || 'medium'}
+  min_area: ${this.config.dockerFrigate.face_recognition?.min_area || 400}
 
 cameras:
-  inner:
-    ffmpeg:
-      hwaccel_args: preset-rpi-64-h265
-      inputs:
-        - path: rtsp://admin:ioBroker_1@192.168.1.159:554/h264Preview_01_sub
-          roles:
-            - detect
-            - record
-    detect:
-      width: 640
-      height: 368
-      fps: 5
-      enabled: true
-
-    snapshots:
-      enabled: true
-      timestamp: true        # Zeitstempel ins Bild drucken
-      bounding_box: true     # Roten Kasten um die Person malen
-      retain:
-        default: 3           # Bilder 3 Tage aufheben
-
-  cockpit:
-    ffmpeg:
-      hwaccel_args: preset-rpi-64-h265
-      inputs:
-        - path: rtsp://admin:ioBroker_1@192.168.1.224:554/h264Preview_01_sub
-          roles:
-            - detect
-            - record
-    detect:
-      width: 1536
-      height: 432
-      fps: 5
-      enabled: true
-
-    snapshots:
-      enabled: true
-      timestamp: true        # Zeitstempel ins Bild drucken
-      bounding_box: true     # Roten Kasten um die Person malen
-      retain:
-        default: 3           # Bilder 3 Tage aufheben
-
-# Optionale globale Einstellungen
+${cameras.join('\n')}
 record:
-  enabled: true
+  enabled: ${this.config.dockerFrigate.record?.enabled}
   retain:
-    days: 3
+    days: ${this.config.dockerFrigate.record?.retain_days || 7}
 detect:
-  enabled: true
+  enabled: ${this.config.dockerFrigate.detect?.enabled || 7}
+${this.config.dockerFrigate.detect?.width ? `  width: ${this.config.dockerFrigate.detect.width}` : ''}
+${this.config.dockerFrigate.detect?.height ? `  height: ${this.config.dockerFrigate.detect.height}` : ''}
+${this.config.dockerFrigate.detect?.fps ? `  fps: ${this.config.dockerFrigate.detect.fps}` : ''}
 version: 0.16-0
 `;
         return text;

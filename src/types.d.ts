@@ -92,5 +92,41 @@ export interface FrigateAdapterConfig extends FrigateAdapterConfigTyped {
         shmSize?: string | number;
         coral?: boolean;
         location?: string;
+        configType?: 'yaml' | 'ui';
+        yaml?: string;
+        detectors?: 'cpu' | 'coral' | 'auto';
+        detectorsCoralType?: 'usb' | 'pci';
+        face_recognition?: {
+            enabled?: boolean;
+            model_size?: 'small' | 'medium' | 'large';
+            min_area?: number | string;
+        };
+        record?: {
+            enabled?: boolean;
+            retain_days?: number | string;
+        };
+        detect?: {
+            enabled?: boolean;
+            width?: number | string;
+            height?: number | string;
+            fps?: number | string;
+        };
+        cameras?: {
+            enabled: boolean;
+            name: string;
+            ffmpeg_hwaccel_args: string;
+            inputs_path: string;
+            inputs_roles_detect: boolean;
+            inputs_roles_record: boolean;
+            inputs_roles_snapshots: boolean;
+            detect_width: number | string;
+            detect_height: number | string;
+            detect_fps: number | string;
+            detect_enabled: boolean;
+            snapshots_enabled: boolean;
+            snapshots_timestamp: boolean;
+            snapshots_bounding_box: boolean;
+            snapshots_retain_default: number | string;
+        }[];
     };
 }

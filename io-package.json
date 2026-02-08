@@ -209,12 +209,11 @@
             "enabled": false,
             "bind": "0.0.0.0",
             "stopIfInstanceStopped": false,
-            "port": 1883,
+            "port": 5000,
             "autoImageUpdate": true,
             "shmSize": 256,
             "location": "",
             "configType": "yaml",
-
             "detectors" : "cpu",
             "detectorsCoralType" : "usb",
             "face_recognition": {

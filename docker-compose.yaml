@@ -1,7 +1,7 @@
 version: '3.9'
 
 services:
-    mysql:
+    frigate:
         image: ghcr.io/blakeblackshear/frigate:stable
         privileged: true
         shm_size: '${config.dockerFrigate.shmSize:-256}m'
