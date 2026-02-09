@@ -110,12 +110,12 @@ ${camera.inputs_roles_detect ? '            - detect' : ''}
 ${camera.inputs_roles_record ? '            - record' : ''}
 ${camera.inputs_roles_snapshots ? '            - snapshots' : ''}
     detect:
-      enabled: ${camera.detect_enabled ? 'true' : 'false'}
+      enabled: ${camera.inputs_roles_detect ? 'true' : 'false'}
 ${camera.detect_width ? `      width: ${camera.detect_width}` : ''}
 ${camera.detect_height ? `      height: ${camera.detect_height}` : ''}
 ${camera.detect_fps ? `      fps: ${camera.detect_fps}` : ''}
     snapshots:
-      enabled: ${camera.snapshots_enabled ? 'true' : 'false'}
+      enabled: ${camera.inputs_roles_snapshots ? 'true' : 'false'}
       timestamp: ${camera.snapshots_timestamp ? 'true' : 'false'}
       bounding_box: ${camera.snapshots_bounding_box ? 'true' : 'false'}
       retain:
@@ -150,11 +150,11 @@ face_recognition:
 cameras:
 ${cameras.join('\n')}
 record:
-  enabled: ${this.config.dockerFrigate.record?.enabled}
+  enabled: ${this.config.dockerFrigate.record?.enabled ? 'true' : 'false'}
   retain:
     days: ${this.config.dockerFrigate.record?.retain_days || 7}
 detect:
-  enabled: ${this.config.dockerFrigate.detect?.enabled || 7}
+  enabled: ${this.config.dockerFrigate.detect?.enabled ? 'true' : 'false'}
 ${this.config.dockerFrigate.detect?.width ? `  width: ${this.config.dockerFrigate.detect.width}` : ''}
 ${this.config.dockerFrigate.detect?.height ? `  height: ${this.config.dockerFrigate.detect.height}` : ''}
 ${this.config.dockerFrigate.detect?.fps ? `  fps: ${this.config.dockerFrigate.detect.fps}` : ''}
@@ -238,7 +238,7 @@ version: 0.16-0
         this.subscribeStates('remote.*');
 
         if (this.config.dockerFrigate.enabled) {
-            const dockerManager = this.getPluginInstance('docker')?.getDockerManager();
+            const dockerManager = this.getPluginInstance('docker');
             // Create config for docker
             if (!this.config.dockerFrigate.location) {
                 const dataDir = getAbsoluteDefaultDataDir();
@@ -255,8 +255,15 @@ version: 0.16-0
             }
 
             // Create config file
-
-            dockerManager?.instanceIsReady();
+            const configFile = this.createFrigateConfigFile();
+            try {
+                fs.writeFileSync(join(this.config.dockerFrigate.location, 'config', 'config.yml'), configFile);
+                dockerManager?.instanceIsReady();
+            } catch (error) {
+                this.log.error(
+                    `Cannot write Frigate config file ${join(this.config.dockerFrigate.location, 'config', 'config.yml')}: ${error}`,
+                );
+            }
         }
 
         this.initMqtt();
@@ -1057,7 +1064,7 @@ version: 0.16-0
                         if (sendInstance.includes('pushover')) {
                             if (type === 'video') {
                                 this.log.info('Pushover does not support video.');
-                                return;
+                                continue;
                             }
 
                             await this.sendToAsync(sendInstance, {
@@ -1092,7 +1099,7 @@ version: 0.16-0
                     if (sendInstance.includes('pushover')) {
                         if (type === 'video') {
                             this.log.info('Pushover does not support video.');
-                            return;
+                            continue;
                         }
 
                         await this.sendToAsync(sendInstance, {

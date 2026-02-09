@@ -24,7 +24,7 @@
     },
     "dependencies": {
         "@iobroker/adapter-core": "^3.3.2",
-        "@iobroker/plugin-docker": "^0.1.7",
+        "@iobroker/plugin-docker": "^0.2.1",
         "aedes": "^0.51.3",
         "axios": "^1.11.0",
         "json2iob": "^2.6.21",
@@ -48,6 +48,7 @@
         "admin{,/!(src)/**}/!(tsconfig|tsconfig.*|.eslintrc).{json,json5}",
         "admin{,/!(src)/**}/*.{html,css,png,svg,jpg,js}",
         "build/",
+        "docker-compose.yaml",
         "io-package.json",
         "LICENSE"
     ],

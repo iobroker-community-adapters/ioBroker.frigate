@@ -1,5 +1,5 @@
 {
-    "i18n": false,
+    "i18n": true,
     "type": "tabs",
     "items": {
         "_general": {
@@ -256,7 +256,7 @@
         "dockerFrigate": {
             "type": "panel",
             "label": "Frigate Docker",
-            "hidden": "!data.dockerFrigate?.enabled",
+            "hidden1": "!data.dockerFrigate?.enabled",
             "items": {
                 "dockerFrigate.bind": {
                     "newLine": true,
@@ -298,6 +298,8 @@
                 "dockerFrigate.location": {
                     "newLine": true,
                     "type": "text",
+                    "validator": "!data.dockerFrigate?.location || data.dockerFrigate?.location?.endsWith('/')",
+                    "validatorErrorText": "Frigate directory location must end with a slash (/)",
                     "label": "Frigate directory location",
                     "help": "As frigate saves a large amount of data, it is recommended to use a separate directory or disk for it.",
                     "xs": 12
@@ -315,7 +317,15 @@
                             "label": "Configure via UI"
                         }
                     ],
+                    "default": "yaml",
                     "help": "Choose how to configure Frigate. The YAML configuration file option allows you to provide a custom configuration file, while the UI option provides a user-friendly interface for configuring Frigate without needing to edit YAML files directly.",
+                    "xs": 12
+                },
+                "dockerFrigate.yaml": {
+                    "hidden": "data.dockerFrigate.configType !== 'yaml'",
+                    "type": "yamlEditor",
+                    "label": "Frigate YAML configuration",
+                    "doNotApplyWithError": true,
                     "xs": 12
                 },
                 "dockerFrigate.detectors": {
@@ -492,93 +502,97 @@
                     "xs": 12,
                     "md": 4
                 },
-                "dockerFrigate.yaml": {
-                    "hidden": "data.dockerFrigate.configType !== 'yaml'",
-                    "type": "text",
-                    "label": "Frigate YAML configuration",
-                    "multiline": true,
-                    "xs": 12
-                },
                 "dockerFrigate.cameras": {
                     "hidden": "data.dockerFrigate.configType !== 'ui'",
                     "type": "table",
                     "label": "Cameras configuration",
                     "xs": 12,
+                    "compact": true,
+                    "useCardFor": ["xs", "sm", "md", "lg", "xl"],
                     "items": [
                         {
                             "attr": "enabled",
-                            "label": "Enabled",
-                            "type": "checkbox"
+                            "title": "Enabled",
+                            "type": "checkbox",
+                            "default": true
                         },
                         {
                             "attr": "name",
-                            "label": "Name",
-                            "type": "text"
+                            "title": "Name",
+                            "type": "text",
+                            "tooltip": "Unique camera name without spaces",
+                            "validator": "data.name?.length && !data.name.includes(' ')",
+                            "validatorErrorText": "Camera name must not be empty and must not contain spaces"
                         },
                         {
                             "attr": "inputs_path",
-                            "label": "Camera Input Path",
+                            "title": "Camera Input Path",
+                            "validator": "data.name?.trim()?.length",
+                            "tooltip": "The input path for the camera stream (e.g., RTSP URL)",
+                            "validatorErrorText": "Camera input path must not be empty",
                             "type": "text"
                         },
                         {
                             "attr": "ffmpeg_hwaccel_args",
-                            "label": "FFMPEG Input",
-                            "type": "text"
+                            "title": "FFMPEG Input",
+                            "type": "text",
+                            "tooltip": "Additional FFMPEG arguments for the input stream (optional)"
                         },
                         {
                             "attr": "inputs_roles_detect",
-                            "label": "Object Detection",
-                            "type": "checkbox"
-                        },
-                        {
-                            "attr": "inputs_roles_record",
-                            "label": "Recoding",
-                            "type": "checkbox"
-                        },
-                        {
-                            "attr": "inputs_roles_snapshots",
-                            "label": "Snapshots",
-                            "type": "checkbox"
-                        },
-                        {
-                            "attr": "detect_enabled",
-                            "label": "Detection",
-                            "type": "number"
+                            "title": "Object Detection",
+                            "type": "checkbox",
+                            "hidden": "!globalData.dockerFrigate?.detect?.enabled",
+                            "defaultFunc": "!!globalData.dockerFrigate?.detect?.enabled"
                         },
                         {
                             "attr": "detect_width",
-                            "label": "Detection Width",
-                            "type": "number"
+                            "title": "Detection Width",
+                            "type": "number",
+                            "hidden": "!data.inputs_roles_detect || !globalData.dockerFrigate.detect?.enabled"
                         },
                         {
                             "attr": "detect_height",
-                            "label": "Detection Height",
-                            "type": "number"
+                            "title": "Detection Height",
+                            "type": "number",
+                            "hidden": "!data.inputs_roles_detect || !globalData.dockerFrigate.detect?.enabled"
                         },
                         {
                             "attr": "detect_fps",
-                            "label": "Detection Confidence Threshold",
-                            "type": "number"
+                            "title": "Detection Confidence Threshold",
+                            "type": "number",
+                            "hidden": "!data.inputs_roles_detect || !globalData.dockerFrigate.detect?.enabled"
+                        },
+
+                        {
+                            "attr": "inputs_roles_record",
+                            "title": "Recording",
+                            "type": "checkbox",
+                            "hidden": "!globalData.dockerFrigate?.record?.enabled",
+                            "defaultFunc": "!!globalData.dockerFrigate?.record?.enabled"
                         },
                         {
-                            "attr": "snapshots_enabled",
-                            "label": "Snapshots",
+                            "attr": "inputs_roles_snapshots",
+                            "title": "Snapshots",
                             "type": "checkbox"
                         },
                         {
                             "attr": "snapshots_timestamp",
-                            "label": "Snapshot Timestamp",
-                            "type": "checkbox"
+                            "title": "Snapshot Timestamp",
+                            "type": "checkbox",
+                            "hidden": "!data.inputs_roles_snapshots"
                         },
                         {
                             "attr": "snapshots_bounding_box",
-                            "label": "Snapshot Bounding Box",
-                            "type": "checkbox"
+                            "title": "Snapshot Bounding Box",
+                            "type": "checkbox",
+                            "hidden": "!data.inputs_roles_snapshots"
                         },
                         {
                             "attr": "snapshots_retain_default",
-                            "label": "Retain Default Snapshots",
-                            "type": "number"
+                            "title": "Retain Default Snapshots",
+                            "type": "number",
+                            "hidden": "!data.inputs_roles_snapshots"
                         }
                     ]
                 }
