@@ -1184,8 +1184,10 @@ version: 0.16-0
                             this.log.error(error);
                         }
                     }
+                    const encodedCameraId = encodeURIComponent(cameraId);
+                    const encodedLabel = encodeURIComponent(label != null ? label.toString() : '');
                     this.requestClient({
-                        url: `http://${this.config.friurl}/api/events/${cameraId}/${label}/create`,
+                        url: `http://${this.config.friurl}/api/events/${encodedCameraId}/${encodedLabel}/create`,
                         method: 'post',
                         data: body,
                     })
