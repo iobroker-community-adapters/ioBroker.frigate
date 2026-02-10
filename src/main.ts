@@ -11,6 +11,7 @@ import Aedes, { type Client } from 'aedes';
 import { type AdapterOptions, Adapter, getAbsoluteDefaultDataDir } from '@iobroker/adapter-core';
 
 import type { FrigateAdapterConfig } from './types';
+import { createFrigateConfigFile } from './lib/utils';
 
 type FrigateMessage = {
     timestamp?: number; // in seconds till 1970
@@ -91,76 +92,6 @@ class FrigateAdapter extends Adapter {
             timeout: 3 * 60 * 1000, //3min client timeout
         });
         this.json2iob = new Json2iob(this);
-    }
-
-    createFrigateConfigFile(): string {
-        if (this.config.dockerFrigate.configType === 'yaml' && this.config.dockerFrigate.yaml) {
-            return this.config.dockerFrigate.yaml;
-        }
-        const cameras: string[] = [];
-        for (const camera of this.config.dockerFrigate.cameras || []) {
-            if (camera.enabled && camera.name && camera.inputs_path) {
-                cameras.push(`  ${camera.name}:
-    ffmpeg:
-      ${camera.ffmpeg_hwaccel_args ? `hwaccel_args: ${camera.ffmpeg_hwaccel_args}` : ''}
-      inputs:
-        - path: ${camera.inputs_path}
-          roles:
-${camera.inputs_roles_detect ? '            - detect' : ''}
-${camera.inputs_roles_record ? '            - record' : ''}
-${camera.inputs_roles_snapshots ? '            - snapshots' : ''}
-    detect:
-      enabled: ${camera.inputs_roles_detect ? 'true' : 'false'}
-${camera.detect_width ? `      width: ${camera.detect_width}` : ''}
-${camera.detect_height ? `      height: ${camera.detect_height}` : ''}
-${camera.detect_fps ? `      fps: ${camera.detect_fps}` : ''}
-    snapshots:
-      enabled: ${camera.inputs_roles_snapshots ? 'true' : 'false'}
-      timestamp: ${camera.snapshots_timestamp ? 'true' : 'false'}
-      bounding_box: ${camera.snapshots_bounding_box ? 'true' : 'false'}
-      retain:
-        default: ${camera.snapshots_retain_default || 10}
-`);
-            }
-        }
-        const text = `mqtt:
-  host: 172.17.0.1
-  port: ${this.config.mqttPort}
-
-detectors:
-  ${
-      this.config.dockerFrigate.detectors === 'cpu'
-          ? `cpu:
-    type: cpu
-`
-          : this.config.dockerFrigate.detectors === 'coral'
-            ? `coral:
-    type: edgetpu
-    device: usb
-`
-            : `standard_detector:
-    type: auto
-`
-  }
-face_recognition:
-  enabled: ${this.config.dockerFrigate.face_recognition?.enabled ? 'true' : 'false'}
-  model_size: ${this.config.dockerFrigate.face_recognition?.model_size || 'medium'}
-  min_area: ${this.config.dockerFrigate.face_recognition?.min_area || 400}
-
-cameras:
-${cameras.join('\n')}
-record:
-  enabled: ${this.config.dockerFrigate.record?.enabled ? 'true' : 'false'}
-  retain:
-    days: ${this.config.dockerFrigate.record?.retain_days || 7}
-detect:
-  enabled: ${this.config.dockerFrigate.detect?.enabled ? 'true' : 'false'}
-${this.config.dockerFrigate.detect?.width ? `  width: ${this.config.dockerFrigate.detect.width}` : ''}
-${this.config.dockerFrigate.detect?.height ? `  height: ${this.config.dockerFrigate.detect.height}` : ''}
-${this.config.dockerFrigate.detect?.fps ? `  fps: ${this.config.dockerFrigate.detect.fps}` : ''}
-version: 0.16-0
-`;
-        return text;
     }
 
     /**
@@ -255,7 +186,7 @@ version: 0.16-0
             }
 
             // Create config file
-            const configFile = this.createFrigateConfigFile();
+            const configFile = createFrigateConfigFile(this.config);
             try {
                 fs.writeFileSync(join(this.config.dockerFrigate.location, 'config', 'config.yml'), configFile);
                 dockerManager?.instanceIsReady();

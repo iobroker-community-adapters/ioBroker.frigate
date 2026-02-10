@@ -256,7 +256,7 @@
         "dockerFrigate": {
             "type": "panel",
             "label": "Frigate Docker",
-            "hidden1": "!data.dockerFrigate?.enabled",
+            "hidden": "!data.dockerFrigate?.enabled",
             "items": {
                 "dockerFrigate.bind": {
                     "newLine": true,
@@ -502,6 +502,14 @@
                     "xs": 12,
                     "md": 4
                 },
+                "_header1": {
+                    "type": "header",
+                    "text": "Cameras Configuration",
+                    "size": 2,
+                    "xs": 12,
+                    "newLine": true,
+                    "hidden": "data.dockerFrigate.configType !== 'ui'"
+                },
                 "dockerFrigate.cameras": {
                     "hidden": "data.dockerFrigate.configType !== 'ui'",
                     "type": "table",
@@ -509,6 +517,7 @@
                     "xs": 12,
                     "compact": true,
                     "useCardFor": ["xs", "sm", "md", "lg", "xl"],
+                    "titleAttribute": "name",
                     "items": [
                         {
                             "attr": "enabled",
@@ -526,7 +535,7 @@
                         },
                         {
                             "attr": "inputs_path",
-                            "title": "Camera Input Path",
+                            "title": "FFMPEG Camera Input Path",
                             "validator": "data.name?.trim()?.length",
                             "tooltip": "The input path for the camera stream (e.g., RTSP URL)",
                             "validatorErrorText": "Camera input path must not be empty",
@@ -534,7 +543,7 @@
                         },
                         {
                             "attr": "ffmpeg_hwaccel_args",
-                            "title": "FFMPEG Input",
+                            "title": "FFMPEG hardware acceleration arguments",
                             "type": "text",
                             "tooltip": "Additional FFMPEG arguments for the input stream (optional)"
                         },
@@ -549,21 +558,20 @@
                             "attr": "detect_width",
                             "title": "Detection Width",
                             "type": "number",
-                            "hidden": "!data.inputs_roles_detect || !globalData.dockerFrigate.detect?.enabled"
+                            "hidden": "!data.inputs_roles_detect || !globalData.dockerFrigate?.detect?.enabled"
                         },
                         {
                             "attr": "detect_height",
                             "title": "Detection Height",
                             "type": "number",
-                            "hidden": "!data.inputs_roles_detect || !globalData.dockerFrigate.detect?.enabled"
+                            "hidden": "!data.inputs_roles_detect || !globalData.dockerFrigate?.detect?.enabled"
                         },
                         {
                             "attr": "detect_fps",
-                            "title": "Detection Confidence Threshold",
+                            "title": "Detection FPS",
                             "type": "number",
-                            "hidden": "!data.inputs_roles_detect || !globalData.dockerFrigate.detect?.enabled"
+                            "hidden": "!data.inputs_roles_detect || !globalData.dockerFrigate?.detect?.enabled"
                         },
-
                         {
                             "attr": "inputs_roles_record",
                             "title": "Recording",
@@ -574,7 +582,8 @@
                         {
                             "attr": "inputs_roles_snapshots",
                             "title": "Snapshots",
-                            "type": "checkbox"
+                            "type": "checkbox",
+                            "default": false
                         },
                         {
                             "attr": "snapshots_timestamp",
@@ -590,8 +599,9 @@
                         },
                         {
                             "attr": "snapshots_retain_default",
-                            "title": "Retain Default Snapshots",
+                            "title": "Retain Snapshots",
                             "type": "number",
+                            "unit": "day(s)",
                             "hidden": "!data.inputs_roles_snapshots"
                         }
                     ]
