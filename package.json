@@ -27,7 +27,6 @@
         "@iobroker/plugin-docker": "^0.2.1",
         "aedes": "^0.51.3",
         "axios": "^1.11.0",
-        "json2iob": "^2.6.21",
         "uuid": "^11.1.0"
     },
     "devDependencies": {

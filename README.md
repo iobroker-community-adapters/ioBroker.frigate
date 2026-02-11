@@ -111,6 +111,12 @@ Event with Person:
     Placeholder for the next version (at the beginning of the line):
   ### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+- (@GermanBluefox) Adapter was migrated to TypeScript
+- (@GermanBluefox) Breaking change: All states with value ON/OFF were changed to boolean true/false
+- (@GermanBluefox) Better handling of complex objects and arrays
+- (@GermanBluefox) path_data is not not parsed anymore
+
 ### 1.4.0 (2026-01-26)
 
 - (mcm1957) Adapter requires node.js 20 as minimum now.

@@ -3,7 +3,6 @@ import { join, sep } from 'node:path';
 import { createServer, type Server } from 'node:net';
 import { tmpdir } from 'node:os';
 
-import Json2iob from 'json2iob';
 import { v4 as UUID } from 'uuid';
 import axios, { type AxiosInstance } from 'axios';
 import Aedes, { type Client } from 'aedes';
@@ -12,6 +11,7 @@ import { type AdapterOptions, Adapter, getAbsoluteDefaultDataDir } from '@iobrok
 
 import type { FrigateAdapterConfig } from './types';
 import { createFrigateConfigFile } from './lib/utils';
+import Json2iob from './lib/json2iob';
 
 type FrigateMessage = {
     timestamp?: number; // in seconds till 1970
@@ -239,13 +239,35 @@ class FrigateAdapter extends Adapter {
         }
     }
 
+    // Remove path_data and empty objects from the given object recursively
     static removePathData(obj: any): void {
         if (obj && typeof obj === 'object') {
-            for (const key in obj) {
-                if (key === 'path_data') {
-                    delete obj[key];
-                } else {
-                    FrigateAdapter.removePathData(obj[key]);
+            if (Array.isArray(obj)) {
+                for (let i = obj.length - 1; i >= 0; i--) {
+                    const item = obj[i];
+                    if (item && typeof item === 'object' && Object.keys(item).length === 0) {
+                        // Delete empty objects in arrays
+                        obj.splice(i, 1);
+                    } else if (item && typeof item === 'object') {
+                        FrigateAdapter.removePathData(item);
+                    }
+                }
+            } else {
+                for (const key in obj) {
+                    if (key === 'path_data') {
+                        delete obj[key];
+                    } else if (Array.isArray(obj[key]) && obj[key].length === 0) {
+                        // Delete empty arrays
+                        delete obj[key];
+                    } else if (obj[key] && typeof obj[key] === 'object' && Object.keys(obj[key]).length === 0) {
+                        // Delete empty objects
+                        delete obj[key];
+                    } else if (obj[key] === null || obj[key] === undefined) {
+                        // Delete null or undefined values
+                        delete obj[key];
+                    } else {
+                        FrigateAdapter.removePathData(obj[key]);
+                    }
                 }
             }
         }
@@ -441,6 +463,7 @@ class FrigateAdapter extends Adapter {
                             pathArray = [cameraId, pathArray.join('_')];
                         }
                     }
+
                     // Ignore path data for states, because they can be very large and are not needed in ioBroker. They are only used to create the snapshot and event history images.
                     FrigateAdapter.removePathData(data);
                     // parse json to iobroker states
@@ -876,6 +899,9 @@ class FrigateAdapter extends Adapter {
                         if (device) {
                             path = `${device}.history`;
                         }
+                        // Ignore path data for states, because they can be very large and are not needed in ioBroker. They are only used to create the snapshot and event history images.
+                        FrigateAdapter.removePathData(response.data);
+
                         await this.json2iob.parse(path, response.data, {
                             forceIndex: true,
                             channelName: 'Events history',
