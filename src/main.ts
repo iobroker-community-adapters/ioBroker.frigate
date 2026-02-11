@@ -817,10 +817,21 @@ class FrigateAdapter extends Adapter {
                             .then(async response => {
                                 if (response.data) {
                                     const writer = fs.createWriteStream(fileName);
-                                    response.data.pipe(writer);
                                     await new Promise<void>((resolve, reject) => {
-                                        writer.on('finish', resolve);
-                                        writer.on('error', reject);
+                                        // Propagate errors from both the writable and readable streams
+                                        const onError: (error: Error) => void = (error: Error): void => {
+                                            reject(error);
+                                        };
+                                        writer.on('finish', () => {
+                                            writer.removeListener('error', onError);
+                                            // Ensure we also stop listening on the source stream
+                                            response.data.removeListener('error', onError);
+                                            resolve();
+                                        });
+                                        writer.on('error', onError);
+                                        // Handle errors from the source stream so they don't get dropped
+                                        response.data.on('error', onError);
+                                        response.data.pipe(writer);
                                     }).catch(error => {
                                         this.log.error(error);
                                     });
