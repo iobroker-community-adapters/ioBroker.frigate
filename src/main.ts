@@ -819,7 +819,7 @@ class FrigateAdapter extends Adapter {
                                     const writer = fs.createWriteStream(fileName);
                                     await new Promise<void>((resolve, reject) => {
                                         // Propagate errors from both the writable and readable streams
-                                        const onError: (error: Error) => void = (error: Error): void => {
+                                        const onError = (error: Error): void => {
                                             reject(error);
                                         };
                                         writer.on('finish', () => {
