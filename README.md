@@ -115,7 +115,8 @@ Event with Person:
 - (@GermanBluefox) Adapter was migrated to TypeScript
 - (@GermanBluefox) Breaking change: All states with value ON/OFF were changed to boolean true/false
 - (@GermanBluefox) Better handling of complex objects and arrays
-- (@GermanBluefox) path_data is not not parsed anymore
+- (@GermanBluefox) path_data is not parsed anymore
+- (@GermanBluefox) Added possiblity to start and manage docker with frigate from the adapter
 
 ### 1.4.0 (2026-01-26)
 
