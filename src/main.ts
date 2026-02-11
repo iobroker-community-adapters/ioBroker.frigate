@@ -239,6 +239,18 @@ class FrigateAdapter extends Adapter {
         }
     }
 
+    static removePathData(obj: any): void {
+        if (obj && typeof obj === 'object') {
+            for (const key in obj) {
+                if (key === 'path_data') {
+                    delete obj[key];
+                } else {
+                    FrigateAdapter.removePathData(obj[key]);
+                }
+            }
+        }
+    }
+
     async cleanTrackedObjects(): Promise<void> {
         this.log.info('Cleaning old tracked objects');
         try {
@@ -314,15 +326,31 @@ class FrigateAdapter extends Adapter {
                     let pathArray = packet.topic.split('/');
                     const dataStr = packet.payload.toString();
                     let write = false;
-                    let data: FrigateMessage | string | undefined;
-                    try {
-                        data = JSON.parse(dataStr);
-                    } catch (error) {
-                        this.log.debug(`Cannot parse ${dataStr} ${error}`);
-                        // do nothing
+                    let data: FrigateMessage | string | undefined | number | boolean;
+                    if (pathArray[pathArray.length - 1] !== 'snapshot') {
+                        if (dataStr === 'ON') {
+                            data = true;
+                        } else if (dataStr === 'OFF') {
+                            data = false;
+                        } else if (
+                            !isNaN(Number(dataStr)) ||
+                            dataStr.includes('"') ||
+                            dataStr.includes('{') ||
+                            dataStr.includes('[')
+                        ) {
+                            try {
+                                data = JSON.parse(dataStr);
+                            } catch (error) {
+                                this.log.debug(`Cannot parse ${dataStr} ${error}`);
+                                // do nothing
+                            }
+                        } else {
+                            data = dataStr;
+                        }
                     }
+
                     if (pathArray[0] === 'frigate') {
-                        // remove first element
+                        // remove first element "frigate" from path array
                         pathArray.shift();
                         const command: string = pathArray[0] as string;
                         const event = pathArray[pathArray.length - 1];
@@ -413,8 +441,10 @@ class FrigateAdapter extends Adapter {
                             pathArray = [cameraId, pathArray.join('_')];
                         }
                     }
+                    // Ignore path data for states, because they can be very large and are not needed in ioBroker. They are only used to create the snapshot and event history images.
+                    FrigateAdapter.removePathData(data);
                     // parse json to iobroker states
-                    await this.json2iob.parse(pathArray.join('.'), data, { write });
+                    await this.json2iob.parse(pathArray.join('.'), data === undefined ? dataStr : data, { write });
                 } catch (error) {
                     this.log.warn(error);
                 }
