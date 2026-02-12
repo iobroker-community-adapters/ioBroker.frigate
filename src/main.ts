@@ -234,7 +234,7 @@ class FrigateAdapter extends Adapter {
             // restart adapter to create all states from io-package.json
             const obj = await this.getForeignObjectAsync(`system.adapter.${this.namespace}`);
             if (obj) {
-                await this.setForeignObject(obj._id, obj);
+                await this.setForeignObjectAsync(obj._id, obj);
             }
         }
     }
