@@ -11,7 +11,7 @@
 
 **Tests:** ![Test and Release](https://github.com/iobroker-community-adapters/ioBroker.frigate/workflows/Test%20and%20Release/badge.svg)
 
-**This adapter uses Sentry libraries to automatically report exceptions and code errors to the developers.** For more details and for information how to disable the error reporting see [Sentry-Plugin Documentation](https://github.com/ioBroker/plugin-sentry#plugin-sentry)! Sentry reporting is used starting with js-controller 3.0.
+**This adapter uses Sentry libraries to automatically report exceptions and code errors to the developers.** For more details and for information on how to disable the error reporting, see [Sentry-Plugin Documentation](https://github.com/ioBroker/plugin-sentry#plugin-sentry)! Sentry reporting is used starting with js-controller 3.0.
 
 ## frigate adapter for ioBroker
 
@@ -63,20 +63,19 @@ Change states to change the settings of the camera.
 * `frigate.0.camera_name.remote.notificationText` - custom notification text for the camera.
 * `frigate.0.camera_name.remote.notificationMinScore` - custom notification min score for the camera.
 * `frigate.0.camera_name.remote.pauseNotifications` - pause notification for the camera.
-
 * `frigate.0.camera_name.remote.ptz` - send ptz commands https://docs.frigate.video/integrations/mqtt/#frigatecamera_nameptz
 
 ## Notifications
 
 The adapter can send snapshots and clips from events and object detection to instances like `telegram`, `pushover` and `signal-cbm`.
 
-You can specify multiple instance or user to send snapshots or clips.
+You can specify multiple instances or users to send snapshots or clips.
 
 Activate notifications in the settings to receive snapshots or clips.
 
 For Event can enter a minimum score before sending. 0 = Disabled.
 
-Clips are send 5s (Instance settings) after event end.
+Clips are sent 5s (Instance settings) after the event ends.
 
 You can enter custom notification text with placeholder `{{source}} {{type}} erkannt {{status}} {{score}} {{state}}`.
 
@@ -116,7 +115,7 @@ Event with Person:
 - (@GermanBluefox) Breaking change: All states with value ON/OFF were changed to boolean true/false
 - (@GermanBluefox) Better handling of complex objects and arrays
 - (@GermanBluefox) path_data is not parsed anymore
-- (@GermanBluefox) Added possiblity to start and manage docker with frigate from the adapter
+- (@GermanBluefox) Added еру possibility to start and manage docker with frigate from the adapter
 
 ### 1.4.0 (2026-01-26)
 
