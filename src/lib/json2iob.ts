@@ -4,9 +4,9 @@ type Options = {
     write?: boolean; // Activate write for all states.
     forceIndex?: boolean; // Instead of trying to find names for array entries, use the index as the name.
     disablePadIndex?: boolean; // Disables padding of array index numbers if forceIndex = true
-    zeroBasedArrayIndex?: boolean; // start array index from 0 if forceIndex = true
-    channelName?: string; // Set name of the root channel.
-    preferredArrayName?: string; // Set key to use this as an array entry name.
+    zeroBasedArrayIndex?: boolean; // start an array index from 0 if forceIndex = true
+    channelName?: string; // Set the name of the root channel.
+    preferredArrayName?: string; // Set a key to use this as an array entry name.
     preferredArrayDesc?: string;
     autoCast?: boolean;
     descriptions?: { [id: string]: ioBroker.StringOrTranslated };
@@ -57,7 +57,7 @@ export default class Json2iob {
      * @param {string} [options.preferedArrayDesc] - Set key to use this as an array entry description.
      * @param {boolean} [options.autoCast] - Make JSON.parse to parse numbers correctly.
      * @param {object} [options.descriptions] - Object of names for state keys.
-     * @param {object} [options.states] - Object of states to create for an id, new entries via json will be added automatically to the states.
+     * @param {object} [options.states] - Object of states to create for an id, new entries via JSON will be added automatically to the states.
      * @param {object} [options.units] - Object of units to create for an id
      * @param {boolean} [options.parseBase64] - Parse base64 encoded strings to utf8.
      * @param {string[]} [options.parseBase64byIds] - Array of ids to parse base64 encoded strings to utf8.
@@ -108,7 +108,7 @@ export default class Json2iob {
             path = path.toString().replace(this.forbiddenCharsRegex, '_');
 
             if (typeof element === 'string' || typeof element === 'number' || typeof element === 'boolean') {
-                // remove ending . from path
+                // remove ending . from a path
                 if (path.endsWith('.')) {
                     path = path.slice(0, -1);
                 }
@@ -338,7 +338,7 @@ export default class Json2iob {
      * @param key - The key of the array in the element.
      * @param path - The current path in the object hierarchy.
      * @param options - The parsing options.
-     * @returns - A promise that resolves when the array extraction and parsing is complete.
+     * @returns - A promise that resolves when the array extraction and parsing are complete.
      */
     async _extractArray(element: any, key: string, path: string, options: Options): Promise<void> {
         try {
@@ -368,7 +368,7 @@ export default class Json2iob {
                 }
                 let arrayPath = key + index;
                 if (typeof arrayElement === 'string' && key !== '') {
-                    // create channel
+                    // create a channel
                     await this.adapter.extendObjectAsync(
                         `${path}.${key}`,
                         {
@@ -486,7 +486,7 @@ export default class Json2iob {
                     typeof arrayElement[Object.keys(arrayElement)[1]] !== 'object' &&
                     arrayElement[Object.keys(arrayElement)[0]] !== 'null'
                 ) {
-                    // create channel
+                    // create a channel
                     await this.adapter.extendObjectAsync(
                         `${path}.${key}`,
                         {

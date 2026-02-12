@@ -38,6 +38,7 @@
         "@iobroker/eslint-config": "^2.2.0",
         "@iobroker/testing": "^5.2.2",
         "@tsconfig/node18": "^18.2.6",
+        "@types/json-bigint": "^1.0.4",
         "@types/node": "^25.2.3",
         "@types/uuid": "^11.0.0",
         "typescript": "~5.9.3"
