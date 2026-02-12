@@ -26,8 +26,9 @@
         "@iobroker/adapter-core": "^3.3.2",
         "@iobroker/plugin-docker": "^0.2.1",
         "aedes": "^0.51.3",
-        "axios": "^1.11.0",
-        "uuid": "^11.1.0"
+        "axios": "^1.13.5",
+        "json-bigint": "^1.0.0",
+        "uuid": "^11.0.0"
     },
     "devDependencies": {
         "@alcalzone/release-script": "^5.0.0",
@@ -37,9 +38,8 @@
         "@iobroker/eslint-config": "^2.2.0",
         "@iobroker/testing": "^5.2.2",
         "@tsconfig/node18": "^18.2.6",
-        "@types/node": "^24.10.1",
+        "@types/node": "^25.2.3",
         "@types/uuid": "^11.0.0",
-        "prettier": "^3.7.4",
         "typescript": "~5.9.3"
     },
     "main": "build/main.js",

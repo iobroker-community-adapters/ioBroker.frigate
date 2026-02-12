@@ -173,7 +173,7 @@ class FrigateAdapter extends Adapter {
             // Create config for docker
             if (!this.config.dockerFrigate.location) {
                 const dataDir = getAbsoluteDefaultDataDir();
-                this.config.dockerFrigate.location = join(dataDir, this.namespace);
+                this.config.dockerFrigate.location = `${join(dataDir, this.namespace)}/`;
             }
             if (!existsSync(join(this.config.dockerFrigate.location, 'config'))) {
                 fs.mkdirSync(join(this.config.dockerFrigate.location, 'config'), { recursive: true });
