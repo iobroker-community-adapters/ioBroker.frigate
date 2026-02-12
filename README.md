@@ -110,7 +110,7 @@ Event with Person:
     Placeholder for the next version (at the beginning of the line):
   ### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 2.0.0-alpha.0 (2026-02-12)
 - (@GermanBluefox) Adapter was migrated to TypeScript
 - (@GermanBluefox) Breaking change: All states with value ON/OFF were changed to boolean true/false
 - (@GermanBluefox) Better handling of complex objects and arrays
@@ -139,10 +139,6 @@ Event with Person:
 ### 1.3.1 (2024-08-30)
 
 - fixed too many states
-
-### 1.3.0 (2024-07-29)
-
-- fix for frigate v0.14
 
 ## License
 

@@ -1,4 +1,8 @@
 # Older changes
+## 1.3.0 (2024-07-29)
+
+- fix for frigate v0.14
+
 ## 1.2.1 (2024-06-06)
 
 - add remote to restart frigate
