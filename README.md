@@ -110,7 +110,7 @@ Event with Person:
     Placeholder for the next version (at the beginning of the line):
   ### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 2.0.0-alpha.1 (2026-02-12)
 - (@GermanBluefox) Adapter was migrated to TypeScript
 - (@GermanBluefox) Breaking change: All states with value ON/OFF were changed to boolean true/false
 - (@GermanBluefox) Better handling of complex objects and arrays
