@@ -13,6 +13,7 @@
     "Comma separated": "Comma separated",
     "Configure via UI": "Configure via UI",
     "Coral Type": "Coral Type",
+    "Current frigate config.yaml": "Current \"frigate\" \"config.yaml\"",
     "Days to retain recordings": "Days to retain recordings",
     "Detection FPS": "Detection FPS",
     "Detection Height": "Detection Height",

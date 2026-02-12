@@ -13,6 +13,7 @@
     "Comma separated": "Kommagetrennt",
     "Configure via UI": "Über die Benutzeroberfläche konfigurieren",
     "Coral Type": "Coral-Typ",
+    "Current frigate config.yaml": "Aktuelle \"frigate\" \"config.yaml\"",
     "Days to retain recordings": "Tage zur Aufbewahrung von Aufnahmen",
     "Detection FPS": "Erkennungs-FPS",
     "Detection Height": "Erkennungshöhe",

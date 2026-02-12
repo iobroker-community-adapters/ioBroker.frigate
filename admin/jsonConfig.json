@@ -3,7 +3,7 @@
     "type": "tabs",
     "items": {
         "_general": {
-            "type": "tab",
+            "type": "panel",
             "label": "General Settings",
             "items": {
                 "dockerFrigate.enabled": {
@@ -61,7 +61,7 @@
             }
         },
         "_notification": {
-            "type": "tab",
+            "type": "panel",
             "label": "Notification Settings",
             "items": {
                 "notificationActive": {
@@ -501,6 +501,18 @@
                     "hidden": "data.dockerFrigate.configType !== 'ui' || !data.dockerFrigate.detect.enabled",
                     "xs": 12,
                     "md": 4
+                },
+                "_showConfig": {
+                    "newLine": true,
+                    "hidden": "data.dockerFrigate.configType !== 'ui'",
+                    "type": "sendTo",
+                    "command": "readConfig",
+                    "label": "Show current Frigate configuration",
+                    "xs": 12,
+                    "md": 6,
+                    "lg": 4,
+                    "variant": "outlined",
+                    "jsonData": "${JSON.stringify(data)}"
                 },
                 "_header1": {
                     "type": "header",

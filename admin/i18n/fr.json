@@ -13,6 +13,7 @@
     "Comma separated": "Séparés par des virgules",
     "Configure via UI": "Configurer via l'UI",
     "Coral Type": "Type de Coral",
+    "Current frigate config.yaml": "Fichier de configuration actuel de la frégate",
     "Days to retain recordings": "Jours de conservation des enregistrements",
     "Detection FPS": "FPS de détection",
     "Detection Height": "Hauteur de détection",

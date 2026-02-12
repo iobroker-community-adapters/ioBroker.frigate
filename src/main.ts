@@ -81,6 +81,7 @@ class FrigateAdapter extends Adapter {
         this.on('ready', this.onReady);
         this.on('stateChange', this.onStateChange);
         this.on('unload', this.onUnload);
+        this.on('message', this.onMessage);
         this.requestClient = axios.create({
             withCredentials: true,
 
@@ -1132,8 +1133,47 @@ class FrigateAdapter extends Adapter {
             }
         }
     }
+    onMessage = (obj: ioBroker.Message): void => {
+        if (obj) {
+            if (obj.command === 'readConfig') {
+                this.log.info('readConfig command received');
+                let config: FrigateAdapterConfig;
+                if (typeof obj.message === 'string') {
+                    try {
+                        config = JSON.parse(obj.message) as FrigateAdapterConfig;
+                    } catch (error) {
+                        this.log.error('Cannot parse config. Please use valid JSON');
+                        this.log.error(error);
+                        this.sendTo(
+                            obj.from,
+                            obj.command,
+                            { error: 'Cannot parse config. Please use valid JSON' },
+                            obj.callback,
+                        );
+                        return;
+                    }
+                } else {
+                    config = obj.message as FrigateAdapterConfig;
+                }
+                const text = createFrigateConfigFile(config);
+                this.sendTo(
+                    obj.from,
+                    obj.command,
+                    {
+                        copyDialog: {
+                            title: 'Current frigate config.yaml',
+                            text,
+                            type: 'yaml',
+                        },
+                    },
+                    obj.callback,
+                );
+            }
+        }
+    };
+
     /**
-     * Is called when adapter shuts down - callback has to be called under any circumstances!
+     * Is called when the adapter shuts down - callback has to be called under any circumstances!
      */
     onUnload = (callback: () => void): void => {
         try {

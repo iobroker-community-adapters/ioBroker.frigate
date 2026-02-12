@@ -13,6 +13,7 @@
     "Comma separated": "Через запятую",
     "Configure via UI": "Настроить через UI",
     "Coral Type": "Тип Coral",
+    "Current frigate config.yaml": "Текущий файл конфигурации \"frigate\" \"config.yaml\"",
     "Days to retain recordings": "Дней хранения записей",
     "Detection FPS": "FPS обнаружения",
     "Detection Height": "Высота обнаружения",
