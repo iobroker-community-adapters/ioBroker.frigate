@@ -185,11 +185,16 @@ class FrigateAdapter extends Adapter {
                 fs.mkdirSync(join(this.config.dockerFrigate.location, 'clips'), { recursive: true });
             }
 
-            // Create config file
+            // Create a config file
             const configFile = createFrigateConfigFile(this.config);
             try {
-                fs.writeFileSync(join(this.config.dockerFrigate.location, 'config', 'config.yml'), configFile);
-                dockerManager?.instanceIsReady();
+                const oldConfigFile = fs.existsSync(join(this.config.dockerFrigate.location, 'config', 'config.yml'))
+                    ? fs.readFileSync(join(this.config.dockerFrigate.location, 'config', 'config.yml'), 'utf-8')
+                    : null;
+                if (oldConfigFile !== configFile) {
+                    fs.writeFileSync(join(this.config.dockerFrigate.location, 'config', 'config.yml'), configFile);
+                }
+                dockerManager?.instanceIsReady(oldConfigFile !== configFile);
             } catch (error) {
                 this.log.error(
                     `Cannot write Frigate config file ${join(this.config.dockerFrigate.location, 'config', 'config.yml')}: ${error}`,
@@ -464,7 +469,7 @@ class FrigateAdapter extends Adapter {
                         }
                     }
 
-                    // Ignore path data for states, because they can be very large and are not needed in ioBroker. They are only used to create the snapshot and event history images.
+                    // Ignore path data for states because they can be very large and are not needed in ioBroker. They are only used to create the snapshot and event history images.
                     FrigateAdapter.removePathData(data);
                     // parse json to iobroker states
                     await this.json2iob.parse(pathArray.join('.'), data === undefined ? dataStr : data, { write });
@@ -494,7 +499,7 @@ class FrigateAdapter extends Adapter {
     }
 
     /**
-     * Handle tracked object update events using JSON-based approach (last 10 updates)
+     * Handle tracked object update events using a JSON-based approach (last 10 updates)
      *
      * @param data - The parsed JSON data from MQTT
      */

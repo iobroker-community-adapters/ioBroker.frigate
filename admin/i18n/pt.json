@@ -41,7 +41,7 @@
   "Frigate YAML configuration": "Configuração YAML da fragata",
   "Frigate configuration type": "Tipo de configuração de fragata",
   "Frigate directory location": "localização do diretório de fragatas",
-  "Frigate directory location must end with a slash (/)": "O caminho do diretório da fragata deve terminar com uma barra (/)",
+  "Frigate directory location must end with a slash (/) and must not be empty": "O caminho do diretório da fragata deve terminar com uma barra (/)",
   "General Settings": "Configurações gerais",
   "Google Coral": "Google Coral",
   "If enabled, the latest Docker image will be pulled when the adapter starts.": "Se ativada, a imagem Docker mais recente será obtida quando o adaptador for iniciado.",

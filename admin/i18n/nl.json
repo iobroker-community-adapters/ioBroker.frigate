@@ -41,7 +41,7 @@
     "Frigate YAML configuration": "Frigate YAML-configuratie",
     "Frigate configuration type": "Frigate-configuratietype",
     "Frigate directory location": "Locatie van de Frigate-map",
-    "Frigate directory location must end with a slash (/)": "De locatie van de Frigate-map moet eindigen met een schuine streep (/)",
+    "Frigate directory location must end with a slash (/) and must not be empty": "De locatie van de Frigate-map moet eindigen met een schuine streep (/)",
     "General Settings": "Algemene instellingen",
     "Google Coral": "Google Coral",
     "If enabled, the latest Docker image will be pulled when the adapter starts.": "Indien ingeschakeld, wordt de nieuwste Docker-image opgehaald wanneer de adapter start.",

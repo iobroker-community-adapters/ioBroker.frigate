@@ -41,7 +41,7 @@
   "Frigate YAML configuration": "Konfiguracja YAML fregaty",
   "Frigate configuration type": "Typ konfiguracji fregaty",
   "Frigate directory location": "Lokalizacja katalogu fregat",
-  "Frigate directory location must end with a slash (/)": "Lokalizacja katalogu fregaty musi kończyć się ukośnikiem (/)",
+  "Frigate directory location must end with a slash (/) and must not be empty": "Lokalizacja katalogu fregaty musi kończyć się ukośnikiem (/)",
   "General Settings": "Ustawienia ogólne",
   "Google Coral": "Google Coral",
   "If enabled, the latest Docker image will be pulled when the adapter starts.": "Jeśli włączone, najnowszy obraz Dockera zostanie pobrany po uruchomieniu adaptera.",

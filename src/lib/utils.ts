@@ -12,10 +12,7 @@ export function createFrigateConfigFile(config: FrigateAdapterConfig): string {
       ${camera.ffmpeg_hwaccel_args ? `hwaccel_args: ${camera.ffmpeg_hwaccel_args}` : ''}
       inputs:
         - path: ${camera.inputs_path}
-          roles:
-${camera.inputs_roles_detect ? '            - detect' : ''}
-${camera.inputs_roles_record ? '            - record' : ''}
-${camera.inputs_roles_snapshots ? '            - snapshots' : ''}
+${camera.inputs_roles_detect || camera.inputs_roles_record || camera.inputs_roles_snapshots ? '          roles:\n' : ''}${camera.inputs_roles_detect ? '            - detect\n' : ''}${camera.inputs_roles_record ? '            - record\n' : ''}${camera.inputs_roles_snapshots ? '            - snapshots\n' : ''}
     detect:
       enabled: ${camera.inputs_roles_detect ? 'true' : 'false'}
 ${camera.detect_width ? `      width: ${camera.detect_width}` : ''}

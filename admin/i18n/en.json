@@ -41,7 +41,7 @@
     "Frigate YAML configuration": "Frigate YAML configuration",
     "Frigate configuration type": "Frigate configuration type",
     "Frigate directory location": "Frigate directory location",
-    "Frigate directory location must end with a slash (/)": "Frigate directory location must end with a slash (/)",
+    "Frigate directory location must end with a slash (/) and must not be empty": "Frigate directory location must end with a slash (/) and must not be empty",
     "General Settings": "General Settings",
     "Google Coral": "Google Coral",
     "If enabled, the latest Docker image will be pulled when the adapter starts.": "If enabled, the latest Docker image will be pulled when the adapter starts.",

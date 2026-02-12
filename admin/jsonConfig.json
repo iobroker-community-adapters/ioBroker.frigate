@@ -298,8 +298,8 @@
                 "dockerFrigate.location": {
                     "newLine": true,
                     "type": "text",
-                    "validator": "!data.dockerFrigate?.location || data.dockerFrigate?.location?.endsWith('/')",
-                    "validatorErrorText": "Frigate directory location must end with a slash (/)",
+                    "validator": "data.dockerFrigate?.location?.endsWith('/')",
+                    "validatorErrorText": "Frigate directory location must end with a slash (/) and must not be empty",
                     "label": "Frigate directory location",
                     "help": "As frigate saves a large amount of data, it is recommended to use a separate directory or disk for it.",
                     "xs": 12

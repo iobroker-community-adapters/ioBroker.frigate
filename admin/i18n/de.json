@@ -41,7 +41,7 @@
     "Frigate YAML configuration": "Frigate YAML-Konfiguration",
     "Frigate configuration type": "Frigate-Konfigurationstyp",
     "Frigate directory location": "Frigate-Verzeichnisspeicherort",
-    "Frigate directory location must end with a slash (/)": "Der Frigate-Verzeichnisspeicherort muss mit einem Schrägstrich (/) enden",
+    "Frigate directory location must end with a slash (/) and must not be empty": "Der Frigate-Verzeichnisspeicherort muss mit einem Schrägstrich (/) enden und darf nicht leer sein",
     "General Settings": "Allgemeine Einstellungen",
     "Google Coral": "Google Coral",
     "If enabled, the latest Docker image will be pulled when the adapter starts.": "Wenn aktiviert, wird das neueste Docker-Image beim Start des Adapters heruntergeladen.",
