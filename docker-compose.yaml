@@ -1,0 +1,38 @@
+version: '3.9'
+
+services:
+    frigate:
+        image: ghcr.io/blakeblackshear/frigate:stable
+        entrypoint: ['/init']
+        privileged: true
+        shm_size: '${config.dockerFrigate.shmSize:-256}m'
+        labels:
+            - 'iobEnabled=${config.dockerFrigate.enabled:-true}'
+            - 'iobStopOnUnload=${config.dockerFrigate.stopIfInstanceStopped:-false}'
+            - 'iobAutoImageUpdate=${config.dockerFrigate.autoImageUpdate:-true}'
+            - 'iobCopyVolumes=./config=>config'
+            - 'iobBackup=frigate_data'
+            - 'iobWaitForReady=true'
+        ports:
+            - '${config.dockerFrigate.bind:-127.0.0.1}:${config.dockerFrigate.port:-5000}:5000'
+            - '8554:8554'
+            - '8555:8555/tcp'
+            - '8555:8555/udp'
+        devices:
+            - /dev/bus/usb:/dev/bus/usb
+        volumes:
+            - '${config.dockerFrigate.location}config:/config'
+            - '${config.dockerFrigate.location}recordings:/media/frigate/recordings'
+            - '${config.dockerFrigate.location}clips:/media/frigate/clips'
+            - 'frigate_logs:/media/frigate/logs'
+            - '/etc/localtime:/etc/localtime:ro'
+        networks:
+            - true
+        restart: unless-stopped
+
+networks:
+    true:
+        driver: bridge
+
+volumes:
+    frigate_logs:
