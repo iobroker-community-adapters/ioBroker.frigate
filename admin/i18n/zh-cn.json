@@ -1,5 +1,6 @@
 {
     "(localhost:5000 or 192.168.178.100:5000)": "(localhost:5000 或 192.168.178.100:5000)",
+    "0% - 100% (0 = Disabled, 100 - absolute sure)": "0% - 100%（0 = 完全无法使用，100 = 绝对可靠）",
     "Additional FFMPEG arguments for the input stream (optional)": "输入流的附加 FFMPEG 参数（可选）",
     "As frigate saves a large amount of data, it is recommended to use a separate directory or disk for it.": "由于 Frigate 会保存大量数据，建议使用单独的目录或磁盘。",
     "Auto-detect (recommended)": "自动检测（推荐）",
@@ -21,6 +22,7 @@
     "Detection Width": "检测宽度",
     "Detection confidence threshold": "检测置信度阈值",
     "Detection height": "检测高度",
+    "Detection threshold": "检测阈值",
     "Detection width": "检测宽度",
     "Detectors": "检测器",
     "Don't send notification when zone list of the event is empty for this cameras": "当这些摄像头的事件区域列表为空时不发送通知",

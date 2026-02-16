@@ -110,6 +110,7 @@ export interface FrigateAdapterConfig extends FrigateAdapterConfigTyped {
             width?: number | string;
             height?: number | string;
             fps?: number | string;
+            min_score?: number;
         };
         cameras?: {
             enabled: boolean;

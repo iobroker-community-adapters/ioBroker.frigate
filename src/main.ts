@@ -109,6 +109,26 @@ class FrigateAdapter extends Adapter {
         if (this.config.dockerFrigate.location && !this.config.dockerFrigate.location.endsWith('/')) {
             this.config.dockerFrigate.location += '/';
         }
+        if (this.config.dockerFrigate.enabled) {
+            this.config.friurl = `${this.config.dockerFrigate.bind}:${this.config.dockerFrigate.port}`;
+            if (this.config.notificationInstances?.replace(/ /g, '')) {
+                const instances = this.config.notificationInstances.replace(/ /g, '').split(',');
+                const ownHost = this.common?.host;
+                if (ownHost) {
+                    for (const instance of instances) {
+                        // check for every instance if it runs on the same host
+                        const obj: ioBroker.InstanceObject | null | undefined = (await this.getForeignObjectAsync(
+                            `system.adapter.${instance}`,
+                        )) as ioBroker.InstanceObject | null | undefined;
+                        if (obj && obj?.common.host !== ownHost) {
+                            this.log.warn(
+                                `Notification will not work, as the "${instance}" is running on different host ("${obj.common.host}") as frigate("${ownHost}"). Change the host of "${instance}" to "${ownHost}"`,
+                            );
+                        }
+                    }
+                }
+            }
+        }
 
         if (!this.config.friurl) {
             this.log.warn('No Frigate url set');
@@ -726,9 +746,7 @@ class FrigateAdapter extends Adapter {
                             const writer = fs.createWriteStream(fileName);
                             await new Promise<void>((resolve, reject) => {
                                 // Propagate errors from both the writable and readable streams
-                                const onError: (error: Error) => void = (error: Error): void => {
-                                    reject(error);
-                                };
+                                const onError: (error: Error) => void = (error: Error): void => reject(error);
                                 writer.on('finish', () => {
                                     writer.removeListener('error', onError);
                                     // Ensure we also stop listening on the source stream
@@ -761,11 +779,11 @@ class FrigateAdapter extends Adapter {
                 await this.sendNotification({
                     source: camera,
                     type: label,
-                    state: state,
-                    status: status,
+                    state,
+                    status,
                     image: fileName,
-                    score: score,
-                    zones: zones,
+                    score,
+                    zones,
                     id: data.before.id,
                 });
             }

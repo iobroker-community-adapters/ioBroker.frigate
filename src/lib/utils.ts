@@ -59,9 +59,7 @@ record:
     days: ${config.dockerFrigate.record?.retain_days || 7}
 detect:
   enabled: ${config.dockerFrigate.detect?.enabled ? 'true' : 'false'}
-${config.dockerFrigate.detect?.width ? `  width: ${config.dockerFrigate.detect.width}` : ''}
-${config.dockerFrigate.detect?.height ? `  height: ${config.dockerFrigate.detect.height}` : ''}
-${config.dockerFrigate.detect?.fps ? `  fps: ${config.dockerFrigate.detect.fps}` : ''}
+${config.dockerFrigate.detect?.width ? `  width: ${config.dockerFrigate.detect.width}\n` : ''}${config.dockerFrigate.detect?.height ? `  height: ${config.dockerFrigate.detect.height}\n` : ''}${config.dockerFrigate.detect?.fps ? `  fps: ${config.dockerFrigate.detect.fps}\n` : ''}${config.dockerFrigate.detect?.min_score ? `  min_score: ${config.dockerFrigate.detect.min_score / 100}\n` : ''}
 version: 0.16-0
 `;
     return text;

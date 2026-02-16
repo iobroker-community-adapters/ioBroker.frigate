@@ -75,7 +75,7 @@ Activate notifications in the settings to receive snapshots or clips.
 
 For Event can enter a minimum score before sending. 0 = Disabled.
 
-Clips are sent 5s (Instance settings) after the event ends.
+Clips are sent 5 seconds (Instance settings) after the event ends.
 
 You can enter custom notification text with placeholder `{{source}} {{type}} erkannt {{status}} {{score}} {{state}}`.
 
@@ -100,6 +100,13 @@ Number of persons:
 Event with Person: 
 - `frigate.0.events.after.label` = person
 
+## Running frigate docker on different host
+If you want to send via telegram and co. the clips and snapshots to the iobroker host,
+the frigate instance and telegram (or other) instance must run on the same host,
+as frigate uses disk to store the clips and snapshots. 
+
+```yaml
+
 ## Discussion and questions
 
 [https://forum.iobroker.net/topic/64928/frigate-adapter-für-iobroker](https://forum.iobroker.net/topic/64928/frigate-adapter-für-iobroker)
@@ -110,11 +117,11 @@ Event with Person:
     Placeholder for the next version (at the beginning of the line):
   ### **WORK IN PROGRESS**
 -->
-### 2.0.0-alpha.1 (2026-02-12)
+### **WORK IN PROGRESS**
 - (@GermanBluefox) Adapter was migrated to TypeScript
 - (@GermanBluefox) Breaking change: All states with value ON/OFF were changed to boolean true/false
 - (@GermanBluefox) Better handling of complex objects and arrays
-- (@GermanBluefox) path_data is not parsed anymore
+- (@GermanBluefox) `path_data` is not parsed anymore
 - (@GermanBluefox) Added еру possibility to start and manage docker with frigate from the adapter
 
 ### 1.4.0 (2026-01-26)

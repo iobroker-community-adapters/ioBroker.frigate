@@ -1,5 +1,6 @@
 {
     "(localhost:5000 or 192.168.178.100:5000)": "(localhost:5000 or 192.168.178.100:5000)",
+    "0% - 100% (0 = Disabled, 100 - absolute sure)": "0% - 100% (0 = Disabled, 100 - absolute sure)",
     "Additional FFMPEG arguments for the input stream (optional)": "Additional FFMPEG arguments for the input stream (optional)",
     "As frigate saves a large amount of data, it is recommended to use a separate directory or disk for it.": "As frigate saves a large amount of data, it is recommended to use a separate directory or disk for it.",
     "Auto-detect (recommended)": "Auto-detect (recommended)",
@@ -21,6 +22,7 @@
     "Detection Width": "Detection Width",
     "Detection confidence threshold": "Detection confidence threshold",
     "Detection height": "Detection height",
+    "Detection threshold": "Detection threshold",
     "Detection width": "Detection width",
     "Detectors": "Detectors",
     "Don't send notification when zone list of the event is empty for this cameras": "Don't send notification when zone list of the event is empty for this cameras",

@@ -260,7 +260,6 @@
             "items": {
                 "dockerFrigate.bind": {
                     "newLine": true,
-                    "listenOnAllPorts": true,
                     "type": "ip",
                     "label": "Start container on IP",
                     "sm": 12,
@@ -470,26 +469,13 @@
                     "xs": 12,
                     "md": 4
                 },
-                "dockerFrigate.detect.confidence_threshold": {
-                    "type": "number",
-                    "label": "Detection confidence threshold",
+                "dockerFrigate.detect.min_score": {
+                    "type": "slider",
+                    "min": 0,
+                    "max": 100,
+                    "label": "Detection threshold",
+                    "help": "0% - 100% (0 = Disabled, 100 - absolute sure)",
                     "tooltip": "The confidence threshold for object detection. Setting this can help reduce false positives by ignoring detections with low confidence scores.",
-                    "hidden": "data.dockerFrigate.configType !== 'ui' || !data.dockerFrigate.detect.enabled",
-                    "xs": 12,
-                    "md": 4
-                },
-                "dockerFrigate.detect.nms_threshold": {
-                    "type": "number",
-                    "label": "Detection NMS threshold",
-                    "tooltip": "The non-maximum suppression (NMS) threshold for object detection. Setting this can help reduce false positives by suppressing overlapping detections of the same object.",
-                    "hidden": "data.dockerFrigate.configType !== 'ui' || !data.dockerFrigate.detect.enabled",
-                    "xs": 12,
-                    "md": 4
-                },
-                "dockerFrigate.detect.max_objects": {
-                    "type": "number",
-                    "label": "Maximum number of objects to detect per frame",
-                    "tooltip": "The maximum number of objects that will be detected in each frame. Setting this can help manage performance by limiting the number of detections, but may also result in missed detections if set too low.",
                     "hidden": "data.dockerFrigate.configType !== 'ui' || !data.dockerFrigate.detect.enabled",
                     "xs": 12,
                     "md": 4
