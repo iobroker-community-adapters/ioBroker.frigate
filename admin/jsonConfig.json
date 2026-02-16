@@ -253,7 +253,7 @@
                 }
             }
         },
-        "dockerFrigate": {
+        "_dockerFrigate": {
             "type": "panel",
             "label": "Frigate Docker",
             "hidden": "!data.dockerFrigate?.enabled",
@@ -302,7 +302,14 @@
                     "label": "Frigate directory location",
                     "help": "As frigate saves a large amount of data, it is recommended to use a separate directory or disk for it.",
                     "xs": 12
-                },
+                }
+            }
+        },
+        "_dockerFrigateSettings": {
+            "type": "panel",
+            "label": "Frigate Settings",
+            "hidden": "!data.dockerFrigate?.enabled",
+            "items": {
                 "dockerFrigate.configType": {
                     "type": "select",
                     "label": "Frigate configuration type",

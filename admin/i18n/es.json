@@ -41,6 +41,7 @@
     "Frigate Docker": "Frigate Docker",
     "Frigate Hostname:Port": "Frigate host:puerto",
     "Frigate Hostname:Port (localhost:5000 or 192.168.178.100:5000)": "Nombre de host de la fragata: Puerto (localhost:5000 o 192.168.178.100:5000)",
+    "Frigate Settings": "Configuración de \"Frigate\"",
     "Frigate YAML configuration": "Configuración YAML de Frigate",
     "Frigate configuration type": "Tipo de configuración de Frigate",
     "Frigate directory location": "Ubicación del directorio de Frigate",

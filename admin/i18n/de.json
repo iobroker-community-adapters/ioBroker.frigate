@@ -41,6 +41,7 @@
     "Frigate Docker": "Frigate Docker",
     "Frigate Hostname:Port": "Frigate Hostname:Port",
     "Frigate Hostname:Port (localhost:5000 or 192.168.178.100:5000)": "Frigate Hostname:Port (localhost:5000 oder 192.168.178.100:5000)",
+    "Frigate Settings": "„Frigate“-Einstellungen",
     "Frigate YAML configuration": "Frigate YAML-Konfiguration",
     "Frigate configuration type": "Frigate-Konfigurationstyp",
     "Frigate directory location": "Frigate-Verzeichnisspeicherort",

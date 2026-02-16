@@ -41,6 +41,7 @@
     "Frigate Docker": "Frigate Docker",
     "Frigate Hostname:Port": "Frigate 主机名:端口",
     "Frigate Hostname:Port (localhost:5000 or 192.168.178.100:5000)": "Frigate 主机名:端口（localhost:5000 或 192.168.178.100:5000）",
+    "Frigate Settings": "“护卫舰”设置",
     "Frigate YAML configuration": "Frigate YAML 配置",
     "Frigate configuration type": "Frigate 配置类型",
     "Frigate directory location": "Frigate 目录位置",
