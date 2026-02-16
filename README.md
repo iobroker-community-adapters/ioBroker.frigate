@@ -117,7 +117,7 @@ as frigate uses disk to store the clips and snapshots.
     Placeholder for the next version (at the beginning of the line):
   ### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 2.0.2 (2026-02-16)
 - (@GermanBluefox) Removed gpu_usages
 
 ### 2.0.0 (2026-02-16)
