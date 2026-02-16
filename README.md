@@ -117,7 +117,7 @@ as frigate uses disk to store the clips and snapshots.
     Placeholder for the next version (at the beginning of the line):
   ### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 2.0.1 (2026-02-16)
 - (@GermanBluefox) Removed gpu_usages
 
 ### 2.0.0 (2026-02-16)
@@ -145,10 +145,6 @@ as frigate uses disk to store the clips and snapshots.
 - (TA2k) move clip url from mp4 to m3u8
 - (mcm1957) Adapter requires js-controller 5.0.19 as minimum now.
 - (mcm1957) Several issues reported by the adapter checker have been fixed.
-
-### 1.3.1 (2024-08-30)
-
-- fixed too many states
 
 ## License
 

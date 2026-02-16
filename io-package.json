@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "frigate",
-    "version": "2.0.0",
+    "version": "2.0.1",
     "news": {
+      "2.0.1": {
+        "en": "Removed gpu_usages",
+        "de": "Entfernt gpu_usages",
+        "ru": "Удаление gpu_usages",
+        "pt": "Gpu_usages removidos",
+        "nl": "Gpu_usages verwijderd",
+        "fr": "Supprimé gpu_usages",
+        "it": "Rimozione di gpu_usages",
+        "es": "Quitar gpu_usages",
+        "pl": "Usunięto gpu _ usements",
+        "uk": "Видалити gpu_usages",
+        "zh-cn": "删除 gpu_us"
+      },
       "2.0.0": {
         "en": "Adapter was migrated to TypeScript\nBreaking change: All states with value ON/OFF were changed to boolean true/false\nBetter handling of complex objects and arrays\n`path_data` is not parsed anymore\nAdded еру possibility to start and manage docker with frigate from the adapter",
         "de": "Adapter wurde auf TypeScript migriert\nBruchänderung: Alle Zustände mit Wert ON/OFF wurden in boolean true/false geändert\nBessere Handhabung komplexer Objekte und Arrays\n`path_data` ist nicht mehr pariert\nHinzugefügt еру Möglichkeit, zu starten und zu verwalten Docker mit frigate aus dem Adapter",
@@ -80,19 +93,6 @@
         "pl": "stałe w wielu stanach",
         "uk": "фіксований на багато штатів",
         "zh-cn": "固定到许多州"
-      },
-      "1.3.0": {
-        "en": "fix for frigate v0.14",
-        "de": "Fix für frigate v0.14",
-        "ru": "для фрегата v0.14",
-        "pt": "correção para fragata v0.14",
-        "nl": "fix voor fregat v0.14",
-        "fr": "correction pour la frégate v0,14",
-        "it": "correzione per fregata v0.14",
-        "es": "fijado para frigate v0.14",
-        "pl": "fix for fregate v0.14",
-        "uk": "фіксатор для фригату v0.14",
-        "zh-cn": "v0.14型护卫舰的固定装置"
       }
     },
     "titleLang": {

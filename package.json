@@ -1,6 +1,6 @@
 {
   "name": "iobroker.frigate",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Adapter for Frigate",
   "author": "TA2k <tombox2020@gmail.com>",
   "contributors": [

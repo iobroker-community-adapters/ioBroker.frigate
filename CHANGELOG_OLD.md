@@ -1,4 +1,8 @@
 # Older changes
+## 1.3.1 (2024-08-30)
+
+- fixed too many states
+
 ## 1.3.0 (2024-07-29)
 
 - fix for frigate v0.14
