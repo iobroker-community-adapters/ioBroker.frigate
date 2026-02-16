@@ -280,7 +280,7 @@ class FrigateAdapter extends Adapter {
                 }
             } else {
                 for (const key in obj) {
-                    if (key === 'path_data') {
+                    if (key === 'path_data' || key === 'gpu_usages') {
                         delete obj[key];
                     } else if (Array.isArray(obj[key]) && obj[key].length === 0) {
                         // Delete empty arrays
@@ -409,6 +409,9 @@ class FrigateAdapter extends Adapter {
                             return;
                         }
 
+                        // Ignore path data for states because they can be very large and are not needed in ioBroker. They are only used to create the snapshot and event history images.
+                        FrigateAdapter.removePathData(data);
+
                         // convert snapshot jpg to base64 with data url
                         if (event === 'snapshot') {
                             data = `data:image/jpeg;base64,${packet.payload.toString('base64')}`;
@@ -490,8 +493,6 @@ class FrigateAdapter extends Adapter {
                         }
                     }
 
-                    // Ignore path data for states because they can be very large and are not needed in ioBroker. They are only used to create the snapshot and event history images.
-                    FrigateAdapter.removePathData(data);
                     // parse json to iobroker states
                     await this.json2iob.parse(pathArray.join('.'), data === undefined ? dataStr : data, { write });
                 } catch (error) {
