@@ -476,14 +476,25 @@
                     "xs": 12,
                     "md": 4
                 },
-                "dockerFrigate.detect.min_score": {
+                "dockerFrigate.objects.min_score": {
                     "type": "slider",
                     "min": 0,
                     "max": 100,
-                    "label": "Detection threshold",
+                    "label": "Person detection minimal score",
+                    "help": "0% - 100% (0 = Disabled, 100 - absolute sure)",
+                    "tooltip": "The minmal score to start the object detection.",
+                    "hidden": "data.dockerFrigate.configType !== 'ui' || !data.dockerFrigate.detect.enabled",
+                    "xs": 12,
+                    "md": 4
+                },
+                "dockerFrigate.objects.threshold": {
+                    "type": "slider",
+                    "min": 0,
+                    "max": 100,
+                    "label": "Person Detection threshold",
                     "help": "0% - 100% (0 = Disabled, 100 - absolute sure)",
                     "tooltip": "The confidence threshold for object detection. Setting this can help reduce false positives by ignoring detections with low confidence scores.",
-                    "hidden": "data.dockerFrigate.configType !== 'ui' || !data.dockerFrigate.detect.enabled",
+                    "hidden": "data.dockerFrigate.configType !== 'ui' || !data.dockerFrigate.detect.enabled || !data.dockerFrigate.objects.min_score",
                     "xs": 12,
                     "md": 4
                 },

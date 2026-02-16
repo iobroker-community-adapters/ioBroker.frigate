@@ -1,5 +1,24 @@
 import type { FrigateAdapterConfig } from '../types';
 
+function generateObjectsConfig(config: FrigateAdapterConfig): string {
+    const objects = config.dockerFrigate.objects;
+    if (!objects?.min_score) {
+        return '';
+    }
+
+    let result = 'objects:\n';
+
+    // Generate filters section
+    result += '  filters:\n';
+    result += `    person\n`;
+    result += `      min_score: ${objects.min_score / 100}\n`;
+    if (objects.threshold !== undefined) {
+        result += `      threshold: ${objects.threshold / 100}\n`;
+    }
+
+    return result;
+}
+
 export function createFrigateConfigFile(config: FrigateAdapterConfig): string {
     if (config.dockerFrigate.configType === 'yaml' && config.dockerFrigate.yaml) {
         return config.dockerFrigate.yaml;
@@ -59,7 +78,7 @@ record:
     days: ${config.dockerFrigate.record?.retain_days || 7}
 detect:
   enabled: ${config.dockerFrigate.detect?.enabled ? 'true' : 'false'}
-${config.dockerFrigate.detect?.width ? `  width: ${config.dockerFrigate.detect.width}\n` : ''}${config.dockerFrigate.detect?.height ? `  height: ${config.dockerFrigate.detect.height}\n` : ''}${config.dockerFrigate.detect?.fps ? `  fps: ${config.dockerFrigate.detect.fps}\n` : ''}${config.dockerFrigate.detect?.min_score ? `  min_score: ${config.dockerFrigate.detect.min_score / 100}\n` : ''}
+${config.dockerFrigate.detect?.width ? `  width: ${config.dockerFrigate.detect.width}\n` : ''}${config.dockerFrigate.detect?.height ? `  height: ${config.dockerFrigate.detect.height}\n` : ''}${config.dockerFrigate.detect?.fps ? `  fps: ${config.dockerFrigate.detect.fps}\n` : ''}${generateObjectsConfig(config)}
 version: 0.16-0
 `;
     return text;

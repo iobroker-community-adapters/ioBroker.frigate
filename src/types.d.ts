@@ -45,6 +45,10 @@ export interface FrigateAdapterConfigTyped {
             height: number;
             fps: number;
         };
+        objects: {
+            min_score: number;
+            threshold: number;
+        };
         cameras: {
             ffmpeg_hwaccel_args: string;
             inputs_path: string;
@@ -110,7 +114,10 @@ export interface FrigateAdapterConfig extends FrigateAdapterConfigTyped {
             width?: number | string;
             height?: number | string;
             fps?: number | string;
+        };
+        objects?: {
             min_score?: number;
+            threshold?: number;
         };
         cameras?: {
             enabled: boolean;
