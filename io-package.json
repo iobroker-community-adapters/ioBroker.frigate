@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "frigate",
-    "version": "2.0.0-alpha.1",
+    "version": "2.0.0",
     "news": {
+      "2.0.0": {
+        "en": "Adapter was migrated to TypeScript\nBreaking change: All states with value ON/OFF were changed to boolean true/false\nBetter handling of complex objects and arrays\n`path_data` is not parsed anymore\nAdded еру possibility to start and manage docker with frigate from the adapter",
+        "de": "Adapter wurde auf TypeScript migriert\nBruchänderung: Alle Zustände mit Wert ON/OFF wurden in boolean true/false geändert\nBessere Handhabung komplexer Objekte und Arrays\n`path_data` ist nicht mehr pariert\nHinzugefügt еру Möglichkeit, zu starten und zu verwalten Docker mit frigate aus dem Adapter",
+        "ru": "Адаптер был перенесен в TypeScript\nПереломные изменения: Все состояния со значением ON/OFF были изменены на boolean true/false\nЛучшая обработка сложных объектов и массивов\npath_data больше не разбирается\nДобавлена возможность запуска и управления докером с фрегата от адаптера",
+        "pt": "O adaptador foi migrado para TypeScript\nMudança de quebra: Todos os estados com valor ON/OFF foram alterados para booleano true/false\nMelhor manuseio de objetos e arrays complexos\n`path_data` já não é analisado\nAdicionado еру possibilidade de iniciar e gerenciar docker com fragata do adaptador",
+        "nl": "Adapter is gemigreerd naar TypeScript\nVerandering: Alle staten met waarde ON/OFF werden veranderd in boolean true/false\nBeter omgaan met complexe objecten en arrays\nde gegevens worden niet meer ontleed\nToegevoegd еру mogelijkheid om docker te starten en te beheren met fregat van de adapter",
+        "fr": "L'adaptateur a été migré vers TypeScript\nBriser le changement : Tous les états avec valeur ON/OFF ont été changés en booléen vrai/faux\nMeilleure gestion des objets et des tableaux complexes\n`path_data` n'est plus analysé\nAjout de la possibilité еру de démarrer et de gérer docker avec la frégate de l'adaptateur",
+        "it": "L'adattatore è stato migrato a TypeScript\nCambiamento di rottura: Tutti gli stati con valore ON/OFF sono stati modificati in booleano vero/falso\nUna migliore gestione di oggetti e array complessi\n`path_data` non è più parsed\nAggiunto еру possibilità di avviare e gestire docker con fregata dall'adattatore",
+        "es": "Adaptador fue migrado a TipoScript\nCambio de ruptura: Todos los estados con valor ON/OFF fueron cambiados a booleano verdadero/falso\nMejor manejo de objetos y arrays complejos\n`path_data` ya no es pareado\nAñadido еру posibilidad de comenzar y gestionar docker con fragata del adaptador",
+        "pl": "Adapter został przeniesiony do TypeScript\nŁamanie zmian: Wszystkie stany o wartości ON / OFF zostały zmienione na boolean true / false\nLepsza obsługa złożonych przedmiotów i tablic\n'path _ data' nie jest już obsługiwane\nDodano możliwość uruchomienia i zarządzania dokiem z fregatą z adaptera",
+        "uk": "Адаптер був мігрований до TypeScript\nЗміна розривів: Всі стани з значенням ON/OFF були змінені на boolean true/false\nКраще обслуговування складних об'єктів і масивів\n`path_data``` не входить до складу\nДодана можливість запуску і управління кермом з фригатом з адаптера",
+        "zh-cn": "适配器已迁移到类型脚本\n中断更改 : 价值为O/OFF的所有州改为布尔真/假\n更好地处理复杂的对象和阵列\n\" path_data \" 不再分析\n添加 QQ 启动和管理适配器护卫舰的可能性"
+      },
       "2.0.0-alpha.1": {
         "en": "Adapter was migrated to TypeScript\nBreaking change: All states with value ON/OFF were changed to boolean true/false\nBetter handling of complex objects and arrays\npath_data is not parsed anymore\nAdded еру possibility to start and manage docker with frigate from the adapter",
         "de": "Adapter wurde auf TypeScript migriert\nBruchänderung: Alle Zustände mit Wert ON/OFF wurden in boolean true/false geändert\nBessere Handhabung komplexer Objekte und Arrays\npath_data wird nicht mehr pariert\nHinzugefügt еру Möglichkeit, zu starten und zu verwalten Docker mit frigate aus dem Adapter",
@@ -80,19 +93,6 @@
         "pl": "fix for fregate v0.14",
         "uk": "фіксатор для фригату v0.14",
         "zh-cn": "v0.14型护卫舰的固定装置"
-      },
-      "1.2.1": {
-        "en": "add remote to restart frigate",
-        "de": "remote hinzugefügt, um frigate neu zu starten",
-        "ru": "добавить удаленный перезапуск фрегата",
-        "pt": "adicionar remoto para reiniciar fragata",
-        "nl": "toe te voegen aan fregat herstarten",
-        "fr": "ajouter la télécommande pour redémarrer la frégate",
-        "it": "aggiungere il telecomando per riavviare la fregata",
-        "es": "añadir remoto para reiniciar fragata",
-        "pl": "dodaj zdalny do ponownego uruchomienia fregaty",
-        "uk": "додати віддалений для перезавантаження фригату",
-        "zh-cn": "添加远程到重新启动护卫舰"
       }
     },
     "titleLang": {
