@@ -105,7 +105,6 @@ If you want to send via telegram and co. the clips and snapshots to the iobroker
 the frigate instance and telegram (or other) instance must run on the same host,
 as frigate uses disk to store the clips and snapshots. 
 
-
 ## Discussion and questions
 
 [https://forum.iobroker.net/topic/64928/frigate-adapter-für-iobroker](https://forum.iobroker.net/topic/64928/frigate-adapter-für-iobroker)
@@ -116,6 +115,9 @@ as frigate uses disk to store the clips and snapshots.
     Placeholder for the next version (at the beginning of the line):
   ### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+- (@GermanBluefox) Code optimizations and refactoring
+
 ### 2.0.2 (2026-02-16)
 - (@GermanBluefox) Removed gpu_usages
 

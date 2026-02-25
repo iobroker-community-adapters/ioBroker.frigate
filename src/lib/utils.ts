@@ -10,7 +10,7 @@ function generateObjectsConfig(config: FrigateAdapterConfig): string {
 
     // Generate filters section
     result += '  filters:\n';
-    result += `    person\n`;
+    result += `    person:\n`;
     result += `      min_score: ${objects.min_score / 100}\n`;
     if (objects.threshold !== undefined) {
         result += `      threshold: ${objects.threshold / 100}\n`;
@@ -59,7 +59,7 @@ detectors:
           : config.dockerFrigate.detectors === 'coral'
             ? `coral:
     type: edgetpu
-    device: usb
+    device: ${config.dockerFrigate.detectorsCoralType || 'usb'}
 `
             : `standard_detector:
     type: auto
@@ -76,7 +76,7 @@ record:
   enabled: ${config.dockerFrigate.record?.enabled ? 'true' : 'false'}
   retain:
     days: ${config.dockerFrigate.record?.retain_days || 7}
-detect:
+${config.dockerFrigate.record?.pre_capture || config.dockerFrigate.record?.post_capture || config.dockerFrigate.record?.max_clip_length ? `  events:\n${config.dockerFrigate.record?.pre_capture ? `    pre_capture: ${config.dockerFrigate.record.pre_capture}\n` : ''}${config.dockerFrigate.record?.post_capture ? `    post_capture: ${config.dockerFrigate.record.post_capture}\n` : ''}${config.dockerFrigate.record?.max_clip_length ? `    max_clip_length: ${config.dockerFrigate.record.max_clip_length}\n` : ''}` : ''}detect:
   enabled: ${config.dockerFrigate.detect?.enabled ? 'true' : 'false'}
 ${config.dockerFrigate.detect?.width ? `  width: ${config.dockerFrigate.detect.width}\n` : ''}${config.dockerFrigate.detect?.height ? `  height: ${config.dockerFrigate.detect.height}\n` : ''}${config.dockerFrigate.detect?.fps ? `  fps: ${config.dockerFrigate.detect.fps}\n` : ''}${generateObjectsConfig(config)}
 version: 0.16-0

@@ -60,7 +60,7 @@ type FrigateMessage = {
 class FrigateAdapter extends Adapter {
     declare config: FrigateAdapterConfig;
     private server: Server;
-    private requestClient: AxiosInstance;
+    private readonly requestClient: AxiosInstance;
     private json2iob: Json2iob;
     private tmpDir = tmpdir();
     private notificationMinScore: number | null = null;
@@ -69,7 +69,7 @@ class FrigateAdapter extends Adapter {
     private notificationsLog: { [id: string]: boolean } = {};
     private trackedObjectsHistory: FrigateMessage[] = [];
     private notificationExcludeArray: string[] = [];
-    private aedes: Aedes;
+    private readonly aedes: Aedes;
 
     constructor(options?: Partial<AdapterOptions>) {
         super({
@@ -132,8 +132,7 @@ class FrigateAdapter extends Adapter {
 
         if (!this.config.friurl) {
             this.log.warn('No Frigate url set');
-        }
-        if (this.config.friurl.includes(':8971')) {
+        } else if (this.config.friurl.includes(':8971')) {
             this.log.warn('You are using the UI port 8971. Please use the API port 5000');
         }
         this.config.notificationMinScore = parseFloat(this.config.notificationMinScore as string) || 0;
@@ -325,7 +324,7 @@ class FrigateAdapter extends Adapter {
             this.trackedObjectsHistory = [];
             this.log.info('Cleaned all tracked objects');
         } catch (error) {
-            this.log.warn(`Error cleaning tracked objects: ${error.message}`);
+            this.log.warn(`Error cleaning tracked objects: ${error instanceof Error ? error.message : String(error)}`);
         }
     }
 
@@ -343,6 +342,7 @@ class FrigateAdapter extends Adapter {
                 this.log.error(
                     `Please check if port ${this.config.mqttPort} is already in use. Use a different port in instance and frigate settings or restart ioBroker.`,
                 );
+                this.terminate();
             });
 
         this.aedes.on('client', async (client: Client): Promise<void> => {
@@ -552,8 +552,8 @@ class FrigateAdapter extends Adapter {
                 `Stored tracked object update. History now contains ${this.trackedObjectsHistory.length} entries`,
             );
         } catch (error) {
-            this.log.error(`Error handling tracked object update: ${error.message}`);
-            this.log.error(error.stack);
+            this.log.error(`Error handling tracked object update: ${error instanceof Error ? error.message : String(error)}`);
+            this.log.error(error instanceof Error ? (error.stack ?? '') : String(error));
         }
     }
 
@@ -915,43 +915,44 @@ class FrigateAdapter extends Adapter {
             if (device) {
                 params.cameras = device;
             }
-            await this.requestClient({
-                url: `http://${this.config.friurl}/api/events`,
-                method: 'get',
-                params,
-            })
-                .then(async response => {
-                    if (response.data) {
-                        this.log.debug(`fetchEventHistory successful ${device}`);
+            try {
+                const response = await this.requestClient({
+                    url: `http://${this.config.friurl}/api/events`,
+                    method: 'get',
+                    params,
+                });
+                if (response.data) {
+                    this.log.debug(`fetchEventHistory successful ${device}`);
 
-                        for (const event of response.data) {
-                            event.websnap = `http://${this.config.friurl}/api/events/${event.id}/snapshot.jpg`;
-                            event.webclip = `http://${this.config.friurl}/api/events/${event.id}/clip.mp4`;
-                            event.webm3u8 = `http://${this.config.friurl}/vod/event/${event.id}/master.m3u8`;
-                            event.thumbnail = `data:image/jpeg;base64,${event.thumbnail}`;
-                            delete event.path_data;
-                        }
-                        let path = 'events.history';
-                        if (device) {
-                            path = `${device}.history`;
-                        }
-                        // Ignore path data for states, because they can be very large and are not needed in ioBroker. They are only used to create the snapshot and event history images.
-                        FrigateAdapter.removePathData(response.data);
+                    for (const event of response.data) {
+                        event.websnap = `http://${this.config.friurl}/api/events/${event.id}/snapshot.jpg`;
+                        event.webclip = `http://${this.config.friurl}/api/events/${event.id}/clip.mp4`;
+                        event.webm3u8 = `http://${this.config.friurl}/vod/event/${event.id}/master.m3u8`;
+                        event.thumbnail = `data:image/jpeg;base64,${event.thumbnail}`;
+                        delete event.path_data;
+                    }
+                    let path = 'events.history';
+                    if (device) {
+                        path = `${device}.history`;
+                    }
+                    // Ignore path data for states, because they can be very large and are not needed in ioBroker. They are only used to create the snapshot and event history images.
+                    FrigateAdapter.removePathData(response.data);
 
-                        await this.json2iob.parse(path, response.data, {
-                            forceIndex: true,
-                            channelName: 'Events history',
-                        });
+                    await this.json2iob.parse(path, response.data, {
+                        forceIndex: true,
+                        channelName: 'Events history',
+                    });
+                    if (!device) {
                         await this.setStateAsync('events.history.json', JSON.stringify(response.data), true);
                     }
-                })
-                .catch(error => {
-                    this.log.warn(`fetchEventHistory error from http://${this.config.friurl}/api/events`);
-                    if (error.response && error.response.status >= 500) {
-                        this.log.warn('Cannot reach server. You can ignore this after restarting the frigate server.');
-                    }
-                    this.log.warn(error);
-                });
+                }
+            } catch (error) {
+                this.log.warn(`fetchEventHistory error from http://${this.config.friurl}/api/events`);
+                if (error.response && error.response.status >= 500) {
+                    this.log.warn('Cannot reach server. You can ignore this after restarting the frigate server.');
+                }
+                this.log.warn(error);
+            }
         }
     }
 
@@ -1038,15 +1039,15 @@ class FrigateAdapter extends Adapter {
             } else if (
                 message.score != null &&
                 this.notificationMinScore &&
-                message.score < (this.config.notificationMinScore as number)
+                message.score < this.notificationMinScore
             ) {
                 this.log.info(
-                    `Notification skipped score ${message.score} is lower than ${this.config.notificationMinScore} state  ${message.state} type ${message.type}`,
+                    `Notification skipped score ${message.score} is lower than ${this.notificationMinScore} state  ${message.state} type ${message.type}`,
                 );
                 return;
             }
             this.log.debug(
-                `Notification score ${message.score} is higher than ${this.config.notificationMinScore} type ${message.type}`,
+                `Notification score ${message.score} is higher than ${this.notificationMinScore} type ${message.type}`,
             );
 
             const sendInstances = this.config.notificationInstances.replace(/ /g, '').split(',');
@@ -1076,6 +1077,12 @@ class FrigateAdapter extends Adapter {
             this.log.debug(`Notification message ${messageText} file ${fileName} type ${type}`);
             if (message.id) {
                 this.notificationsLog[message.id] = true;
+                const logKeys = Object.keys(this.notificationsLog);
+                if (logKeys.length > 1000) {
+                    for (const key of logKeys.slice(0, logKeys.length - 1000)) {
+                        delete this.notificationsLog[key];
+                    }
+                }
             }
             for (const sendInstance of sendInstances) {
                 if (!sendInstance) {
@@ -1196,7 +1203,7 @@ class FrigateAdapter extends Adapter {
      */
     onUnload = (callback: () => void): void => {
         try {
-            this.server.close(() => callback?.());
+            this.aedes.close(() => this.server.close(() => callback?.()));
         } catch (e) {
             this.log.error(`Error onUnload: ${e}`);
             callback();
@@ -1225,7 +1232,7 @@ class FrigateAdapter extends Adapter {
                             cmd: 'publish',
                             qos: 0,
                             topic,
-                            payload: state.val as string,
+                            payload: Buffer.from(String(state.val ?? '')),
                             retain: false,
                             dup: false,
                         },
@@ -1314,7 +1321,7 @@ class FrigateAdapter extends Adapter {
                         .replace('pauseNotificationsForTime', 'pauseNotifications')
                         .replace(`${this.name}.${this.instance}.`, '');
                     await this.setStateAsync(pauseId, true, true);
-                    let deviceId = id.split('.')[0];
+                    let deviceId = id.split('.')[2];
                     if (deviceId === 'remote') {
                         deviceId = 'all';
                     }

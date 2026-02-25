@@ -97,13 +97,7 @@ export default class Json2iob {
             }
             const objectKeys = Object.keys(element);
 
-            if (!options?.write) {
-                if (!options) {
-                    options = { write: false };
-                } else {
-                    options.write = false;
-                }
-            }
+            options.write = options.write ?? false;
 
             path = path.toString().replace(this.forbiddenCharsRegex, '_');
 
@@ -383,10 +377,11 @@ export default class Json2iob {
                     await this.parse(`${path}.${key}.${arrayElement.replace(/\./g, '')}`, arrayElement, options);
                     continue;
                 }
-                if (typeof arrayElement[Object.keys(arrayElement)[0]] === 'string') {
-                    arrayPath = arrayElement[Object.keys(arrayElement)[0]];
+                const arrayElementKeys = Object.keys(arrayElement);
+                if (typeof arrayElement[arrayElementKeys[0]] === 'string') {
+                    arrayPath = arrayElement[arrayElementKeys[0]];
                 }
-                for (const keyName of Object.keys(arrayElement)) {
+                for (const keyName of arrayElementKeys) {
                     if (keyName.endsWith('Id') && arrayElement[keyName] !== null) {
                         if (arrayElement[keyName]?.replace) {
                             arrayPath = arrayElement[keyName].replace(/\./g, '');
@@ -395,7 +390,7 @@ export default class Json2iob {
                         }
                     }
                 }
-                for (const keyName in Object.keys(arrayElement)) {
+                for (const keyName of arrayElementKeys) {
                     if (keyName.endsWith('Name')) {
                         if (arrayElement[keyName]?.replace) {
                             arrayPath = arrayElement[keyName].replace(/\./g, '');
@@ -479,12 +474,12 @@ export default class Json2iob {
                 // special case array with 2 string objects
                 if (
                     !options.forceIndex &&
-                    Object.keys(arrayElement).length === 2 &&
-                    typeof Object.keys(arrayElement)[0] === 'string' &&
-                    typeof Object.keys(arrayElement)[1] === 'string' &&
-                    typeof arrayElement[Object.keys(arrayElement)[0]] !== 'object' &&
-                    typeof arrayElement[Object.keys(arrayElement)[1]] !== 'object' &&
-                    arrayElement[Object.keys(arrayElement)[0]] !== 'null'
+                    arrayElementKeys.length === 2 &&
+                    typeof arrayElementKeys[0] === 'string' &&
+                    typeof arrayElementKeys[1] === 'string' &&
+                    typeof arrayElement[arrayElementKeys[0]] !== 'object' &&
+                    typeof arrayElement[arrayElementKeys[1]] !== 'object' &&
+                    arrayElement[arrayElementKeys[0]] !== 'null'
                 ) {
                     // create a channel
                     await this.adapter.extendObjectAsync(
@@ -498,8 +493,8 @@ export default class Json2iob {
                         },
                         options,
                     );
-                    let subKey = arrayElement[Object.keys(arrayElement)[0]];
-                    let subValue = arrayElement[Object.keys(arrayElement)[1]];
+                    let subKey = arrayElement[arrayElementKeys[0]];
+                    let subValue = arrayElement[arrayElementKeys[1]];
 
                     if (
                         (options.parseBase64 && this._isBase64(subValue)) ||

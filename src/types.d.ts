@@ -38,6 +38,9 @@ export interface FrigateAdapterConfigTyped {
         record: {
             enabled: boolean;
             retain_days: number;
+            pre_capture?: number;
+            post_capture?: number;
+            max_clip_length?: number;
         };
         detect: {
             enabled: boolean;
@@ -108,6 +111,9 @@ export interface FrigateAdapterConfig extends FrigateAdapterConfigTyped {
         record?: {
             enabled?: boolean;
             retain_days?: number | string;
+            pre_capture?: number | string;
+            post_capture?: number | string;
+            max_clip_length?: number | string;
         };
         detect?: {
             enabled?: boolean;
