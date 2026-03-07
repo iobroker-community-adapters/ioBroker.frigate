@@ -115,7 +115,7 @@ as frigate uses disk to store the clips and snapshots.
     Placeholder for the next version (at the beginning of the line):
   ### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 2.1.0 (2026-03-07)
 - (@GermanBluefox) Code optimizations and refactoring
 - (copilot) missing jsonConfig sizes have been added
 - (mcm1957) dependencies have been updated
@@ -141,13 +141,6 @@ as frigate uses disk to store the clips and snapshots.
 - (copilot) Adapter requires admin >= 7.6.17 now
 
 - (mcm1957) Adapter requires admin 6.17.14 as minimum now.
-
-### 1.3.2 (2025-05-06)
-
-- (TA2k) remove path_data from v0.16
-- (TA2k) move clip url from mp4 to m3u8
-- (mcm1957) Adapter requires js-controller 5.0.19 as minimum now.
-- (mcm1957) Several issues reported by the adapter checker have been fixed.
 
 ## License
 
