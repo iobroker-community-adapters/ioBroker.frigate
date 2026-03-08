@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "frigate",
-    "version": "2.0.2",
+    "version": "2.1.0",
     "news": {
+      "2.1.0": {
+        "en": "Code optimizations and refactoring\nmissing jsonConfig sizes have been added\ndependencies have been updated",
+        "de": "Codeoptimierungen und Refactoring\nfehlende jsonConfig Größen wurden hinzugefügt\nabhängigkeiten wurden aktualisiert",
+        "ru": "Оптимизация кода и рефакторинг\nдобавлены недостающие размеры jsonConfig\nобновлены зависимости",
+        "pt": "Otimizações de código e refatoração\nfaltam os tamanhos do jsonConfig\nas dependências foram atualizadas",
+        "nl": "Code optimalisaties en refactoring\nontbrekende jsonConfig maten zijn toegevoegd\nafhankelijkheden zijn bijgewerkt",
+        "fr": "Optimisations et refacturation du code\nles tailles jsonConfig manquantes ont été ajoutées\nles dépendances ont été mises à jour",
+        "it": "Ottimizzazione del codice e rifattori\nmancanti dimensioni jsonConfig sono stati aggiunti\nle dipendenze sono state aggiornate",
+        "es": "Optimizaciones de código y refactorización\ndesaparecidos jsonConfig tamaños se han añadido\nlas dependencias se han actualizado",
+        "pl": "Optymalizacja kodu i refakturowanie\nbrakujące rozmiary jsonConfig zostały dodane\nuzależnienia zostały zaktualizowane",
+        "uk": "Оптимізація коду та рефакторинг\nвідсутні розміри jsonConfig\nбуло оновлено залежності",
+        "zh-cn": "代码优化和重构\n已添加缺失的 json 大小\n依赖关系已更新"
+      },
       "2.0.2": {
         "en": "Removed gpu_usages",
         "de": "Entfernt gpu_usages",
@@ -80,19 +93,6 @@
         "pl": "usunąć path _ data z v0.16\nprzenieść klip url z mp4 do m3u8\nAdapter wymaga kontrolera js- 5.0.19 jako minimum teraz.\nKilka problemów zgłoszonych przez łamacz adapterów zostało naprawionych.",
         "uk": "видалити шлях_data з v0.16\nперемістити кліп url від mp4 до m3u8\nАдаптер вимагає js-controller 5.0.19 як мінімум зараз.\nВиправлено кілька питань, які повідомляються перехідником.",
         "zh-cn": "从 v0. 16 中删除路径数据\n将剪辑 url 从 mp4 移动到 m3u8\n适配器要求js控制器5.0.19作为现在的最低值.\n适配器夹子报告的若干问题已经解决."
-      },
-      "1.3.1": {
-        "en": "fixed to much states",
-        "de": "Fix für zuviele States",
-        "ru": "фиксированные для многих государств",
-        "pt": "fixo em muitos estados",
-        "nl": "vast te stellen aan veel staten",
-        "fr": "fixé à beaucoup d'états",
-        "it": "fissi a molti stati",
-        "es": "fijos a muchos estados",
-        "pl": "stałe w wielu stanach",
-        "uk": "фіксований на багато штатів",
-        "zh-cn": "固定到许多州"
       }
     },
     "titleLang": {

@@ -552,7 +552,9 @@ class FrigateAdapter extends Adapter {
                 `Stored tracked object update. History now contains ${this.trackedObjectsHistory.length} entries`,
             );
         } catch (error) {
-            this.log.error(`Error handling tracked object update: ${error instanceof Error ? error.message : String(error)}`);
+            this.log.error(
+                `Error handling tracked object update: ${error instanceof Error ? error.message : String(error)}`,
+            );
             this.log.error(error instanceof Error ? (error.stack ?? '') : String(error));
         }
     }
