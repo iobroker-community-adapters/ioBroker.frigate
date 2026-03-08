@@ -1,4 +1,18 @@
 # Older changes
+## 1.3.3 (2026-01-26)
+
+- (copilot) Adapter requires js-controller >= 6.0.11 now
+- (copilot) Adapter requires admin >= 7.6.17 now
+
+- (mcm1957) Adapter requires admin 6.17.14 as minimum now.
+
+## 1.3.2 (2025-05-06)
+
+- (TA2k) remove path_data from v0.16
+- (TA2k) move clip url from mp4 to m3u8
+- (mcm1957) Adapter requires js-controller 5.0.19 as minimum now.
+- (mcm1957) Several issues reported by the adapter checker have been fixed.
+
 ## 1.3.2 (2025-05-06)
 
 - (TA2k) remove path_data from v0.16

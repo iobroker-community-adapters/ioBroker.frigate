@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "frigate",
-    "version": "2.1.0",
+    "version": "2.1.1",
     "news": {
+      "2.1.1": {
+        "en": "Added threshold for person detection in notifications",
+        "de": "Zusätzlicher Schwellenwert für die Personenerkennung in Notifikationen",
+        "ru": "Добавлен порог обнаружения личности в уведомлениях",
+        "pt": "Limite adicional para detecção de pessoas nas notificações",
+        "nl": "Toegevoegde drempel voor persoonsdetectie in kennisgevingen",
+        "fr": "Seuil ajouté pour la détection des personnes dans les notifications",
+        "it": "Soglia aggiuntiva per il rilevamento della persona nelle notifiche",
+        "es": "Umbral añadido para la detección de personas en notificaciones",
+        "pl": "Dodany próg wykrywania osób w powiadomieniach",
+        "uk": "Додано поріг для виявлення особи в повідомленнях",
+        "zh-cn": "在通知中添加检测人的门槛值"
+      },
       "2.1.0": {
         "en": "Code optimizations and refactoring\nmissing jsonConfig sizes have been added\ndependencies have been updated",
         "de": "Codeoptimierungen und Refactoring\nfehlende jsonConfig Größen wurden hinzugefügt\nabhängigkeiten wurden aktualisiert",
@@ -80,19 +93,6 @@
         "pl": "Adapter wymaga node.js 20 jako minimum teraz.\nUsuń obiekty path _ data, aby zapobiec zbyt wielu obiektów generowanych przez adapter",
         "uk": "Адаптер вимагає node.js 20 як мінімум зараз.\nВидалити шлях_data об'єктів, щоб запобігти занадто багато об'єктів, створених адаптером",
         "zh-cn": "适配器现在至少需要20号节点.\n删除路径数据对象以防止适配器生成过多对象"
-      },
-      "1.3.2": {
-        "en": "remove path_data from v0.16\nmove clip url from mp4 to m3u8\nAdapter requires js-controller 5.0.19 as minimum now.\nSeveral issues reported by adapter chacker have been fixed.",
-        "de": "path_data von v0.16 entfernen\nclip url von mp4 nach m3u8 verschieben\nAdapter benötigt jetzt mindestens den js-Controller 5.0.19.\nMehrere Probleme, die von Adapter chacker gemeldet wurden behoben.",
-        "ru": "удалить path_data из v0.16\nпереместить url клипа с mp4 на m3u8\nАдаптер требует JS-контроллер 5.0.19 как минимум.\nНесколько проблем, о которых сообщил адаптеров, были исправлены.",
-        "pt": "remove path_data de v0.16\nmova a url clip de mp4 para m3u8\nAdaptador requer js-controller 5.0.19 como mínimo agora.\nVárias questões relatadas pelo chacker do adaptador foram corrigidas.",
-        "nl": "pad_data uit v0.16 verwijderen\nclip url verplaatsen van mp4 naar m3u8\nAdapter vereist nu minimaal js-controller 5.0.19.\nVerschillende problemen gemeld door adapter chacker zijn opgelost.",
-        "fr": "supprimer path_data de v0.16\ndéplacer le clip url de mp4 à m3u8\nAdaptateur nécessite js-controller 5.0.19 au minimum maintenant.\nPlusieurs problèmes signalés par l'adaptateur chacker ont été corrigés.",
-        "it": "rimuovere path_data da v0.16\nspostare clip url da mp4 a m3u8\nAdattatore richiede js-controller 5.0.19 come minimo ora.\nDiversi problemi segnalati da adattatore chacker sono stati fissati.",
-        "es": "quitar path_data de v0.16\nmover clip url de mp4 a m3u8\nAdaptador requiere js-controller 5.0.19 como mínimo ahora.\nSe han solucionado varios problemas reportados por el chacker del adaptador.",
-        "pl": "usunąć path _ data z v0.16\nprzenieść klip url z mp4 do m3u8\nAdapter wymaga kontrolera js- 5.0.19 jako minimum teraz.\nKilka problemów zgłoszonych przez łamacz adapterów zostało naprawionych.",
-        "uk": "видалити шлях_data з v0.16\nперемістити кліп url від mp4 до m3u8\nАдаптер вимагає js-controller 5.0.19 як мінімум зараз.\nВиправлено кілька питань, які повідомляються перехідником.",
-        "zh-cn": "从 v0. 16 中删除路径数据\n将剪辑 url 从 mp4 移动到 m3u8\n适配器要求js控制器5.0.19作为现在的最低值.\n适配器夹子报告的若干问题已经解决."
       }
     },
     "titleLang": {
