@@ -117,6 +117,7 @@ as frigate uses disk to store the clips and snapshots.
 -->
 ### **WORK IN PROGRESS**
 - (@GermanBluefox) Code optimizations and refactoring
+- (@GermanBluefox) Added threshold for person detection in notifications
 
 ### 2.0.2 (2026-02-16)
 - (@GermanBluefox) Removed gpu_usages

@@ -26,6 +26,18 @@ export function createFrigateConfigFile(config: FrigateAdapterConfig): string {
     const cameras: string[] = [];
     for (const camera of config.dockerFrigate.cameras || []) {
         if (camera.enabled && camera.name && camera.inputs_path) {
+            // Generate camera-specific objects config if min_score is set
+            let cameraObjectsConfig = '';
+            if (camera.objects_min_score) {
+                const minScore = Number(camera.objects_min_score) / 100;
+                const threshold = camera.objects_threshold ? Number(camera.objects_threshold) / 100 : null;
+                cameraObjectsConfig = `    objects:
+      filters:
+        person:
+          min_score: ${minScore}
+${threshold ? `          threshold: ${threshold}\n` : ''}`;
+            }
+
             cameras.push(`  ${camera.name}:
     ffmpeg:
       ${camera.ffmpeg_hwaccel_args ? `hwaccel_args: ${camera.ffmpeg_hwaccel_args}` : ''}
@@ -37,7 +49,7 @@ ${camera.inputs_roles_detect || camera.inputs_roles_record || camera.inputs_role
 ${camera.detect_width ? `      width: ${camera.detect_width}` : ''}
 ${camera.detect_height ? `      height: ${camera.detect_height}` : ''}
 ${camera.detect_fps ? `      fps: ${camera.detect_fps}` : ''}
-    snapshots:
+${cameraObjectsConfig}    snapshots:
       enabled: ${camera.inputs_roles_snapshots ? 'true' : 'false'}
       timestamp: ${camera.snapshots_timestamp ? 'true' : 'false'}
       bounding_box: ${camera.snapshots_bounding_box ? 'true' : 'false'}

@@ -62,6 +62,8 @@ export interface FrigateAdapterConfigTyped {
             detect_height: number;
             detect_fps: number;
             detect_enabled: boolean;
+            objects_min_score?: number;
+            objects_threshold?: number;
             snapshots_enabled: boolean;
             snapshots_timestamp: boolean;
             snapshots_bounding_box: boolean;
@@ -137,6 +139,8 @@ export interface FrigateAdapterConfig extends FrigateAdapterConfigTyped {
             detect_height: number | string;
             detect_fps: number | string;
             detect_enabled: boolean;
+            objects_min_score?: number | string;
+            objects_threshold?: number | string;
             snapshots_enabled: boolean;
             snapshots_timestamp: boolean;
             snapshots_bounding_box: boolean;
