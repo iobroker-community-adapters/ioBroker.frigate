@@ -345,22 +345,14 @@
                     ],
                     "default": "yaml",
                     "help": "Choose how to configure Frigate. The YAML configuration file option allows you to provide a custom configuration file, while the UI option provides a user-friendly interface for configuring Frigate without needing to edit YAML files directly.",
-                    "xs": 12,
-                    "sm": 12,
-                    "md": 6,
-                    "lg": 4,
-                    "xl": 4
+                    "xs": 12
                 },
                 "dockerFrigate.yaml": {
                     "hidden": "data.dockerFrigate.configType !== 'yaml'",
                     "type": "yamlEditor",
                     "label": "Frigate YAML configuration",
                     "doNotApplyWithError": true,
-                    "xs": 12,
-                    "sm": 12,
-                    "md": 12,
-                    "lg": 12,
-                    "xl": 12
+                    "xs": 12
                 },
                 "dockerFrigate.detectors": {
                     "hidden": "data.dockerFrigate.configType !== 'ui'",
@@ -384,8 +376,8 @@
                     "help": "The type of detectors to use. CPU is the default and works without additional hardware, but may have higher CPU usage. Google Coral is an optional hardware accelerator that can significantly reduce CPU usage if supported.",
                     "xs": 12,
                     "sm": 12,
-                    "md": 6,
-                    "lg": 4,
+                    "md": 12,
+                    "lg": 6,
                     "xl": 4
                 },
                 "dockerFrigate.detectorsCoralType": {
@@ -406,8 +398,8 @@
                     "hidden": "data.dockerFrigate.configType !== 'ui' || data.dockerFrigate.detectors !== 'coral'",
                     "xs": 12,
                     "sm": 12,
-                    "md": 6,
-                    "lg": 4,
+                    "md": 12,
+                    "lg": 6,
                     "xl": 4
                 },
                 "dockerFrigate.face_recognition.enabled": {
@@ -451,6 +443,8 @@
                     "label": "Minimum area for face recognition",
                     "tooltip": "The minimum area (in pixels) of a detected object for face recognition to be applied. Setting this can help reduce false positives by ignoring small objects that are unlikely to be faces.",
                     "hidden": "data.dockerFrigate.configType !== 'ui' || !data.dockerFrigate.face_recognition.enabled",
+                    "min": 50,
+                    "unit": "px",
                     "xs": 12,
                     "sm": 12,
                     "md": 4,
@@ -470,9 +464,10 @@
                 },
                 "dockerFrigate.record.pre_capture": {
                     "type": "number",
-                    "label": "Pre-capture recording time in seconds",
+                    "label": "Pre-capture recording time",
                     "tooltip": "The amount of time (in seconds) to include in the recording before the event is triggered. This can help capture important context leading up to the event.",
                     "hidden": "data.dockerFrigate.configType !== 'ui' || !data.dockerFrigate.record.enabled",
+                    "unit": "sec",
                     "xs": 12,
                     "sm": 12,
                     "md": 4,
@@ -481,9 +476,10 @@
                 },
                 "dockerFrigate.record.post_capture": {
                     "type": "number",
-                    "label": "Post-capture recording time in seconds",
+                    "label": "Post-capture recording time",
                     "tooltip": "The amount of time (in seconds) to include in the recording after the event is triggered. This can help capture important context following the event.",
                     "hidden": "data.dockerFrigate.configType !== 'ui' || !data.dockerFrigate.record.enabled",
+                    "unit": "sec",
                     "xs": 12,
                     "sm": 12,
                     "md": 4,
@@ -492,9 +488,10 @@
                 },
                 "dockerFrigate.record.max_clip_length": {
                     "type": "number",
-                    "label": "Maximum clip length in seconds",
+                    "label": "Maximum clip length",
                     "tooltip": "The maximum length of recorded clips in seconds. Setting this can help manage storage usage by limiting the duration of recorded events.",
                     "hidden": "data.dockerFrigate.configType !== 'ui' || !data.dockerFrigate.record.enabled",
+                    "unit": "sec",
                     "xs": 12,
                     "sm": 12,
                     "md": 4,
@@ -503,9 +500,10 @@
                 },
                 "dockerFrigate.record.retain_days": {
                     "type": "number",
-                    "label": "Days to retain recordings",
+                    "label": "Retain recordings",
                     "tooltip": "The number of days to retain recorded clips. Setting this can help manage storage usage by automatically deleting older recordings.",
                     "hidden": "data.dockerFrigate.configType !== 'ui' || !data.dockerFrigate.record.enabled",
+                    "unit": "days",
                     "xs": 12,
                     "sm": 12,
                     "md": 4,
@@ -528,6 +526,7 @@
                     "label": "Detection width",
                     "tooltip": "The width (in pixels) to which the input frames will be resized for object detection. Setting this can help improve performance by reducing the resolution of the input frames, but may also reduce detection accuracy if set too low.",
                     "hidden": "data.dockerFrigate.configType !== 'ui' || !data.dockerFrigate.detect.enabled",
+                    "unit": "px",
                     "xs": 12,
                     "sm": 12,
                     "md": 4,
@@ -539,6 +538,7 @@
                     "label": "Detection height",
                     "tooltip": "The height (in pixels) to which the input frames will be resized for object detection. Setting this can help improve performance by reducing the resolution of the input frames, but may also reduce detection accuracy if set too low.",
                     "hidden": "data.dockerFrigate.configType !== 'ui' || !data.dockerFrigate.detect.enabled",
+                    "unit": "px",
                     "xs": 12,
                     "sm": 12,
                     "md": 4,
@@ -679,7 +679,7 @@
                         {
                             "attr": "objects_min_score",
                             "title": "Min Score",
-                            "type": "number",
+                            "type": "slider",
                             "unit": "%",
                             "min": 0,
                             "max": 100,
@@ -690,7 +690,7 @@
                             "attr": "objects_threshold",
                             "title": "Threshold",
                             "unit": "%",
-                            "type": "number",
+                            "type": "slider",
                             "min": 0,
                             "max": 100,
                             "validator": "!data.objects_threshold || !data.objects_min_score || data.objects_threshold >= data.objects_min_score",
