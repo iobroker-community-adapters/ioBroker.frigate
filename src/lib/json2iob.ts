@@ -7,19 +7,19 @@ type Options = {
     zeroBasedArrayIndex?: boolean; // start an array index from 0 if forceIndex = true
     channelName?: string; // Set the name of the root channel.
     preferredArrayName?: string; // Set a key to use this as an array entry name.
-    preferredArrayDesc?: string;
-    autoCast?: boolean;
-    descriptions?: { [id: string]: ioBroker.StringOrTranslated };
-    states?: { [id: string]: { [value: string]: string } };
-    units?: { [id: string]: string };
-    parseBase64?: boolean;
-    parseBase64byIds?: string[];
-    parseBase64byIdsToHex?: string[];
-    deleteBeforeUpdate?: boolean;
-    removePasswords?: boolean;
-    excludeStateWithEnding?: string[];
-    makeStateWritableWithEnding?: string[];
-    dontSaveCreatedObjects?: boolean;
+    preferredArrayDesc?: string; // Set key to use this as an array entry description.
+    autoCast?: boolean; // Make JSON.parse to parse numbers correctly.
+    descriptions?: { [id: string]: ioBroker.StringOrTranslated }; // Object of names for state keys.
+    states?: { [id: string]: { [value: string]: string } }; // Object of states to create for an ID, new entries via JSON will be added automatically to the states.
+    units?: { [id: string]: string }; // Object of units to create for an ID
+    parseBase64?: boolean; // Parse base64 encoded strings to utf8.
+    parseBase64byIds?: string[]; // Array of IDs to parse base64 encoded strings to utf8.
+    parseBase64byIdsToHex?: string[]; // Array of IDs to parse base64 encoded strings to utf8.
+    deleteBeforeUpdate?: boolean; // Delete channel before update.
+    removePasswords?: boolean; // Remove password from log.
+    excludeStateWithEnding?: string[]; // Array of strings to exclude states with this ending.
+    makeStateWritableWithEnding?: string[]; // Array of strings to make states with this ending writable.
+    dontSaveCreatedObjects?: boolean; // Create objects but do not save them to alreadyCreatedObjects.
 };
 
 export default class Json2iob {
@@ -45,31 +45,30 @@ export default class Json2iob {
      * Parses the given element and creates states in the adapter based on the element's structure.
      *
      * @function parse
-     * @param {string} path - The ioBroker object path which the element should be saved to.
-     * @param {any} element - The element to be parsed.
-     * @param {Options} [options={}] - The parsing options.
-     * @param {boolean} [options.write] - Activate write for all states.
-     * @param {boolean} [options.forceIndex] - Instead of trying to find names for array entries, use the index as the name.
-     * @param {boolean} [options.disablePadIndex] - Disables padding of array index numbers if forceIndex = true
-     * @param {boolean} [options.zeroBasedArrayIndex] - Start array index from 0 if forceIndex = true
-     * @param {string} [options.channelName] - Set name of the root channel.
-     * @param {string} [options.preferedArrayName] - Set key to use this as an array entry name.
-     * @param {string} [options.preferedArrayDesc] - Set key to use this as an array entry description.
-     * @param {boolean} [options.autoCast] - Make JSON.parse to parse numbers correctly.
-     * @param {object} [options.descriptions] - Object of names for state keys.
-     * @param {object} [options.states] - Object of states to create for an id, new entries via JSON will be added automatically to the states.
-     * @param {object} [options.units] - Object of units to create for an id
-     * @param {boolean} [options.parseBase64] - Parse base64 encoded strings to utf8.
-     * @param {string[]} [options.parseBase64byIds] - Array of ids to parse base64 encoded strings to utf8.
-     * @param {string[]} [options.parseBase64byToHex] - Array of ids to parse base64 encoded strings to utf8.
-     * @param {boolean} [options.deleteBeforeUpdate] - Delete channel before update.
-     * @param {boolean} [options.removePasswords] - Remove password from log.
-     * @param {string[]} [options.excludeStateWithEnding] - Array of strings to exclude states with this ending.
-     * @param {string[]} [options.makeStateWritableWithEnding] - Array of strings to make states with this ending writable.
-     * @param {boolean} [options.dontSaveCreatedObjects] - Create objects but do not save them to alreadyCreatedObjects.
-     * @returns {Promise<void>} - A promise that resolves when the parsing is complete.
+     * @param path - The ioBroker object path which the element should be saved to.
+     * @param element - The element to be parsed.
+     * @param options - The parsing options.
+     * @param options.write - Activate write for all states.
+     * @param options.forceIndex - Instead of trying to find names for array entries, use the index as the name.
+     * @param options.disablePadIndex - Disables padding of array index numbers if forceIndex = true
+     * @param options.zeroBasedArrayIndex - Start array index from 0 if forceIndex = true
+     * @param options.channelName - Set name of the root channel.
+     * @param options.preferredArrayName - Set key to use this as an array entry name.
+     * @param options.preferredArrayDesc - Set key to use this as an array entry description.
+     * @param options.autoCast - Make JSON.parse to parse numbers correctly.
+     * @param options.descriptions - Object of names for state keys.
+     * @param options.states - Object of states to create for an id, new entries via JSON will be added automatically to the states.
+     * @param options.units - Object of units to create for an id
+     * @param options.parseBase64 - Parse base64 encoded strings to utf8.
+     * @param options.parseBase64byIds - Array of ids to parse base64 encoded strings to utf8.
+     * @param options.parseBase64byToHex - Array of ids to parse base64 encoded strings to utf8.
+     * @param options.deleteBeforeUpdate - Delete channel before update.
+     * @param options.removePasswords - Remove password from log.
+     * @param options.excludeStateWithEnding - Array of strings to exclude states with this ending.
+     * @param options.makeStateWritableWithEnding - Array of strings to make states with this ending writable.
+     * @param options.dontSaveCreatedObjects - Create objects but do not save them to alreadyCreatedObjects.
+     * @returns A promise that resolves when the parsing is complete.
      */
-
     async parse(path: string, element: any, options: Options = { write: false }): Promise<void> {
         try {
             if (element === null || element === undefined) {
@@ -299,13 +298,14 @@ export default class Json2iob {
             this.adapter.log.error(error);
         }
     }
+
     /**
      * Creates a state object in the adapter's namespace.
      *
      * @param path - The path of the state object.
      * @param common - The common object for the state.
-     * @param [options] - Optional parameters.
-     * @param [options.dontSaveCreatedObjects] - If true, the created object will not be saved.
+     * @param options - Optional parameters.
+     * @param options.dontSaveCreatedObjects - If true, the created object will not be saved.
      * @returns - A promise that resolves when the state object is created.
      */
     async _createState(path: string, common: ioBroker.StateCommon, options: Options = {}): Promise<void> {

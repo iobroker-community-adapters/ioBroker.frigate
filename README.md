@@ -115,6 +115,9 @@ as frigate uses disk to store the clips and snapshots.
     Placeholder for the next version (at the beginning of the line):
   ### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+- (@GermanBluefox) Corrected the writing of ON/OFF states
+
 ### 2.1.1 (2026-03-08)
 - (@GermanBluefox) Added threshold for person detection in notifications
 

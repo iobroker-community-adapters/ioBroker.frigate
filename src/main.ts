@@ -13,6 +13,22 @@ import type { FrigateAdapterConfig } from './types';
 import { createFrigateConfigFile } from './lib/utils';
 import Json2iob from './lib/json2iob';
 
+const ON_OFF_STATES = [
+    'audio',
+    'birdseye',
+    'detect',
+    'enabled',
+    'improve_contrast',
+    'motion',
+    'object_descriptions',
+    'ptz_autotracker',
+    'recordings',
+    'review_alerts',
+    'review_descriptions',
+    'review_detections',
+    'snapshots',
+];
+
 type FrigateMessage = {
     timestamp?: number; // in seconds till 1970
     type: string;
@@ -376,9 +392,16 @@ class FrigateAdapter extends Adapter {
                     let write = false;
                     let data: FrigateMessage | string | undefined | number | boolean;
                     if (pathArray[pathArray.length - 1] !== 'snapshot') {
-                        if (dataStr === 'ON') {
+                        if (
+                            dataStr === 'ON' &&
+                            (ON_OFF_STATES.includes(pathArray[pathArray.length - 2]) ||
+                                pathArray[pathArray.length - 1] === 'motion')
+                        ) {
                             data = true;
-                        } else if (dataStr === 'OFF') {
+                        } else if (
+                            (dataStr === 'OFF' && ON_OFF_STATES.includes(pathArray[pathArray.length - 2])) ||
+                            pathArray[pathArray.length - 1] === 'motion'
+                        ) {
                             data = false;
                         } else if (
                             !isNaN(Number(dataStr)) ||
@@ -494,7 +517,21 @@ class FrigateAdapter extends Adapter {
                     }
 
                     // parse json to iobroker states
-                    await this.json2iob.parse(pathArray.join('.'), data === undefined ? dataStr : data, { write });
+                    await this.json2iob.parse(pathArray.join('.'), data === undefined ? dataStr : data, {
+                        write,
+                        states: {
+                            birdseye_mode_state: {
+                                OBJECTS: 'objects',
+                                CONTINUOUS: 'continuous',
+                                MOTION: 'motion',
+                            },
+                            review_status: {
+                                NONE: 'none',
+                                DETECTION: 'detection',
+                                ALERT: 'alert',
+                            },
+                        },
+                    });
                 } catch (error) {
                     this.log.warn(error);
                 }
@@ -1221,10 +1258,25 @@ class FrigateAdapter extends Adapter {
                 this.log.debug(`state ${id} changed: ${state.val} (ack = ${state.ack})`);
 
                 if (id.endsWith('_state')) {
-                    //remove adapter name and instance from id
-                    id = id.replace(`${this.name}.${this.instance}.`, '');
+                    // remove adapter name and instance from id
+                    id = id.replace(`${this.namespace}.`, '');
                     id = id.replace('_state', '');
                     const idArray = id.split('.');
+                    // If it is ON/OFF state
+                    if (ON_OFF_STATES.includes(idArray[idArray.length - 1])) {
+                        if (
+                            state.val === 'true' ||
+                            state.val === true ||
+                            state.val === 'ON' ||
+                            state.val === 'on' ||
+                            state.val === '1' ||
+                            state.val === 1
+                        ) {
+                            state.val = 'ON';
+                        } else {
+                            state.val = 'OFF';
+                        }
+                    }
                     const pathArray = ['frigate', ...idArray, 'set'];
 
                     const topic = pathArray.join('/');
