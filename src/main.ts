@@ -418,7 +418,13 @@ class FrigateAdapter extends Adapter {
     }
 
     initMqttClient(): void {
-        let brokerUrl = this.config.mqttHost || '';
+        if (!this.config.mqttHost) {
+            this.log.error('External MQTT broker host is not configured. Please set the MQTT host in the adapter settings.');
+            this.terminate();
+            return;
+        }
+
+        let brokerUrl = this.config.mqttHost;
         if (!brokerUrl.includes('://')) {
             brokerUrl = `mqtt://${brokerUrl}`;
         }
@@ -490,7 +496,15 @@ class FrigateAdapter extends Adapter {
      * Publish an MQTT message via either the built-in broker or external client
      */
     private publishMqtt(topic: string, payload: string | Buffer, callback?: (err?: Error) => void): void {
-        if (this.config.mqttMode === 'client' && this.mqttClient) {
+        if (this.config.mqttMode === 'client') {
+            if (!this.mqttClient || !this.mqttClient.connected) {
+                const err = new Error('External MQTT client is not connected');
+                this.log.warn(`Cannot publish to "${topic}": ${err.message}`);
+                if (callback) {
+                    callback(err);
+                }
+                return;
+            }
             this.mqttClient.publish(topic, payload, { qos: 0, retain: false }, err => {
                 if (callback) {
                     callback(err || undefined);
@@ -1349,7 +1363,10 @@ class FrigateAdapter extends Adapter {
     onUnload = (callback: () => void): void => {
         try {
             if (this.mqttClient) {
-                this.mqttClient.end(true, () => callback?.());
+                this.mqttClient.end(true, () => {
+                    // Also close the Aedes broker and server that were created in the constructor
+                    this.aedes.close(() => this.server.close(() => callback?.()));
+                });
             } else {
                 this.aedes.close(() => this.server.close(() => callback?.()));
             }
