@@ -419,7 +419,9 @@ class FrigateAdapter extends Adapter {
 
     initMqttClient(): void {
         if (!this.config.mqttHost) {
-            this.log.error('External MQTT broker host is not configured. Please set the MQTT host in the adapter settings.');
+            this.log.error(
+                'External MQTT broker host is not configured. Please set the MQTT host in the adapter settings.',
+            );
             this.terminate();
             return;
         }
@@ -571,7 +573,7 @@ class FrigateAdapter extends Adapter {
             if (pathArray[0] === prefix) {
                 // remove first element (topic prefix) from path array
                 pathArray.shift();
-                const command: string = pathArray[0] as string;
+                const command = pathArray[0];
                 const event = pathArray[pathArray.length - 1];
 
                 // Handle tracked_object_update events
