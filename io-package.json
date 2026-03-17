@@ -216,7 +216,12 @@
   },
   "native": {
     "friurl": "localhost:5000",
+    "mqttMode": "broker",
     "mqttPort": 1883,
+    "mqttHost": "",
+    "mqttUsername": "",
+    "mqttPassword": "",
+    "mqttTopicPrefix": "frigate",
     "webnum": 10,
     "notificationMinScore": 0,
     "notificationActive": false,

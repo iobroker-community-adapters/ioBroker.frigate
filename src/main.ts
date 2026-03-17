@@ -6,6 +6,7 @@ import { tmpdir } from 'node:os';
 import { v4 as UUID } from 'uuid';
 import axios, { type AxiosInstance } from 'axios';
 import Aedes, { type Client } from 'aedes';
+import mqtt, { type MqttClient } from 'mqtt';
 
 import { type AdapterOptions, Adapter, getAbsoluteDefaultDataDir } from '@iobroker/adapter-core';
 
@@ -86,6 +87,7 @@ class FrigateAdapter extends Adapter {
     private trackedObjectsHistory: FrigateMessage[] = [];
     private notificationExcludeArray: string[] = [];
     private readonly aedes: Aedes;
+    private mqttClient: MqttClient | null = null;
 
     constructor(options?: Partial<AdapterOptions>) {
         super({
@@ -156,6 +158,8 @@ class FrigateAdapter extends Adapter {
             parseFloat(this.config.notificationEventClipWaitTime as string) || 5;
         this.config.webnum = parseInt(this.config.webnum as string, 10) || 5;
         this.config.mqttPort = parseInt((this.config.mqttPort || '1883') as string, 10) || 1883;
+        this.config.mqttMode = this.config.mqttMode || 'broker';
+        this.config.mqttTopicPrefix = this.config.mqttTopicPrefix || 'frigate';
 
         try {
             if (this.config.notificationMinScore) {
@@ -238,7 +242,11 @@ class FrigateAdapter extends Adapter {
             }
         }
 
-        this.initMqtt();
+        if (this.config.mqttMode === 'client') {
+            this.initMqttClient();
+        } else {
+            this.initMqtt();
+        }
     };
 
     async cleanOldObjects(): Promise<void> {
@@ -555,6 +563,233 @@ class FrigateAdapter extends Adapter {
         this.aedes.on('connectionError', (client, err) =>
             this.log.warn(`client error: ${client.id} ${err.message} ${err.stack}`),
         );
+    }
+
+    initMqttClient(): void {
+        let brokerUrl = this.config.mqttHost || '';
+        if (!brokerUrl.includes('://')) {
+            brokerUrl = `mqtt://${brokerUrl}`;
+        }
+        // If no port specified in URL, append default MQTT port
+        if (!brokerUrl.match(/:\d+$/)) {
+            brokerUrl = `${brokerUrl}:1883`;
+        }
+
+        const mqttOptions: mqtt.IClientOptions = {
+            clientId: `iobroker_frigate_${this.instance}`,
+            clean: true,
+            reconnectPeriod: 5000,
+        };
+
+        if (this.config.mqttUsername) {
+            mqttOptions.username = this.config.mqttUsername;
+        }
+        if (this.config.mqttPassword) {
+            mqttOptions.password = this.config.mqttPassword;
+        }
+
+        this.log.info(`Connecting to external MQTT broker at ${brokerUrl}`);
+        this.mqttClient = mqtt.connect(brokerUrl, mqttOptions);
+
+        this.mqttClient.on('connect', async () => {
+            this.log.info(`Connected to external MQTT broker at ${brokerUrl}`);
+            await this.setStateAsync('info.connection', true, true);
+
+            const prefix = this.config.mqttTopicPrefix;
+            this.mqttClient!.subscribe(`${prefix}/#`, err => {
+                if (err) {
+                    this.log.error(`Failed to subscribe to ${prefix}/#: ${err.message}`);
+                } else {
+                    this.log.info(`Subscribed to ${prefix}/#`);
+                }
+            });
+
+            await this.fetchEventHistory();
+        });
+
+        this.mqttClient.on('close', async () => {
+            this.log.info('Disconnected from external MQTT broker');
+            await this.setStateAsync('info.connection', false, true);
+        });
+
+        this.mqttClient.on('error', err => {
+            this.log.error(`MQTT client error: ${err.message}`);
+        });
+
+        this.mqttClient.on('reconnect', () => {
+            this.log.debug('Reconnecting to external MQTT broker...');
+        });
+
+        this.mqttClient.on('message', async (topic: string, payload: Buffer) => {
+            if (payload) {
+                if (topic === `${this.config.mqttTopicPrefix}/stats` || topic.endsWith('snapshot')) {
+                    this.log.silly(`received ${topic} ${payload.toString()}`);
+                } else {
+                    this.log.debug(`received ${topic} ${payload.toString()}`);
+                }
+            }
+
+            try {
+                let pathArray = topic.split('/');
+                const dataStr = payload.toString();
+                let write = false;
+                let data: FrigateMessage | string | undefined | number | boolean;
+                if (pathArray[pathArray.length - 1] !== 'snapshot') {
+                    if (
+                        dataStr === 'ON' &&
+                        (ON_OFF_STATES.includes(pathArray[pathArray.length - 2]) ||
+                            pathArray[pathArray.length - 1] === 'motion')
+                    ) {
+                        data = true;
+                    } else if (
+                        (dataStr === 'OFF' && ON_OFF_STATES.includes(pathArray[pathArray.length - 2])) ||
+                        pathArray[pathArray.length - 1] === 'motion'
+                    ) {
+                        data = false;
+                    } else if (
+                        !isNaN(Number(dataStr)) ||
+                        dataStr.includes('"') ||
+                        dataStr.includes('{') ||
+                        dataStr.includes('[')
+                    ) {
+                        try {
+                            data = JSON.parse(dataStr);
+                        } catch (error) {
+                            this.log.debug(`Cannot parse ${dataStr} ${error}`);
+                        }
+                    } else {
+                        data = dataStr;
+                    }
+                }
+
+                const prefix = this.config.mqttTopicPrefix;
+                if (pathArray[0] === prefix) {
+                    pathArray.shift();
+                    const command: string = pathArray[0] as string;
+                    const event = pathArray[pathArray.length - 1];
+
+                    if (command === 'tracked_object_update' && typeof data === 'object') {
+                        await this.handleTrackedObjectUpdate(data);
+                        return;
+                    }
+
+                    FrigateAdapter.removePathData(data);
+
+                    if (event === 'snapshot') {
+                        data = `data:image/jpeg;base64,${payload.toString('base64')}`;
+
+                        if (this.config.notificationCamera) {
+                            const uuid = UUID();
+                            const fileName = `${this.tmpDir}${sep}${uuid}.jpg`;
+                            this.log.debug(`Save ${event} image to ${fileName}`);
+                            fs.writeFileSync(fileName, payload);
+                            await this.sendNotification({
+                                source: command,
+                                type: pathArray[1],
+                                state: event,
+                                image: fileName,
+                            });
+                            try {
+                                if (fileName) {
+                                    this.log.debug(`Try to delete ${fileName}`);
+                                    fs.unlinkSync(fileName);
+                                    this.log.debug(`Deleted ${fileName}`);
+                                }
+                            } catch (error) {
+                                this.log.error(error);
+                            }
+                        }
+                    } else if (event === 'state') {
+                        write = true;
+                    } else if (event === 'events' && typeof data === 'object') {
+                        await this.prepareEventNotification(data);
+                        await this.fetchEventHistory();
+                    } else if (command === 'reviews' && typeof data === 'object') {
+                        delete data.after.data.detections;
+                        delete data.before.data.detections;
+                    } else if (command === 'events' && typeof data === 'object') {
+                        delete data.after.path_data;
+                        delete data.before.path_data;
+                        if (data.after.snapshot && typeof data === 'object') {
+                            delete data.after.snapshot.path_data;
+                        }
+                        if (data.before.snapshot) {
+                            delete data.before.snapshot.path_data;
+                        }
+                        if (data.history) {
+                            for (const item of data.history) {
+                                delete item.path_data;
+                                if (item.snapshot) {
+                                    delete item.snapshot.path_data;
+                                }
+                            }
+                        }
+                    } else if (command === 'stats' && typeof data === 'object') {
+                        delete data.cpu_usages;
+                        await this.createCameraDevices();
+                    }
+
+                    if (
+                        command !== 'stats' &&
+                        command !== 'events' &&
+                        command !== 'available' &&
+                        command !== 'reviews' &&
+                        command !== 'camera_activity' &&
+                        pathArray.length > 1
+                    ) {
+                        const cameraId = pathArray.shift() || '';
+                        pathArray = [cameraId, pathArray.join('_')];
+                    }
+                }
+
+                await this.json2iob.parse(pathArray.join('.'), data === undefined ? dataStr : data, {
+                    write,
+                    states: {
+                        birdseye_mode_state: {
+                            OBJECTS: 'objects',
+                            CONTINUOUS: 'continuous',
+                            MOTION: 'motion',
+                        },
+                        review_status: {
+                            NONE: 'none',
+                            DETECTION: 'detection',
+                            ALERT: 'alert',
+                        },
+                    },
+                });
+            } catch (error) {
+                this.log.warn(error);
+            }
+        });
+    }
+
+    /**
+     * Publish an MQTT message via either the built-in broker or external client
+     */
+    private publishMqtt(topic: string, payload: string | Buffer, callback?: (err?: Error) => void): void {
+        if (this.config.mqttMode === 'client' && this.mqttClient) {
+            this.mqttClient.publish(topic, payload, { qos: 0, retain: false }, err => {
+                if (callback) {
+                    callback(err || undefined);
+                }
+            });
+        } else {
+            this.aedes.publish(
+                {
+                    cmd: 'publish',
+                    qos: 0,
+                    topic,
+                    payload: Buffer.from(typeof payload === 'string' ? payload : payload),
+                    retain: false,
+                    dup: false,
+                },
+                err => {
+                    if (callback) {
+                        callback(err || undefined);
+                    }
+                },
+            );
+        }
     }
 
     /**
@@ -1242,7 +1477,11 @@ class FrigateAdapter extends Adapter {
      */
     onUnload = (callback: () => void): void => {
         try {
-            this.aedes.close(() => this.server.close(() => callback?.()));
+            if (this.mqttClient) {
+                this.mqttClient.end(true, () => callback?.());
+            } else {
+                this.aedes.close(() => this.server.close(() => callback?.()));
+            }
         } catch (e) {
             this.log.error(`Error onUnload: ${e}`);
             callback();
@@ -1277,27 +1516,17 @@ class FrigateAdapter extends Adapter {
                             state.val = 'OFF';
                         }
                     }
-                    const pathArray = ['frigate', ...idArray, 'set'];
+                    const pathArray = [this.config.mqttTopicPrefix || 'frigate', ...idArray, 'set'];
 
                     const topic = pathArray.join('/');
                     this.log.debug(`publish sending to "${topic}" ${state.val}`);
-                    this.aedes.publish(
-                        {
-                            cmd: 'publish',
-                            qos: 0,
-                            topic,
-                            payload: Buffer.from(String(state.val ?? '')),
-                            retain: false,
-                            dup: false,
-                        },
-                        err => {
-                            if (err) {
-                                this.log.error(err.toString());
-                            } else {
-                                this.log.info(`published "${topic}" ${state.val}`);
-                            }
-                        },
-                    );
+                    this.publishMqtt(topic, String(state.val ?? ''), err => {
+                        if (err) {
+                            this.log.error(err.toString());
+                        } else {
+                            this.log.info(`published "${topic}" ${state.val}`);
+                        }
+                    });
                 } else if (id.endsWith('remote.createEvent')) {
                     //remove adapter name and instance from id
                     const cameraId = id.split('.')[2];
@@ -1330,45 +1559,26 @@ class FrigateAdapter extends Adapter {
                             this.log.error(error);
                         });
                 } else if (id.endsWith('remote.restart') && state.val) {
-                    // remove adapter name and instance from id
-                    this.aedes.publish(
-                        {
-                            cmd: 'publish',
-                            qos: 0,
-                            topic: `frigate/restart`,
-                            retain: false,
-                            dup: false,
-                            payload: '',
-                        },
-                        err => {
-                            if (err) {
-                                this.log.error(err.toString());
-                            } else {
-                                this.log.info('published frigate/restart');
-                            }
-                        },
-                    );
+                    const restartTopic = `${this.config.mqttTopicPrefix || 'frigate'}/restart`;
+                    this.publishMqtt(restartTopic, '', err => {
+                        if (err) {
+                            this.log.error(err.toString());
+                        } else {
+                            this.log.info(`published ${restartTopic}`);
+                        }
+                    });
                 } else if (id.endsWith('remote.ptz') && state.val !== null) {
                     //remove adapter name and instance from id
                     const cameraId = id.split('.')[2];
                     const command = state.val.toString();
-                    this.aedes.publish(
-                        {
-                            cmd: 'publish',
-                            qos: 0,
-                            topic: `frigate/${cameraId}/ptz`,
-                            payload: command,
-                            retain: false,
-                            dup: false,
-                        },
-                        err => {
-                            if (err) {
-                                this.log.error(err.toString());
-                            } else {
-                                this.log.info(`published frigate/${cameraId}/ptz ${command}`);
-                            }
-                        },
-                    );
+                    const ptzTopic = `${this.config.mqttTopicPrefix || 'frigate'}/${cameraId}/ptz`;
+                    this.publishMqtt(ptzTopic, command, err => {
+                        if (err) {
+                            this.log.error(err.toString());
+                        } else {
+                            this.log.info(`published ${ptzTopic} ${command}`);
+                        }
+                    });
                 } else if (id.endsWith('remote.pauseNotificationsForTime')) {
                     const pauseTime = parseInt(state.val as string, 10) || 10;
                     const pauseId = id

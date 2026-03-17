@@ -16,7 +16,7 @@
                 "_frigateHost": {
                     "type": "header",
                     "text": "Enter the ioBroker IP Address in the frigate config under mqtt->host",
-                    "hidden": "!!data.dockerFrigate?.enabled",
+                    "hidden": "!!data.dockerFrigate?.enabled || data.mqttMode === 'client'",
                     "size": 2,
                     "xs": 12,
                     "sm": 12,
@@ -37,10 +37,82 @@
                     "xl": 4,
                     "newLine": true
                 },
+                "mqttMode": {
+                    "type": "select",
+                    "label": "MQTT Mode",
+                    "help": "Built-in Broker: Frigate connects directly to this adapter. External Broker: Adapter connects to an existing MQTT broker (e.g. Mosquitto).",
+                    "options": [
+                        {
+                            "value": "broker",
+                            "label": "Built-in MQTT Broker (default)"
+                        },
+                        {
+                            "value": "client",
+                            "label": "External MQTT Broker"
+                        }
+                    ],
+                    "default": "broker",
+                    "hidden": "!!data.dockerFrigate?.enabled",
+                    "xs": 12,
+                    "sm": 12,
+                    "md": 6,
+                    "lg": 4,
+                    "xl": 4,
+                    "newLine": true
+                },
                 "mqttPort": {
                     "type": "number",
-                    "label": "MQTT Server Port in Frigate config",
-                    "help": "MQTT Server Port in Frigate config",
+                    "label": "MQTT Server Port",
+                    "help": "Port for the built-in MQTT broker",
+                    "hidden": "data.mqttMode === 'client'",
+                    "xs": 12,
+                    "sm": 12,
+                    "md": 6,
+                    "lg": 4,
+                    "xl": 4,
+                    "newLine": true
+                },
+                "mqttHost": {
+                    "type": "text",
+                    "label": "External MQTT Broker Host",
+                    "help": "Hostname or IP of the external MQTT broker (e.g. 192.168.1.100 or mqtt://192.168.1.100:1883)",
+                    "hidden": "data.mqttMode !== 'client'",
+                    "xs": 12,
+                    "sm": 12,
+                    "md": 6,
+                    "lg": 4,
+                    "xl": 4,
+                    "newLine": true
+                },
+                "mqttUsername": {
+                    "type": "text",
+                    "label": "MQTT Username",
+                    "help": "Optional: Username for the external MQTT broker",
+                    "hidden": "data.mqttMode !== 'client'",
+                    "xs": 12,
+                    "sm": 12,
+                    "md": 6,
+                    "lg": 4,
+                    "xl": 4,
+                    "newLine": true
+                },
+                "mqttPassword": {
+                    "type": "password",
+                    "label": "MQTT Password",
+                    "help": "Optional: Password for the external MQTT broker",
+                    "hidden": "data.mqttMode !== 'client'",
+                    "xs": 12,
+                    "sm": 12,
+                    "md": 6,
+                    "lg": 4,
+                    "xl": 4
+                },
+                "mqttTopicPrefix": {
+                    "type": "text",
+                    "label": "MQTT Topic Prefix",
+                    "help": "The topic prefix used by Frigate (default: frigate)",
+                    "hidden": "data.mqttMode !== 'client'",
+                    "placeholder": "frigate",
                     "xs": 12,
                     "sm": 12,
                     "md": 6,
