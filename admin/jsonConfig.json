@@ -11,7 +11,11 @@
                     "type": "checkDocker",
                     "label": "Use self-hosted Frigate in Docker",
                     "help": "docker_explanation",
-                    "xs": 12
+                    "xs": 12,
+                    "sm": 12,
+                    "md": 6,
+                    "lg": 4,
+                    "xl": 4
                 },
                 "_frigateHost": {
                     "type": "header",
@@ -345,14 +349,22 @@
                     ],
                     "default": "yaml",
                     "help": "Choose how to configure Frigate. The YAML configuration file option allows you to provide a custom configuration file, while the UI option provides a user-friendly interface for configuring Frigate without needing to edit YAML files directly.",
-                    "xs": 12
+                    "xs": 12,
+                    "sm": 12,
+                    "md": 12,
+                    "lg": 6,
+                    "xl": 4
                 },
                 "dockerFrigate.yaml": {
                     "hidden": "data.dockerFrigate.configType !== 'yaml'",
                     "type": "yamlEditor",
                     "label": "Frigate YAML configuration",
                     "doNotApplyWithError": true,
-                    "xs": 12
+                    "xs": 12,
+                    "sm": 12,
+                    "md": 12,
+                    "lg": 12,
+                    "xl": 12
                 },
                 "dockerFrigate.detectors": {
                     "hidden": "data.dockerFrigate.configType !== 'ui'",
