@@ -19,6 +19,12 @@ Adapter for Frigate Tool [Frigate Video](https://frigate.video/)
 
 ## Setup
 
+The adapter supports two MQTT modes:
+
+### Built-in MQTT Broker (default)
+
+Frigate connects directly to the adapter's built-in MQTT broker.
+
 - Enter Frigate url e.g. `localhost:5000` or `192.168.178.2:5000`
 - Enter MQTT port: 1883 from the frigate config
 - Enter host or ip of iobroker system in the frigate config under
@@ -29,6 +35,18 @@ mqtt:
 ```
 
 After Starting Frigate and the Adapter, you should see a new client connected in the log.
+
+### External MQTT Broker
+
+If you already have an MQTT broker (e.g. Mosquitto) running in your network and Frigate is connected to it, you can configure the adapter to connect to that broker as a client instead.
+
+- Set **MQTT Mode** to `External MQTT Broker`
+- Enter the **External MQTT Broker Host** (e.g. `192.168.1.100` or `mqtt://192.168.1.100:1883`)
+- Optionally enter **MQTT Username** and **MQTT Password** if the broker requires authentication
+- Set the **MQTT Topic Prefix** if Frigate uses a custom prefix (default: `frigate`)
+- Enter the Frigate url as usual
+
+The adapter will subscribe to all Frigate topics on the external broker and process events, states and snapshots the same way as with the built-in broker.
 
 ## Usage
 
@@ -115,6 +133,11 @@ as frigate uses disk to store the clips and snapshots.
     Placeholder for the next version (at the beginning of the line):
   ### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+- (Eistee82) Added support for connecting to an external MQTT broker (e.g. Mosquitto) as an alternative to the built-in broker
+- (Eistee82) Added configurable MQTT topic prefix
+- (Eistee82) Added i18n translations for new MQTT configuration fields
+
 ### 2.1.2 (2026-03-14)
 - (@GermanBluefox) Corrected the writing of ON/OFF states
 

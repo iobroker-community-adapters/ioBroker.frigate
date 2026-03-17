@@ -146,6 +146,8 @@
     "mode": "daemon",
     "type": "alarm",
     "compact": true,
+    "encryptedNative": ["mqttPassword"],
+    "protectedNative": ["mqttPassword"],
     "connectionType": "local",
     "dataSource": "push",
     "adminUI": {
