@@ -115,6 +115,10 @@ as frigate uses disk to store the clips and snapshots.
     Placeholder for the next version (at the beginning of the line):
   ### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+- (@GermanBluefox) Remove wrong log message about missing docker
+- (@GermanBluefox) Send on connection the topic onConnect to receive camera_activity topic
+
 ### 2.1.2 (2026-03-14)
 - (@GermanBluefox) Corrected the writing of ON/OFF states
 
