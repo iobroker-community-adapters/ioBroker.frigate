@@ -115,7 +115,7 @@ as frigate uses disk to store the clips and snapshots.
     Placeholder for the next version (at the beginning of the line):
   ### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 2.1.3 (2026-03-19)
 - (@GermanBluefox) Remove wrong log message about missing docker
 - (@GermanBluefox) Send on connection the topic onConnect to receive camera_activity topic
 
@@ -132,13 +132,6 @@ as frigate uses disk to store the clips and snapshots.
 
 ### 2.0.2 (2026-02-16)
 - (@GermanBluefox) Removed gpu_usages
-
-### 2.0.0 (2026-02-16)
-- (@GermanBluefox) Adapter was migrated to TypeScript
-- (@GermanBluefox) Breaking change: All states with value ON/OFF were changed to boolean true/false
-- (@GermanBluefox) Better handling of complex objects and arrays
-- (@GermanBluefox) `path_data` is not parsed anymore
-- (@GermanBluefox) Added еру possibility to start and manage docker with frigate from the adapter
 
 ## License
 
