@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "frigate",
-    "version": "2.1.2",
+    "version": "2.1.3",
     "news": {
+      "2.1.3": {
+        "en": "Remove wrong log message about missing docker\nSend on connection the topic onConnect to receive camera_activity topic",
+        "de": "Entfernen Sie die falsche Log-Nachricht über fehlende Docker\nSenden Sie die Verbindung zum Thema onConnect um camera_aktivität Thema zu erhalten",
+        "ru": "Удалить неправильное сообщение журнала о пропавшем докере\nОтправить на подключение тему onConnect для получения темы camera_activity",
+        "pt": "Remover a mensagem de registo errada sobre o docker em falta\nEnviar na conexão o tópico emConectar para receber o tópico câmera_atividade",
+        "nl": "Verkeerde logbericht over ontbrekende docker verwijderen\nVerstuur op verbinding het onderwerp opConnect om camera_activiteit onderwerp te ontvangen",
+        "fr": "Supprimer le mauvais message de journal sur le Docker manquant\nEnvoyer sur connexion le sujet surConnect pour recevoir le sujet camera_activity",
+        "it": "Rimuovi il messaggio di registro sbagliato su mancante docker\nInviare sul collegamento l'argomento suConnect per ricevere argomento camera_attività",
+        "es": "Eliminar el mensaje de registro incorrecto sobre el docker perdido\nEnvíe el tema sobreConnect para recibir el tema de la cámara_actividad",
+        "pl": "Usuń błędną wiadomość dziennika o brakującym dokerze\nWyślij na podłączenie temat onConnect, aby otrzymać temat camera _ activity",
+        "uk": "Видалити неправильне повідомлення про відсутність docker\nНадіслати на підключення теми наConnect, щоб отримати тему камери_активності",
+        "zh-cn": "删除错误的日志信息 \n发送连接到 Connect 上的话题以接收相机_ 活动主题"
+      },
       "2.1.2": {
         "en": "Corrected the writing of ON/OFF states",
         "de": "Das Schreiben von ON/OFF-Staaten korrigiert",
@@ -69,19 +82,6 @@
         "zh-cn": "适配器已迁移到类型脚本\n中断更改 : 价值为O/OFF的所有州改为布尔真/假\n更好地处理复杂的对象和阵列\n\" path_data \" 不再分析\n添加 QQ 启动和管理适配器护卫舰的可能性"
       },
       "2.0.0-alpha.1": {
-        "en": "Adapter was migrated to TypeScript\nBreaking change: All states with value ON/OFF were changed to boolean true/false\nBetter handling of complex objects and arrays\npath_data is not parsed anymore\nAdded еру possibility to start and manage docker with frigate from the adapter",
-        "de": "Adapter wurde auf TypeScript migriert\nBruchänderung: Alle Zustände mit Wert ON/OFF wurden in boolean true/false geändert\nBessere Handhabung komplexer Objekte und Arrays\npath_data wird nicht mehr pariert\nHinzugefügt еру Möglichkeit, zu starten und zu verwalten Docker mit frigate aus dem Adapter",
-        "ru": "Адаптер был перенесен в TypeScript\nПереломные изменения: Все состояния со значением ON/OFF были изменены на boolean true/false\nЛучшая обработка сложных объектов и массивов\npath_data больше не используется\nДобавлена возможность запуска и управления докером с фрегата от адаптера",
-        "pt": "O adaptador foi migrado para TypeScript\nMudança de quebra: Todos os estados com valor ON/OFF foram alterados para booleano true/false\nMelhor manuseio de objetos e arrays complexos\ncaminho_ dado não é analisado mais\nAdicionado еру possibilidade de iniciar e gerenciar docker com fragata do adaptador",
-        "nl": "Adapter is gemigreerd naar TypeScript\nVerandering: Alle staten met waarde ON/OFF werden veranderd in boolean true/false\nBeter omgaan met complexe objecten en arrays\npath_data wordt niet meer ontleed\nToegevoegd еру mogelijkheid om docker te starten en te beheren met fregat van de adapter",
-        "fr": "L'adaptateur a été migré vers TypeScript\nBriser le changement : Tous les états avec valeur ON/OFF ont été changés en booléen vrai/faux\nMeilleure gestion des objets et des tableaux complexes\npath_data n'est plus analysé\nAjout de la possibilité еру de démarrer et de gérer docker avec la frégate de l'adaptateur",
-        "it": "L'adattatore è stato migrato a TypeScript\nCambiamento di rottura: Tutti gli stati con valore ON/OFF sono stati modificati in booleano vero/falso\nUna migliore gestione di oggetti e array complessi\npath_data non è più parso\nAggiunto еру possibilità di avviare e gestire docker con fregata dall'adattatore",
-        "es": "Adaptador fue migrado a TipoScript\nCambio de ruptura: Todos los estados con valor ON/OFF fueron cambiados a booleano verdadero/falso\nMejor manejo de objetos y arrays complejos\npath_data ya no es analizado\nAñadido еру posibilidad de comenzar y gestionar docker con fragata del adaptador",
-        "pl": "Adapter został przeniesiony do TypeScript\nŁamanie zmian: Wszystkie stany o wartości ON / OFF zostały zmienione na boolean true / false\nLepsza obsługa złożonych przedmiotów i tablic\npath _ data nie jest już obsługiwany\nDodano możliwość uruchomienia i zarządzania dokiem z fregatą z adaptera",
-        "uk": "Адаптер був мігрований до TypeScript\nЗміна розривів: Всі стани з значенням ON/OFF були змінені на boolean true/false\nКраще обслуговування складних об'єктів і масивів\nшлях_data не приписується\nДодана можливість запуску і управління кермом з фригатом з адаптера",
-        "zh-cn": "适配器已迁移到类型脚本\n中断更改 : 价值为O/OFF的所有州改为布尔真/假\n更好地处理复杂的对象和阵列\n路径数据已不解析\n添加 QQ 启动和管理适配器护卫舰的可能性"
-      },
-      "2.0.0-alpha.0": {
         "en": "Adapter was migrated to TypeScript\nBreaking change: All states with value ON/OFF were changed to boolean true/false\nBetter handling of complex objects and arrays\npath_data is not parsed anymore\nAdded еру possibility to start and manage docker with frigate from the adapter",
         "de": "Adapter wurde auf TypeScript migriert\nBruchänderung: Alle Zustände mit Wert ON/OFF wurden in boolean true/false geändert\nBessere Handhabung komplexer Objekte und Arrays\npath_data wird nicht mehr pariert\nHinzugefügt еру Möglichkeit, zu starten und zu verwalten Docker mit frigate aus dem Adapter",
         "ru": "Адаптер был перенесен в TypeScript\nПереломные изменения: Все состояния со значением ON/OFF были изменены на boolean true/false\nЛучшая обработка сложных объектов и массивов\npath_data больше не используется\nДобавлена возможность запуска и управления докером с фрегата от адаптера",

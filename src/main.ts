@@ -373,6 +373,24 @@ class FrigateAdapter extends Adapter {
             this.log.info(`New client: ${client.id}`);
             this.log.info(`Filter for message from client: ${client.id}`);
             await this.setStateAsync('info.connection', true, true);
+            // Trigger camera_activity from Frigate by publishing onConnect
+            this.aedes.publish(
+                {
+                    cmd: 'publish',
+                    qos: 0,
+                    topic: 'frigate/onConnect',
+                    payload: Buffer.from(''),
+                    retain: false,
+                    dup: false,
+                },
+                err => {
+                    if (err) {
+                        this.log.error(`onConnect publish error: ${err}`);
+                    } else {
+                        this.log.info('Published frigate/onConnect to trigger camera_activity');
+                    }
+                },
+            );
             await this.fetchEventHistory();
         });
 
@@ -395,6 +413,156 @@ class FrigateAdapter extends Adapter {
 
             if (client) {
                 await this.handleMqttMessage(packet.topic, Buffer.from(packet.payload));
+                try {
+                    let pathArray = packet.topic.split('/');
+                    const dataStr = packet.payload.toString();
+                    let write = false;
+                    let data: FrigateMessage | string | undefined | number | boolean;
+                    if (pathArray[pathArray.length - 1] !== 'snapshot') {
+                        if (
+                            dataStr === 'ON' &&
+                            (ON_OFF_STATES.includes(pathArray[pathArray.length - 2]) ||
+                                pathArray[pathArray.length - 1] === 'motion')
+                        ) {
+                            data = true;
+                        } else if (
+                            dataStr === 'OFF' &&
+                            (ON_OFF_STATES.includes(pathArray[pathArray.length - 2]) ||
+                                pathArray[pathArray.length - 1] === 'motion')
+                        ) {
+                            data = false;
+                        } else if (
+                            !isNaN(Number(dataStr)) ||
+                            dataStr.includes('"') ||
+                            dataStr.includes('{') ||
+                            dataStr.includes('[')
+                        ) {
+                            try {
+                                data = JSON.parse(dataStr);
+                            } catch (error) {
+                                this.log.debug(`Cannot parse ${dataStr} ${error}`);
+                                // do nothing
+                            }
+                        } else {
+                            data = dataStr;
+                        }
+                    }
+
+                    if (pathArray[0] === 'frigate') {
+                        // remove the first element "frigate" from a path array
+                        pathArray.shift();
+                        const command: string = pathArray[0] as string;
+                        const event = pathArray[pathArray.length - 1];
+
+                        // Handle tracked_object_update events
+                        if (command === 'tracked_object_update' && typeof data === 'object') {
+                            await this.handleTrackedObjectUpdate(data);
+                            return;
+                        }
+
+                        // Ignore path data for states because they can be very large and are not needed in ioBroker. They are only used to create the snapshot and event history images.
+                        FrigateAdapter.removePathData(data);
+
+                        // convert snapshot jpg to base64 with data url
+                        if (event === 'snapshot') {
+                            data = `data:image/jpeg;base64,${packet.payload.toString('base64')}`;
+
+                            if (this.config.notificationCamera) {
+                                const uuid = UUID();
+                                const fileName = `${this.tmpDir}${sep}${uuid}.jpg`;
+                                this.log.debug(`Save ${event} image to ${fileName}`);
+                                fs.writeFileSync(fileName, packet.payload);
+                                await this.sendNotification({
+                                    source: command,
+                                    type: pathArray[1],
+                                    state: event,
+                                    image: fileName,
+                                });
+                                try {
+                                    if (fileName) {
+                                        this.log.debug(`Try to delete ${fileName}`);
+                                        fs.unlinkSync(fileName);
+                                        this.log.debug(`Deleted ${fileName}`);
+                                    }
+                                } catch (error) {
+                                    this.log.error(error);
+                                }
+                            }
+                        } else if (event === 'state') {
+                            // if last path state then make it writable
+                            write = true;
+                        } else if (event === 'events' && typeof data === 'object') {
+                            // events topic trigger history fetching
+                            await this.prepareEventNotification(data);
+                            await this.fetchEventHistory();
+                            // if (data.before?.start_time) {
+                            //   data.before.start_time = data.before.start_time.split('.')[0];
+                            //   data.before.end_time = data.before.end_time.split('.')[0];
+                            // }
+                            // if (data.after?.start_time) {
+                            //   data.after.start_time = data.after.start_time.split('.')[0];
+                            //   data.after.end_time = data.after.end_time.split('.')[0];
+                            // }
+                        } else if (command === 'reviews' && typeof data === 'object') {
+                            delete data.after.data.detections;
+                            delete data.before.data.detections;
+                        } else if (command === 'events' && typeof data === 'object') {
+                            delete data.after.path_data;
+                            delete data.before.path_data;
+                            if (data.after.snapshot && typeof data === 'object') {
+                                delete data.after.snapshot.path_data;
+                            }
+                            if (data.before.snapshot) {
+                                delete data.before.snapshot.path_data;
+                            }
+                            if (data.history) {
+                                for (const item of data.history) {
+                                    delete item.path_data;
+                                    if (item.snapshot) {
+                                        delete item.snapshot.path_data;
+                                    }
+                                }
+                            }
+                        } else if (command === 'stats' && typeof data === 'object') {
+                            // create devices state for cameras
+                            delete data.cpu_usages;
+
+                            await this.createCameraDevices();
+                        }
+
+                        if (
+                            command !== 'stats' &&
+                            command !== 'events' &&
+                            command !== 'available' &&
+                            command !== 'reviews' &&
+                            command !== 'camera_activity' &&
+                            pathArray.length > 1
+                        ) {
+                            // join every path item except the first one to create a flat hierarchy
+                            const cameraId = pathArray.shift() || '';
+                            pathArray = [cameraId, pathArray.join('_')];
+                        }
+                    }
+
+                    // parse json to iobroker states
+                    await this.json2iob.parse(pathArray.join('.'), data === undefined ? dataStr : data, {
+                        write,
+                        states: {
+                            birdseye_mode_state: {
+                                OBJECTS: 'objects',
+                                CONTINUOUS: 'continuous',
+                                MOTION: 'motion',
+                            },
+                            review_status: {
+                                NONE: 'none',
+                                DETECTION: 'detection',
+                                ALERT: 'alert',
+                            },
+                        },
+                    });
+                } catch (error) {
+                    this.log.warn(error);
+                }
             }
         });
         this.aedes.on('subscribe', (subscriptions, client) => {
@@ -693,7 +861,7 @@ class FrigateAdapter extends Adapter {
 
             this.log.debug(`Processing tracked object update: ${JSON.stringify(data).substring(0, 200)}...`);
 
-            // Add timestamp if not present
+            // Add a timestamp if not present
             data.timestamp ||= Date.now() / 1000;
 
             // Add the new update to the beginning of the array (latest first)
@@ -780,7 +948,7 @@ class FrigateAdapter extends Adapter {
                         common: {
                             name: 'Body for create Event',
                             type: 'string',
-                            role: 'json',
+                            role: 'object',
                             def: `{}`,
                             read: true,
                             write: true,
@@ -1096,7 +1264,7 @@ class FrigateAdapter extends Adapter {
                     if (device) {
                         path = `${device}.history`;
                     }
-                    // Ignore path data for states, because they can be very large and are not needed in ioBroker. They are only used to create the snapshot and event history images.
+                    // Ignore path data for states because they can be very large and are not needed in ioBroker. They are only used to create the snapshot and event history images.
                     FrigateAdapter.removePathData(response.data);
 
                     await this.json2iob.parse(path, response.data, {
