@@ -76,7 +76,6 @@
     "MQTT Mode": "MQTT-Modus",
     "MQTT Password": "MQTT-Passwort",
     "MQTT Server Port": "MQTT-Server-Port",
-    "MQTT Server Port in Frigate config": "MQTT-Server-Port in der Frigate-Konfiguration",
     "MQTT Topic Prefix": "MQTT-Topic-Präfix",
     "MQTT Username": "MQTT-Benutzername",
     "Name": "Name",
