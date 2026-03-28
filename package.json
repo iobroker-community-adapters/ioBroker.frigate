@@ -28,6 +28,7 @@
     "aedes": "^0.51.3",
     "axios": "^1.13.6",
     "json-bigint": "^1.0.0",
+    "mqtt": "^5.15.0",
     "uuid": "^11.0.0"
   },
   "devDependencies": {

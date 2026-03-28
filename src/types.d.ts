@@ -1,6 +1,11 @@
 export interface FrigateAdapterConfigTyped {
     friurl: string;
+    mqttMode: 'broker' | 'client';
     mqttPort: number;
+    mqttHost: string;
+    mqttUsername: string;
+    mqttPassword: string;
+    mqttTopicPrefix: string;
     webnum: number;
     notificationMinScore: number;
     notificationActive: boolean;
@@ -74,7 +79,12 @@ export interface FrigateAdapterConfigTyped {
 
 export interface FrigateAdapterConfig extends FrigateAdapterConfigTyped {
     friurl: string;
+    mqttMode: 'broker' | 'client';
     mqttPort: number | string;
+    mqttHost: string;
+    mqttUsername: string;
+    mqttPassword: string;
+    mqttTopicPrefix: string;
     webnum: number | string;
     notificationMinScore: number | string;
     notificationActive: boolean;
