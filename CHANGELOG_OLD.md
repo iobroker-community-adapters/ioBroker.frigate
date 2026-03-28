@@ -1,4 +1,7 @@
 # Older changes
+## 2.0.2 (2026-02-16)
+- (@GermanBluefox) Removed gpu_usages
+
 ## 2.0.0 (2026-02-16)
 - (@GermanBluefox) Adapter was migrated to TypeScript
 - (@GermanBluefox) Breaking change: All states with value ON/OFF were changed to boolean true/false
