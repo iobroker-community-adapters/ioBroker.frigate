@@ -44,7 +44,6 @@ export default class Json2iob {
     /**
      * Parses the given element and creates states in the adapter based on the element's structure.
      *
-     * @function parse
      * @param path - The ioBroker object path which the element should be saved to.
      * @param element - The element to be parsed.
      * @param options - The parsing options.

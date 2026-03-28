@@ -137,6 +137,7 @@ as frigate uses disk to store the clips and snapshots.
 - (Eistee82) Added support for connecting to an external MQTT broker (e.g. Mosquitto) as an alternative to the built-in broker
 - (Eistee82) Added configurable MQTT topic prefix
 - (Eistee82) Added i18n translations for new MQTT configuration fields
+
 ### 2.1.3 (2026-03-19)
 - (@GermanBluefox) Remove wrong log message about missing docker
 - (@GermanBluefox) Send on connection the topic onConnect to receive camera_activity topic
