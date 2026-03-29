@@ -33,7 +33,7 @@ Adapter for [Frigate NVR](https://frigate.video/) — an open-source, self-hoste
     Placeholder for the next version (at the beginning of the line):
   ### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 2.3.0 (2026-03-29)
 - (Eistee82) Many new features, improvements, and bug fixes in development for the next major release (see 2.2.2)
 
 ### 2.2.2 (2026-03-29)
@@ -78,14 +78,6 @@ Adapter for [Frigate NVR](https://frigate.video/) — an open-source, self-hoste
 
 ### 2.1.2 (2026-03-14)
 - (@GermanBluefox) Corrected the writing of ON/OFF states
-
-### 2.1.1 (2026-03-08)
-- (@GermanBluefox) Added threshold for person detection in notifications
-
-### 2.1.0 (2026-03-07)
-- (@GermanBluefox) Code optimizations and refactoring
-- (copilot) missing jsonConfig sizes have been added
-- (mcm1957) dependencies have been updated
 
 ## License
 

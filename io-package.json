@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "frigate",
-    "version": "2.2.1",
+    "version": "2.3.0",
     "news": {
+      "2.3.0": {
+        "en": "Many new features, improvements, and bug fixes in development for the next major release (see 2.2.2)",
+        "de": "Viele neue Features, Verbesserungen und Fehlerbehebungen in der Entwicklung für die nächste große Version (siehe 2.2.2)",
+        "ru": "Многие новые функции, улучшения и исправления ошибок в разработке для следующего крупного выпуска (см. 2.2.2)",
+        "pt": "Muitas novas funcionalidades, melhorias e correções de bugs em desenvolvimento para a próxima versão principal (ver 2.2.2)",
+        "nl": "Veel nieuwe functies, verbeteringen en bugfixes in ontwikkeling voor de volgende grote release (zie 2.2.2)",
+        "fr": "De nombreuses nouvelles fonctionnalités, améliorations et corrections de bogues pour la prochaine version majeure (voir 2.2.2)",
+        "it": "Molte nuove funzionalità, miglioramenti e correzioni di bug in sviluppo per il prossimo rilascio principale (vedere 2.2.2)",
+        "es": "Muchas nuevas características, mejoras y correcciones de errores en el desarrollo para la próxima versión importante (véase 2.2.2)",
+        "pl": "Wiele nowych funkcji, ulepszeń i poprawek błędów w rozwoju dla następnego wydania głównego (patrz 2.2.2)",
+        "uk": "Багато нових функцій, вдосконалення та виправлення помилок у розробці для наступного основного релізу (див. 2.2.2)",
+        "zh-cn": "开发中的许多新特性、改进和错误修正,用于下一次主要发行(见2.2.2)"
+      },
       "2.2.1": {
         "en": "Added support for connecting to an external MQTT broker (e.g. Mosquitto) as an alternative to the built-in broker\nAdded configurable MQTT topic prefix\nAdded i18n translations for new MQTT configuration fields\ndependencies have been updated",
         "de": "Unterstützung für den Anschluss an einen externen MQTT-Broker (z.B. Mosquitto) als Alternative zum eingebauten Broker\nKonfigurierbares MQTT-Thema-Präfix hinzugefügt\nI18n Übersetzungen für neue MQTT Konfigurationsfelder hinzugefügt\nabhängigkeiten wurden aktualisiert",
