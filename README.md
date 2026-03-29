@@ -33,7 +33,7 @@ Adapter for [Frigate NVR](https://frigate.video/) — an open-source, self-hoste
     Placeholder for the next version (at the beginning of the line):
   ### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 2.3.1 (2026-03-29)
 - (Eistee82) Added Frigate API authentication support for port 8971 (username/password login with JWT)
 - (Eistee82) Automatic token refresh on 401 responses
 
@@ -79,9 +79,6 @@ Adapter for [Frigate NVR](https://frigate.video/) — an open-source, self-hoste
 ### 2.1.3 (2026-03-19)
 - (@GermanBluefox) Remove wrong log message about missing docker
 - (@GermanBluefox) Send on connection the topic onConnect to receive camera_activity topic
-
-### 2.1.2 (2026-03-14)
-- (@GermanBluefox) Corrected the writing of ON/OFF states
 
 ## License
 

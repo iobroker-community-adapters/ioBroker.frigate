@@ -1,4 +1,7 @@
 # Older changes
+## 2.1.2 (2026-03-14)
+- (@GermanBluefox) Corrected the writing of ON/OFF states
+
 ## 2.1.1 (2026-03-08)
 - (@GermanBluefox) Added threshold for person detection in notifications
 
