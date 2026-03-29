@@ -133,7 +133,7 @@ as frigate uses disk to store the clips and snapshots.
     Placeholder for the next version (at the beginning of the line):
   ### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 2.2.1 (2026-03-29)
 - (Eistee82) Added support for connecting to an external MQTT broker (e.g. Mosquitto) as an alternative to the built-in broker
 - (Eistee82) Added configurable MQTT topic prefix
 - (Eistee82) Added i18n translations for new MQTT configuration fields

@@ -1,20 +1,20 @@
 {
   "common": {
     "name": "frigate",
-    "version": "2.2.0",
+    "version": "2.2.1",
     "news": {
-      "2.2.0": {
-        "en": "Added support for connecting to an external MQTT broker (e.g. Mosquitto) as an alternative to the built-in broker\nAdded configurable MQTT topic prefix\nAdded i18n translations for new MQTT configuration fields",
-        "de": "Unterstützung für den Anschluss an einen externen MQTT-Broker (z.B. Mosquitto) als Alternative zum eingebauten Broker\nKonfigurierbares MQTT-Thema-Präfix hinzugefügt\nI18n Übersetzungen für neue MQTT Konfigurationsfelder hinzugefügt",
-        "ru": "Добавлена поддержка подключения к внешнему брокеру MQTT (например, Mosquitto) в качестве альтернативы встроенному брокеру\nДобавлен настраиваемый префикс темы MQTT\nДобавлены переводы i18n для новых полей конфигурации MQTT",
-        "pt": "Adicionado suporte para a conexão a um corretor externo MQTT (por exemplo, Mosquitto) como uma alternativa ao corretor embutido\nPrefixo de tópico MQTT configurável adicionado\nAdicionado i18n traduções para novos campos de configuração MQTT",
-        "nl": "Toegevoegde ondersteuning voor het verbinden met een externe MQTT-makelaar (bijv. Mosquitto) als alternatief voor de ingebouwde makelaar\nConfigureerbare MQTT topic prefix toegevoegd\nToegevoegd i18n vertalingen voor nieuwe MQTT configuratievelden",
-        "fr": "Ajout d'un soutien pour se connecter à un courtier MQTT externe (p. ex. Mosquitto) comme alternative au courtier intégré\nAjout du préfixe du sujet configurable MQTT\nAjout de traductions i18n pour les nouveaux champs de configuration MQTT",
-        "it": "Aggiunto supporto per il collegamento a un broker MQTT esterno (ad esempio Mosquitto) come alternativa al broker integrato\nAggiunto configurabile MQTT argomento prefisso\nAggiunto i18n traduzioni per nuovi campi di configurazione MQTT",
-        "es": "Apoyo añadido para conectarse a un corredor MQTT externo (por ejemplo, Mosquitto) como una alternativa al corredor incorporado\nAñadido prefijo de MQTT configurable\nAñadido i18n traducciones para nuevos campos de configuración MQTT",
-        "pl": "Dodano wsparcie dla podłączenia do zewnętrznego brokera MQTT (np. Mosquitto) jako alternatywy dla brokera built- in\nDodano konfigurowalny prefiks motywu MQTT\nDodano tłumaczenie i18n dla nowych pól konfiguracyjnych MQTT",
-        "uk": "Додана підтримка підключення до зовнішнього брокера MQTT (наприклад, Mosquitto) як альтернатива вбудованому брокеру\nДодано налаштування MQTT prefix\nДодано i18n переклади для нових полів конфігурації MQTT",
-        "zh-cn": "添加支持连接到外部 MQTT 经纪人( 如蚊子) , 作为内置经纪人的替代品\n添加可配置的 MQTT 主题前缀\n为新的 MQTT 配置字段添加了 i18n 翻译"
+      "2.2.1": {
+        "en": "Added support for connecting to an external MQTT broker (e.g. Mosquitto) as an alternative to the built-in broker\nAdded configurable MQTT topic prefix\nAdded i18n translations for new MQTT configuration fields\ndependencies have been updated",
+        "de": "Unterstützung für den Anschluss an einen externen MQTT-Broker (z.B. Mosquitto) als Alternative zum eingebauten Broker\nKonfigurierbares MQTT-Thema-Präfix hinzugefügt\nI18n Übersetzungen für neue MQTT Konfigurationsfelder hinzugefügt\nabhängigkeiten wurden aktualisiert",
+        "ru": "Добавлена поддержка подключения к внешнему брокеру MQTT (например, Mosquitto) в качестве альтернативы встроенному брокеру\nДобавлен настраиваемый префикс темы MQTT\nДобавлены переводы i18n для новых полей конфигурации MQTT\nобновлены зависимости",
+        "pt": "Adicionado suporte para a conexão a um corretor externo MQTT (por exemplo, Mosquitto) como uma alternativa ao corretor embutido\nPrefixo de tópico MQTT configurável adicionado\nAdicionado i18n traduções para novos campos de configuração MQTT\nas dependências foram atualizadas",
+        "nl": "Toegevoegde ondersteuning voor het verbinden met een externe MQTT-makelaar (bijv. Mosquitto) als alternatief voor de ingebouwde makelaar\nConfigureerbare MQTT topic prefix toegevoegd\nToegevoegd i18n vertalingen voor nieuwe MQTT configuratievelden\nafhankelijkheden zijn bijgewerkt",
+        "fr": "Ajout d'un soutien pour se connecter à un courtier MQTT externe (p. ex. Mosquitto) comme alternative au courtier intégré\nAjout du préfixe du sujet configurable MQTT\nAjout de traductions i18n pour les nouveaux champs de configuration MQTT\nles dépendances ont été mises à jour",
+        "it": "Aggiunto supporto per il collegamento a un broker MQTT esterno (ad esempio Mosquitto) come alternativa al broker integrato\nAggiunto configurabile MQTT argomento prefisso\nAggiunto i18n traduzioni per nuovi campi di configurazione MQTT\nle dipendenze sono state aggiornate",
+        "es": "Apoyo añadido para conectarse a un corredor MQTT externo (por ejemplo, Mosquitto) como una alternativa al corredor incorporado\nAñadido prefijo de MQTT configurable\nAñadido i18n traducciones para nuevos campos de configuración MQTT\nlas dependencias se han actualizado",
+        "pl": "Dodano wsparcie dla podłączenia do zewnętrznego brokera MQTT (np. Mosquitto) jako alternatywy dla brokera built- in\nDodano konfigurowalny prefiks motywu MQTT\nDodano tłumaczenie i18n dla nowych pól konfiguracyjnych MQTT\nuzależnienia zostały zaktualizowane",
+        "uk": "Додана підтримка підключення до зовнішнього брокера MQTT (наприклад, Mosquitto) як альтернатива вбудованому брокеру\nДодано налаштування MQTT prefix\nДодано i18n переклади для нових полів конфігурації MQTT\nбуло оновлено залежності",
+        "zh-cn": "添加支持连接到外部 MQTT 经纪人( 如蚊子) , 作为内置经纪人的替代品\n添加可配置的 MQTT 主题前缀\n为新的 MQTT 配置字段添加了 i18n 翻译\n依赖关系已更新"
       },
       "2.1.3": {
         "en": "Remove wrong log message about missing docker\nSend on connection the topic onConnect to receive camera_activity topic",
@@ -80,19 +80,6 @@
         "pl": "Usunięto gpu _ usements",
         "uk": "Видалити gpu_usages",
         "zh-cn": "删除 gpu_us"
-      },
-      "2.0.0": {
-        "en": "Adapter was migrated to TypeScript\nBreaking change: All states with value ON/OFF were changed to boolean true/false\nBetter handling of complex objects and arrays\n`path_data` is not parsed anymore\nAdded еру possibility to start and manage docker with frigate from the adapter",
-        "de": "Adapter wurde auf TypeScript migriert\nBruchänderung: Alle Zustände mit Wert ON/OFF wurden in boolean true/false geändert\nBessere Handhabung komplexer Objekte und Arrays\n`path_data` ist nicht mehr pariert\nHinzugefügt еру Möglichkeit, zu starten und zu verwalten Docker mit frigate aus dem Adapter",
-        "ru": "Адаптер был перенесен в TypeScript\nПереломные изменения: Все состояния со значением ON/OFF были изменены на boolean true/false\nЛучшая обработка сложных объектов и массивов\npath_data больше не разбирается\nДобавлена возможность запуска и управления докером с фрегата от адаптера",
-        "pt": "O adaptador foi migrado para TypeScript\nMudança de quebra: Todos os estados com valor ON/OFF foram alterados para booleano true/false\nMelhor manuseio de objetos e arrays complexos\n`path_data` já não é analisado\nAdicionado еру possibilidade de iniciar e gerenciar docker com fragata do adaptador",
-        "nl": "Adapter is gemigreerd naar TypeScript\nVerandering: Alle staten met waarde ON/OFF werden veranderd in boolean true/false\nBeter omgaan met complexe objecten en arrays\nde gegevens worden niet meer ontleed\nToegevoegd еру mogelijkheid om docker te starten en te beheren met fregat van de adapter",
-        "fr": "L'adaptateur a été migré vers TypeScript\nBriser le changement : Tous les états avec valeur ON/OFF ont été changés en booléen vrai/faux\nMeilleure gestion des objets et des tableaux complexes\n`path_data` n'est plus analysé\nAjout de la possibilité еру de démarrer et de gérer docker avec la frégate de l'adaptateur",
-        "it": "L'adattatore è stato migrato a TypeScript\nCambiamento di rottura: Tutti gli stati con valore ON/OFF sono stati modificati in booleano vero/falso\nUna migliore gestione di oggetti e array complessi\n`path_data` non è più parsed\nAggiunto еру possibilità di avviare e gestire docker con fregata dall'adattatore",
-        "es": "Adaptador fue migrado a TipoScript\nCambio de ruptura: Todos los estados con valor ON/OFF fueron cambiados a booleano verdadero/falso\nMejor manejo de objetos y arrays complejos\n`path_data` ya no es pareado\nAñadido еру posibilidad de comenzar y gestionar docker con fragata del adaptador",
-        "pl": "Adapter został przeniesiony do TypeScript\nŁamanie zmian: Wszystkie stany o wartości ON / OFF zostały zmienione na boolean true / false\nLepsza obsługa złożonych przedmiotów i tablic\n'path _ data' nie jest już obsługiwane\nDodano możliwość uruchomienia i zarządzania dokiem z fregatą z adaptera",
-        "uk": "Адаптер був мігрований до TypeScript\nЗміна розривів: Всі стани з значенням ON/OFF були змінені на boolean true/false\nКраще обслуговування складних об'єктів і масивів\n`path_data``` не входить до складу\nДодана можливість запуску і управління кермом з фригатом з адаптера",
-        "zh-cn": "适配器已迁移到类型脚本\n中断更改 : 价值为O/OFF的所有州改为布尔真/假\n更好地处理复杂的对象和阵列\n\" path_data \" 不再分析\n添加 QQ 启动和管理适配器护卫舰的可能性"
       }
     },
     "titleLang": {
