@@ -9,6 +9,7 @@ Adapter für [Frigate NVR](https://frigate.video/) — ein quelloffenes, selbst 
 - [Einrichtung](#einrichtung)
   - [Eingebauter MQTT-Broker](#eingebauter-mqtt-broker-standard)
   - [Externer MQTT-Broker](#externer-mqtt-broker)
+  - [Frigate API-Authentifizierung](#frigate-api-authentifizierung)
 - [States-Referenz](#states-referenz)
   - [Statistiken](#statistiken)
   - [Events](#events)
@@ -58,6 +59,20 @@ Wenn bereits ein MQTT-Broker (z.B. Mosquitto) läuft, kann der Adapter sich als 
 3. Optional Benutzername und Passwort eingeben
 4. **MQTT-Topic-Prefix** setzen falls Frigate einen eigenen verwendet (Standard: `frigate`)
 5. Frigate-URL wie gewohnt eingeben
+
+### Frigate API-Authentifizierung
+
+Wenn deine Frigate-Instanz Authentifizierung aktiviert hat (typischerweise auf Port 8971 mit HTTPS), kannst du den Adapter so konfigurieren, dass er sich automatisch anmeldet.
+
+1. Frigate-URL mit `https://` Prefix eingeben (z.B. `https://192.168.178.26:8971`)
+2. **Frigate Benutzername** und **Frigate Passwort** eingeben
+3. Der Adapter meldet sich über `POST /api/login` an und verwendet den JWT-Token für alle API-Aufrufe
+
+Wenn die Felder leer bleiben, wird kein Login durchgeführt und der Adapter funktioniert wie bisher (unauthentifizierter Zugriff auf Port 5000).
+
+Der Adapter aktualisiert den Token automatisch wenn er abläuft (bei 401-Antwort wird erneut eingeloggt und der Request wiederholt).
+
+**Hinweis:** Selbstsignierte Zertifikate werden akzeptiert. Wenn kein HTTPS verwendet wird, die URL ohne Prefix eingeben (z.B. `192.168.178.26:5000`) — der Adapter verwendet standardmäßig HTTP.
 
 ---
 

@@ -17,28 +17,59 @@
                     "lg": 4,
                     "xl": 4
                 },
+                "_headerApi": {
+                    "type": "header",
+                    "text": "Frigate API",
+                    "size": 4,
+                    "hidden": "!!data.dockerFrigate?.enabled",
+                    "newLine": true
+                },
                 "_frigateHost": {
                     "type": "header",
-                    "text": "Enter the ioBroker IP Address in the frigate config under mqtt->host",
+                    "text": "frigate_host_hint",
                     "hidden": "!!data.dockerFrigate?.enabled || data.mqttMode === 'client'",
-                    "size": 2,
-                    "xs": 12,
-                    "sm": 12,
-                    "md": 12,
-                    "lg": 12,
-                    "xl": 12,
+                    "size": 5,
                     "newLine": true
                 },
                 "friurl": {
                     "type": "text",
                     "label": "Frigate Hostname:Port",
-                    "help": "(localhost:5000 or 192.168.178.100:5000)",
+                    "help": "frigate_url_help",
                     "hidden": "!!data.dockerFrigate?.enabled",
                     "xs": 12,
                     "sm": 12,
-                    "md": 6,
+                    "md": 4,
                     "lg": 4,
                     "xl": 4,
+                    "newLine": true
+                },
+                "frigateUsername": {
+                    "type": "text",
+                    "label": "Frigate Username",
+                    "help": "frigate_auth_help",
+                    "hidden": "!!data.dockerFrigate?.enabled",
+                    "xs": 12,
+                    "sm": 6,
+                    "md": 4,
+                    "lg": 4,
+                    "xl": 4
+                },
+                "frigatePassword": {
+                    "type": "password",
+                    "label": "Frigate Password",
+                    "help": "frigate_auth_help",
+                    "hidden": "!!data.dockerFrigate?.enabled",
+                    "xs": 12,
+                    "sm": 6,
+                    "md": 4,
+                    "lg": 4,
+                    "xl": 4
+                },
+                "_headerMqtt": {
+                    "type": "header",
+                    "text": "MQTT",
+                    "size": 4,
+                    "hidden": "!!data.dockerFrigate?.enabled",
                     "newLine": true
                 },
                 "mqttMode": {
@@ -122,6 +153,13 @@
                     "md": 6,
                     "lg": 4,
                     "xl": 4,
+                    "newLine": true
+                },
+                "_headerHistory": {
+                    "type": "header",
+                    "text": "Event History",
+                    "size": 4,
+                    "hidden": "!!data.dockerFrigate?.enabled",
                     "newLine": true
                 },
                 "webnum": {

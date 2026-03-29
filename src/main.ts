@@ -1,4 +1,5 @@
 import fs, { existsSync } from 'node:fs';
+import https from 'node:https';
 import { join } from 'node:path';
 import { createServer, type Server } from 'node:net';
 import { tmpdir } from 'node:os';
@@ -40,6 +41,7 @@ class FrigateAdapter extends Adapter {
     private mqttClient: MqttClient | null = null;
     private fetchEventHistoryTimeout: ioBroker.Timeout | undefined | null = null;
     private zoneAggregator: ZoneAggregator;
+    frigateBaseUrl = '';
 
     constructor(options?: Partial<AdapterOptions>) {
         super({
@@ -57,9 +59,11 @@ class FrigateAdapter extends Adapter {
                 accept: '*/*',
             },
             timeout: 3 * 60 * 1000,
+            httpsAgent: new https.Agent({ rejectUnauthorized: false }),
         });
         this.json2iob = new Json2iob(this);
         this.zoneAggregator = new ZoneAggregator({ adapter: this });
+        this.setupAuthInterceptor();
     }
 
     onReady = async (): Promise<void> => {
@@ -94,8 +98,21 @@ class FrigateAdapter extends Adapter {
 
         if (!this.config.friurl) {
             this.log.warn('No Frigate url set');
-        } else if (this.config.friurl.includes(':8971')) {
-            this.log.warn('You are using the UI port 8971. Please use the API port 5000');
+        }
+
+        // Build base URL: user can prefix with https:// for TLS, otherwise http://
+        if (this.config.friurl?.startsWith('http')) {
+            this.frigateBaseUrl = this.config.friurl;
+        } else {
+            this.frigateBaseUrl = `http://${this.config.friurl}`;
+        }
+
+        if (this.config.frigateUsername && this.config.frigatePassword) {
+            await this.loginToFrigate();
+        } else if (this.config.friurl?.includes(':8971')) {
+            this.log.warn(
+                'Port 8971 requires authentication. Please enter Frigate username and password in the adapter settings.',
+            );
         }
         this.config.notificationMinScore = parseFloat(this.config.notificationMinScore as string) || 0;
         this.config.notificationEventClipWaitTime =
@@ -474,6 +491,82 @@ class FrigateAdapter extends Adapter {
             json2iob: this.json2iob,
             deviceArray: this.deviceArray,
         });
+    }
+
+    // --- Frigate API Authentication ---
+
+    private async loginToFrigate(): Promise<boolean> {
+        try {
+            const url = `${this.frigateBaseUrl}/api/login`;
+            this.log.info(`Logging in to Frigate API at ${url}`);
+            const response = await this.requestClient.post(url, {
+                user: this.config.frigateUsername,
+                password: this.config.frigatePassword,
+            });
+            if (response.status === 200) {
+                this.log.info('Successfully authenticated with Frigate API');
+                // Extract Bearer token from cookie if available
+                const cookies = response.headers['set-cookie'];
+                if (cookies) {
+                    for (const cookie of cookies) {
+                        const match = cookie.match(/frigate_token=([^;]+)/);
+                        if (match) {
+                            this.requestClient.defaults.headers.common.Authorization = `Bearer ${match[1]}`;
+                            this.log.debug('Set Bearer token from login response');
+                        }
+                    }
+                }
+                return true;
+            }
+            this.log.warn(`Frigate login returned status ${response.status}`);
+            return false;
+        } catch (error: any) {
+            const msg = error instanceof Error ? error.message : String(error);
+            if (error.response?.status === 401) {
+                this.log.error('Frigate login failed: Invalid username or password');
+            } else if (error.code === 'EPROTO' || msg.includes('SSL') || msg.includes('EPROTO')) {
+                this.log.error(
+                    `Frigate login failed: SSL/TLS error. Port 8971 requires https:// — change the URL to https://${this.config.friurl}`,
+                );
+            } else if (error.response?.status === 404 || error.response?.status === 400) {
+                if (!this.frigateBaseUrl.startsWith('https')) {
+                    this.log.error(
+                        `Frigate login failed: Login not available at ${this.frigateBaseUrl}. Try adding https:// to the URL`,
+                    );
+                } else {
+                    this.log.error(
+                        `Frigate login failed: Login endpoint returned ${error.response.status} at ${this.frigateBaseUrl}`,
+                    );
+                }
+            } else {
+                this.log.error(`Frigate login failed: ${msg}`);
+            }
+            return false;
+        }
+    }
+
+    private setupAuthInterceptor(): void {
+        this.requestClient.interceptors.response.use(
+            response => response,
+            async error => {
+                const originalRequest = error.config;
+                if (
+                    error.response?.status === 401 &&
+                    !originalRequest._retry &&
+                    this.config.frigateUsername &&
+                    this.config.frigatePassword &&
+                    !originalRequest.url?.includes('/api/login')
+                ) {
+                    originalRequest._retry = true;
+                    this.log.debug('Received 401, attempting re-login to Frigate API');
+                    const loggedIn = await this.loginToFrigate();
+                    if (loggedIn) {
+                        return this.requestClient(originalRequest);
+                    }
+                }
+                throw error;
+            },
+        );
     }
 
     // --- Adapter lifecycle ---
