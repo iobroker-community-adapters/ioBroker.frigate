@@ -1,32 +1,9 @@
-type Options = {
-    write?: boolean; // Activate write for all states.
-    forceIndex?: boolean; // Instead of trying to find names for array entries, use the index as the name.
-    disablePadIndex?: boolean; // Disables padding of array index numbers if forceIndex = true
-    zeroBasedArrayIndex?: boolean; // start an array index from 0 if forceIndex = true
-    channelName?: string; // Set the name of the root channel.
-    preferredArrayName?: string; // Set a key to use this as an array entry name.
-    preferredArrayDesc?: string; // Set key to use this as an array entry description.
-    autoCast?: boolean; // Make JSON.parse to parse numbers correctly.
-    descriptions?: { [id: string]: ioBroker.StringOrTranslated }; // Object of names for state keys.
-    states?: { [id: string]: { [value: string]: string } }; // Object of states to create for an ID, new entries via JSON will be added automatically to the states.
-    units?: { [id: string]: string }; // Object of units to create for an ID
-    parseBase64?: boolean; // Parse base64 encoded strings to utf8.
-    parseBase64byIds?: string[]; // Array of IDs to parse base64 encoded strings to utf8.
-    parseBase64byIdsToHex?: string[]; // Array of IDs to parse base64 encoded strings to utf8.
-    deleteBeforeUpdate?: boolean; // Delete channel before update.
-    removePasswords?: boolean; // Remove password from log.
-    excludeStateWithEnding?: string[]; // Array of strings to exclude states with this ending.
-    makeStateWritableWithEnding?: string[]; // Array of strings to make states with this ending writable.
-    dontSaveCreatedObjects?: boolean; // Create objects but do not save them to alreadyCreatedObjects.
-};
-
 export default class Json2iob {
-    private readonly adapter: ioBroker.Adapter;
-    private readonly alreadyCreatedObjects: { [id: string]: true };
-    private readonly objectTypes: { [id: string]: ioBroker.CommonType };
-    private readonly forbiddenCharsRegex: RegExp;
-
-    constructor(adapter: ioBroker.Adapter) {
+    adapter;
+    alreadyCreatedObjects;
+    objectTypes;
+    forbiddenCharsRegex;
+    constructor(adapter) {
         if (!adapter) {
             throw new Error('ioBroker Adapter is not defined!');
         }
@@ -38,7 +15,6 @@ export default class Json2iob {
             this.forbiddenCharsRegex = this.adapter.FORBIDDEN_CHARS;
         }
     }
-
     /**
      * Parses the given element and creates states in the adapter based on the element's structure.
      *
@@ -66,18 +42,15 @@ export default class Json2iob {
      * @param options.dontSaveCreatedObjects - Create objects but do not save them to alreadyCreatedObjects.
      * @returns A promise that resolves when the parsing is complete.
      */
-    async parse(path: string, element: any, options: Options = { write: false }): Promise<void> {
+    async parse(path, element, options = { write: false }) {
         try {
             if (element === null || element === undefined) {
                 this.adapter.log.debug(`Cannot extract empty: ${path}`);
                 return;
             }
-
-            if (
-                (options.parseBase64 && this._isBase64(element)) ||
+            if ((options.parseBase64 && this._isBase64(element)) ||
                 options.parseBase64byIds?.includes(path) ||
-                options.parseBase64byIdsToHex?.includes(path)
-            ) {
+                options.parseBase64byIdsToHex?.includes(path)) {
                 try {
                     let value = Buffer.from(element, 'base64').toString('utf8');
                     if (options.parseBase64byIdsToHex?.includes(path)) {
@@ -87,22 +60,19 @@ export default class Json2iob {
                         value = JSON.parse(element);
                     }
                     element = value;
-                } catch (error) {
+                }
+                catch (error) {
                     this.adapter.log.warn(`Cannot parse base64 for ${path}: ${error}`);
                 }
             }
             const objectKeys = Object.keys(element);
-
             options.write = options.write ?? false;
-
             path = path.toString().replace(this.forbiddenCharsRegex, '_');
-
             if (typeof element === 'string' || typeof element === 'number' || typeof element === 'boolean') {
                 // remove ending . from a path
                 if (path.endsWith('.')) {
                     path = path.slice(0, -1);
                 }
-
                 const lastPathElement = path.split('.').pop() || '';
                 if (options.excludeStateWithEnding && lastPathElement) {
                     for (const excludeEnding of options.excludeStateWithEnding) {
@@ -121,18 +91,17 @@ export default class Json2iob {
                     }
                 }
                 if (!this.alreadyCreatedObjects[path] || this.objectTypes[path] !== typeof element) {
-                    let type: ioBroker.CommonType = typeof element as ioBroker.CommonType;
+                    let type = typeof element;
                     if (this.objectTypes[path] && this.objectTypes[path] !== typeof element) {
                         type = 'mixed';
                         this.adapter.log.debug(`Type changed for ${path} from ${this.objectTypes[path]} to ${type}`);
                     }
-                    let states: { [value: string]: string } | undefined;
+                    let states;
                     if (options.states?.[path] && typeof element !== 'boolean') {
                         states = options.states[path];
                         states[element] ||= element.toString();
                     }
-
-                    const common: ioBroker.StateCommon = {
+                    const common = {
                         name: lastPathElement,
                         role: this._getRole(element, options.write || false),
                         type,
@@ -146,7 +115,6 @@ export default class Json2iob {
                     await this._createState(path, common, options);
                 }
                 await this.adapter.setStateAsync(path, element, true);
-
                 return;
             }
             if (options.removePasswords && path.toString().toLowerCase().includes('password')) {
@@ -185,26 +153,25 @@ export default class Json2iob {
                 }
                 await this.adapter
                     .extendObjectAsync(path, {
-                        type: 'channel',
-                        common: {
-                            name,
-                        },
-                        native: {},
-                    })
+                    type: 'channel',
+                    common: {
+                        name,
+                    },
+                    native: {},
+                })
                     .then(() => {
-                        if (!options.dontSaveCreatedObjects) {
-                            this.alreadyCreatedObjects[path] = true;
-                        }
-                        options.channelName = undefined;
-                        options.deleteBeforeUpdate = undefined;
-                    })
-                    .catch((error: any) => this.adapter.log.error(error));
+                    if (!options.dontSaveCreatedObjects) {
+                        this.alreadyCreatedObjects[path] = true;
+                    }
+                    options.channelName = undefined;
+                    options.deleteBeforeUpdate = undefined;
+                })
+                    .catch((error) => this.adapter.log.error(error));
             }
             if (Array.isArray(element)) {
                 await this._extractArray(element, '', path, options);
                 return;
             }
-
             for (const key of objectKeys) {
                 if (key.toLowerCase().includes('password') && options.removePasswords) {
                     this.adapter.log.debug(`skip password : ${path}.${key}`);
@@ -220,12 +187,9 @@ export default class Json2iob {
                 if (this._isJsonString(element[key]) && options.autoCast) {
                     element[key] = JSON.parse(element[key]);
                 }
-
-                if (
-                    (options.parseBase64 && this._isBase64(element[key])) ||
+                if ((options.parseBase64 && this._isBase64(element[key])) ||
                     options.parseBase64byIds?.includes(key) ||
-                    options.parseBase64byIdsToHex?.includes(key)
-                ) {
+                    options.parseBase64byIdsToHex?.includes(key)) {
                     try {
                         let value = Buffer.from(element[key], 'base64').toString('utf8');
                         if (options.parseBase64byIdsToHex?.includes(key)) {
@@ -235,35 +199,30 @@ export default class Json2iob {
                             value = JSON.parse(element[key]);
                         }
                         element[key] = value;
-                    } catch (error) {
+                    }
+                    catch (error) {
                         this.adapter.log.warn(`Cannot parse base64 for ${path}.${key}: ${error}`);
                     }
                 }
-
                 if (Array.isArray(element[key])) {
                     await this._extractArray(element, key, path, options);
-                } else if (element[key] !== null && typeof element[key] === 'object') {
+                }
+                else if (element[key] !== null && typeof element[key] === 'object') {
                     await this.parse(`${path}.${key}`, element[key], options);
-                } else {
+                }
+                else {
                     const pathKey = key.replace(/\./g, '_');
-                    if (
-                        !this.alreadyCreatedObjects[`${path}.${pathKey}`] ||
-                        this.objectTypes[`${path}.${pathKey}`] !== typeof element[key]
-                    ) {
-                        let objectName: ioBroker.StringOrTranslated = key;
+                    if (!this.alreadyCreatedObjects[`${path}.${pathKey}`] ||
+                        this.objectTypes[`${path}.${pathKey}`] !== typeof element[key]) {
+                        let objectName = key;
                         if (options.descriptions?.[key]) {
                             objectName = options.descriptions[key];
                         }
-                        let type: ioBroker.CommonType =
-                            element[key] !== null ? (typeof element[key] as ioBroker.CommonType) : 'mixed';
-                        if (
-                            this.objectTypes[`${path}.${pathKey}`] &&
-                            this.objectTypes[`${path}.${pathKey}`] !== typeof element[key]
-                        ) {
+                        let type = element[key] !== null ? typeof element[key] : 'mixed';
+                        if (this.objectTypes[`${path}.${pathKey}`] &&
+                            this.objectTypes[`${path}.${pathKey}`] !== typeof element[key]) {
                             type = 'mixed';
-                            this.adapter.log.debug(
-                                `Type changed for ${path}.${pathKey} from ${this.objectTypes[`${path}.${pathKey}`]} to ${type}`,
-                            );
+                            this.adapter.log.debug(`Type changed for ${path}.${pathKey} from ${this.objectTypes[`${path}.${pathKey}`]} to ${type}`);
                         }
                         let states;
                         if (options.states?.[key]) {
@@ -272,8 +231,7 @@ export default class Json2iob {
                                 states[element[key]] = element[key];
                             }
                         }
-
-                        const common: ioBroker.StateCommon = {
+                        const common = {
                             name: objectName,
                             role: this._getRole(element[key], options.write || false),
                             type,
@@ -281,7 +239,6 @@ export default class Json2iob {
                             read: true,
                             states: states,
                         };
-
                         if (options.units?.[key]) {
                             common.unit = options.units[key]; // Assign the value to the 'unit' property
                         }
@@ -290,12 +247,12 @@ export default class Json2iob {
                     await this.adapter.setStateAsync(`${path}.${pathKey}`, element[key], true);
                 }
             }
-        } catch (error) {
+        }
+        catch (error) {
             this.adapter.log.error(`Error extract keys: ${path} ${JSON.stringify(element)}`);
             this.adapter.log.error(error);
         }
     }
-
     /**
      * Creates a state object in the adapter's namespace.
      *
@@ -305,23 +262,22 @@ export default class Json2iob {
      * @param options.dontSaveCreatedObjects - If true, the created object will not be saved.
      * @returns - A promise that resolves when the state object is created.
      */
-    async _createState(path: string, common: ioBroker.StateCommon, options: Options = {}): Promise<void> {
+    async _createState(path, common, options = {}) {
         path = path.toString().replace(this.forbiddenCharsRegex, '_');
         await this.adapter
             .extendObjectAsync(path, {
-                type: 'state',
-                common,
-                native: {},
-            })
+            type: 'state',
+            common,
+            native: {},
+        })
             .then(() => {
-                if (!options.dontSaveCreatedObjects) {
-                    this.alreadyCreatedObjects[path] = true;
-                }
-                this.objectTypes[path] = common.type;
-            })
-            .catch((error: any) => this.adapter.log.error(error));
+            if (!options.dontSaveCreatedObjects) {
+                this.alreadyCreatedObjects[path] = true;
+            }
+            this.objectTypes[path] = common.type;
+        })
+            .catch((error) => this.adapter.log.error(error));
     }
-
     /**
      * Extracts an array from the given element and recursively parses its elements.
      *
@@ -331,7 +287,7 @@ export default class Json2iob {
      * @param options - The parsing options.
      * @returns - A promise that resolves when the array extraction and parsing are complete.
      */
-    async _extractArray(element: any, key: string, path: string, options: Options): Promise<void> {
+    async _extractArray(element, key, path, options) {
         try {
             if (key) {
                 element = element[key];
@@ -342,10 +298,8 @@ export default class Json2iob {
                     this.adapter.log.debug(`Cannot extract empty: ${path}.${key}.${index}`);
                     continue;
                 }
-
                 let indexNumber = parseInt(index) + 1;
                 index = indexNumber.toString();
-
                 if (indexNumber < 10) {
                     index = `0${index}`;
                 }
@@ -353,24 +307,21 @@ export default class Json2iob {
                     try {
                         element[index] = JSON.parse(arrayElement);
                         arrayElement = element[index];
-                    } catch (error) {
+                    }
+                    catch (error) {
                         this.adapter.log.warn(`Cannot parse json value for ${path}.${key}.${index}: ${error}`);
                     }
                 }
                 let arrayPath = key + index;
                 if (typeof arrayElement === 'string' && key !== '') {
                     // create a channel
-                    await this.adapter.extendObjectAsync(
-                        `${path}.${key}`,
-                        {
-                            type: 'channel',
-                            common: {
-                                name: key,
-                            },
-                            native: {},
+                    await this.adapter.extendObjectAsync(`${path}.${key}`, {
+                        type: 'channel',
+                        common: {
+                            name: key,
                         },
-                        options,
-                    );
+                        native: {},
+                    }, options);
                     await this.parse(`${path}.${key}.${arrayElement.replace(/\./g, '')}`, arrayElement, options);
                     continue;
                 }
@@ -382,7 +333,8 @@ export default class Json2iob {
                     if (keyName.endsWith('Id') && arrayElement[keyName] !== null) {
                         if (arrayElement[keyName]?.replace) {
                             arrayPath = arrayElement[keyName].replace(/\./g, '');
-                        } else {
+                        }
+                        else {
                             arrayPath = arrayElement[keyName];
                         }
                     }
@@ -391,16 +343,17 @@ export default class Json2iob {
                     if (keyName.endsWith('Name')) {
                         if (arrayElement[keyName]?.replace) {
                             arrayPath = arrayElement[keyName].replace(/\./g, '');
-                        } else {
+                        }
+                        else {
                             arrayPath = arrayElement[keyName];
                         }
                     }
                 }
-
                 if (arrayElement.id) {
                     if (arrayElement.id.replace) {
                         arrayPath = arrayElement.id.replace(/\./g, '');
-                    } else {
+                    }
+                    else {
                         arrayPath = arrayElement.id;
                     }
                 }
@@ -416,7 +369,6 @@ export default class Json2iob {
                 if (arrayElement.start_date_time) {
                     arrayPath = arrayElement.start_date_time.replace(/\./g, '');
                 }
-
                 if (options.preferredArrayName?.includes('+')) {
                     const preferredArrayNameArray = options.preferredArrayName.split('+');
                     if (arrayElement[preferredArrayNameArray[0]] !== undefined) {
@@ -430,10 +382,12 @@ export default class Json2iob {
                             const subElement = arrayElement[subArray[0]];
                             if (subElement && subElement[subArray[1]] !== undefined) {
                                 element1 = subElement[subArray[1]];
-                            } else if (arrayElement[subArray[1]] !== undefined) {
+                            }
+                            else if (arrayElement[subArray[1]] !== undefined) {
                                 element1 = arrayElement[subArray[1]];
                             }
-                        } else {
+                        }
+                        else {
                             element1 = arrayElement[preferredArrayNameArray[1]]
                                 .toString()
                                 .replace(/\./g, '')
@@ -441,7 +395,8 @@ export default class Json2iob {
                         }
                         arrayPath = `${element0}-${element1}`;
                     }
-                } else if (options.preferredArrayName?.includes('/')) {
+                }
+                else if (options.preferredArrayName?.includes('/')) {
                     const preferredArrayNameArray = options.preferredArrayName.split('/');
                     const subElement = arrayElement[preferredArrayNameArray[0]];
                     if (subElement) {
@@ -450,54 +405,44 @@ export default class Json2iob {
                             .replace(/\./g, '')
                             .replace(/ /g, '');
                     }
-                } else if (options.preferredArrayName && arrayElement[options.preferredArrayName]) {
+                }
+                else if (options.preferredArrayName && arrayElement[options.preferredArrayName]) {
                     arrayPath = arrayElement[options.preferredArrayName].toString().replace(/\./g, '');
                 }
-
                 if (options.forceIndex) {
                     if (options.zeroBasedArrayIndex === true) {
                         indexNumber -= 1;
                     }
-
                     if (options.disablePadIndex) {
                         index = indexNumber.toString();
-                    } else {
+                    }
+                    else {
                         // reassign index in case zeroBasedArrayIndex is enabled
                         index = `${indexNumber < 10 ? '0' : ''}${indexNumber}`;
                     }
-
                     arrayPath = key + index;
                 }
                 // special case array with 2 string objects
-                if (
-                    !options.forceIndex &&
+                if (!options.forceIndex &&
                     arrayElementKeys.length === 2 &&
                     typeof arrayElementKeys[0] === 'string' &&
                     typeof arrayElementKeys[1] === 'string' &&
                     typeof arrayElement[arrayElementKeys[0]] !== 'object' &&
                     typeof arrayElement[arrayElementKeys[1]] !== 'object' &&
-                    arrayElement[arrayElementKeys[0]] !== 'null'
-                ) {
+                    arrayElement[arrayElementKeys[0]] !== 'null') {
                     // create a channel
-                    await this.adapter.extendObjectAsync(
-                        `${path}.${key}`,
-                        {
-                            type: 'channel',
-                            common: {
-                                name: key,
-                            },
-                            native: {},
+                    await this.adapter.extendObjectAsync(`${path}.${key}`, {
+                        type: 'channel',
+                        common: {
+                            name: key,
                         },
-                        options,
-                    );
+                        native: {},
+                    }, options);
                     let subKey = arrayElement[arrayElementKeys[0]];
                     let subValue = arrayElement[arrayElementKeys[1]];
-
-                    if (
-                        (options.parseBase64 && this._isBase64(subValue)) ||
+                    if ((options.parseBase64 && this._isBase64(subValue)) ||
                         options.parseBase64byIds?.includes(subKey) ||
-                        options.parseBase64byIdsToHex?.includes(subKey)
-                    ) {
+                        options.parseBase64byIdsToHex?.includes(subKey)) {
                         try {
                             let value = Buffer.from(subValue, 'base64').toString('utf8');
                             if (options.parseBase64byIdsToHex?.includes(subKey)) {
@@ -507,45 +452,33 @@ export default class Json2iob {
                                 value = JSON.parse(subValue);
                             }
                             subValue = value;
-                        } catch (error) {
-                            this.adapter.log.warn(
-                                `Cannot parse base64 value ${subValue} for ${path}.${subKey}: ${error}`,
-                            );
+                        }
+                        catch (error) {
+                            this.adapter.log.warn(`Cannot parse base64 value ${subValue} for ${path}.${subKey}: ${error}`);
                         }
                     }
-
                     const subName = `${Object.keys(arrayElement)[0]} ${Object.keys(arrayElement)[1]}`;
-
                     if (key) {
                         subKey = `${key}.${subKey || Object.keys(arrayElement)[0]}`;
                     }
-                    if (
-                        !this.alreadyCreatedObjects[`${path}.${subKey}`] ||
-                        this.objectTypes[`${path}.${subKey}`] !== typeof subValue
-                    ) {
-                        let type: ioBroker.CommonType =
-                            subValue !== null ? (typeof subValue as ioBroker.CommonType) : 'mixed';
-                        if (
-                            this.objectTypes[`${path}.${subKey}`] &&
-                            this.objectTypes[`${path}.${subKey}`] !== typeof subValue
-                        ) {
-                            this.adapter.log.debug(
-                                `Type of ${path}.${subKey} changed from ${
-                                    this.objectTypes[`${path}.${subKey}`]
-                                } to ${typeof subValue}!`,
-                            );
+                    if (!this.alreadyCreatedObjects[`${path}.${subKey}`] ||
+                        this.objectTypes[`${path}.${subKey}`] !== typeof subValue) {
+                        let type = subValue !== null ? typeof subValue : 'mixed';
+                        if (this.objectTypes[`${path}.${subKey}`] &&
+                            this.objectTypes[`${path}.${subKey}`] !== typeof subValue) {
+                            this.adapter.log.debug(`Type of ${path}.${subKey} changed from ${this.objectTypes[`${path}.${subKey}`]} to ${typeof subValue}!`);
                             type = 'mixed';
                         }
-                        let states: { [value: string]: string } | undefined;
+                        let states;
                         if (options.states?.[subKey]) {
                             states = options.states[subKey];
                             states[subValue] ||= subValue;
                         }
-                        let name: ioBroker.StringOrTranslated = subName;
+                        let name = subName;
                         if (options.descriptions?.[subKey.split('.').pop()]) {
                             name = options.descriptions[subKey.split('.').pop()];
                         }
-                        const common: ioBroker.StateCommon = {
+                        const common = {
                             name,
                             role: this._getRole(subValue, options.write || false),
                             type,
@@ -561,10 +494,10 @@ export default class Json2iob {
                     await this.adapter.setStateAsync(`${path}.${subKey}`, subValue, true);
                     continue;
                 }
-
                 await this.parse(`${path}.${arrayPath}`, arrayElement, options);
             }
-        } catch (error) {
+        }
+        catch (error) {
             this.adapter.log.error(`Cannot extract array ${path}`);
             this.adapter.log.error(error);
         }
@@ -575,24 +508,24 @@ export default class Json2iob {
      * @param str - The string to be checked.
      * @returns - Returns true if the string is a valid base64 encoded string, otherwise returns false.
      */
-    _isBase64(str: string): boolean {
+    _isBase64(str) {
         if (!str || typeof str !== 'string') {
             return false;
         }
         const base64regex = /^([0-9a-zA-Z+/]{4})*(([0-9a-zA-Z+/]{2}==)|([0-9a-zA-Z+/]{3}=))/;
         return base64regex.test(str);
     }
-
     /**
      * Checks if a given string is a valid JSON string.
      *
      * @param str - The string to be checked.
      * @returns - Returns true if the string is a valid JSON string, otherwise false.
      */
-    _isJsonString(str: string): boolean {
+    _isJsonString(str) {
         try {
             JSON.parse(str);
-        } catch {
+        }
+        catch {
             return false;
         }
         return true;
@@ -604,10 +537,7 @@ export default class Json2iob {
      * @param write - Indicates whether the element is being written to.
      * @returns - The role of the element.
      */
-    _getRole(
-        element: any,
-        write: boolean,
-    ): 'indicator' | 'switch' | 'value.time' | 'value' | 'level' | 'text' | 'state' {
+    _getRole(element, write) {
         if (typeof element === 'boolean' && !write) {
             return 'indicator';
         }
@@ -619,7 +549,8 @@ export default class Json2iob {
                 if (element > 1500000000000 && element < 2000000000000) {
                     return 'value.time';
                 }
-            } else if (element && element.toFixed().toString().length === 10) {
+            }
+            else if (element && element.toFixed().toString().length === 10) {
                 if (element > 1500000000 && element < 2000000000) {
                     return 'value.time';
                 }
@@ -635,3 +566,4 @@ export default class Json2iob {
         return 'state';
     }
 }
+//# sourceMappingURL=json2iob.js.map

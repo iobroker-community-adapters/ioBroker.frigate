@@ -1,5 +1,6 @@
-const path = require('path');
-const { tests } = require('@iobroker/testing');
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { tests } from '@iobroker/testing';
 
-// Validate the package files
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 tests.packageFiles(path.join(__dirname, '..'));

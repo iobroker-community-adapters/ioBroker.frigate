@@ -1,5 +1,6 @@
-const path = require('path');
-const { tests } = require('@iobroker/testing');
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { tests } from '@iobroker/testing';
 
-// Run integration tests - See https://github.com/ioBroker/testing for a detailed explanation and further options
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 tests.integration(path.join(__dirname, '..'));
