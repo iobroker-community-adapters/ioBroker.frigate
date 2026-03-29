@@ -1,3 +1,55 @@
+export type FrigateMessage = {
+    timestamp?: number;
+    type: string;
+    after: {
+        id: string;
+        camera: string;
+        label: string;
+        top_score: number;
+        entered_zones: string[];
+        data: { detections: any };
+        snapshot: { path_data?: string };
+        path_data?: string;
+        has_snapshot?: boolean;
+        has_clip?: boolean;
+        stationary?: boolean;
+        active?: boolean;
+    };
+    before: {
+        id: string;
+        camera: string;
+        label: string;
+        top_score: number;
+        entered_zones: string[];
+        data: { detections: any };
+        snapshot: { path_data?: string };
+        path_data?: string;
+        has_snapshot?: boolean;
+        has_clip?: boolean;
+        stationary?: boolean;
+        active?: boolean;
+    };
+    history: {
+        path_data?: string;
+        snapshot: { path_data?: string };
+    }[];
+    cpu_usages: any;
+};
+
+export type NotificationMessage = {
+    source: string;
+    type: string;
+    state: string;
+    status?: string;
+    clip?: string;
+    score?: number;
+    zones?: string[];
+    image?: string;
+    clipm3u8?: string;
+    clipUrl?: string;
+    id?: string;
+};
+
 export interface FrigateAdapterConfigTyped {
     friurl: string;
     mqttMode: 'broker' | 'client';

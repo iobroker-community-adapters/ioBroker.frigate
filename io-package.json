@@ -368,6 +368,53 @@
         "write": true
       },
       "native": {}
+    },
+    {
+      "_id": "notifications",
+      "type": "channel",
+      "common": {
+        "name": "Frigate Notifications Control"
+      },
+      "native": {}
+    },
+    {
+      "_id": "notifications.enabled",
+      "type": "state",
+      "common": {
+        "name": "Frigate notifications enabled",
+        "type": "boolean",
+        "role": "switch",
+        "def": true,
+        "read": true,
+        "write": true
+      },
+      "native": {}
+    },
+    {
+      "_id": "notifications.suspend",
+      "type": "state",
+      "common": {
+        "name": "Suspend Frigate notifications for X minutes",
+        "type": "number",
+        "role": "level",
+        "def": 0,
+        "read": true,
+        "write": true
+      },
+      "native": {}
+    },
+    {
+      "_id": "notifications.suspended",
+      "type": "state",
+      "common": {
+        "name": "Notifications suspended until (UNIX timestamp)",
+        "type": "number",
+        "role": "value.time",
+        "def": 0,
+        "read": true,
+        "write": false
+      },
+      "native": {}
     }
   ]
 }

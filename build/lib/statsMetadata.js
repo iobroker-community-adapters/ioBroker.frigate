@@ -1,0 +1,63 @@
+/** Human-readable descriptions for Frigate stats fields */
+export const STATS_DESCRIPTIONS = {
+    // Camera stats
+    camera_fps: 'Frames per second from camera feed',
+    process_fps: 'Frames per second being processed',
+    skipped_fps: 'Frames per second skipped (processing overload)',
+    detection_fps: 'Object detection runs per second',
+    detection_enabled: 'Object detection active',
+    capture_pid: 'Camera capture process ID',
+    ffmpeg_pid: 'FFmpeg process ID',
+    pid: 'Process ID',
+    audio_dBFS: 'Audio level (decibels relative to full scale)',
+    audio_rms: 'Audio RMS amplitude',
+    // Detector stats
+    inference_speed: 'Time per inference',
+    detection_start: 'Detector start time (UNIX timestamp)',
+    // Embedding stats
+    face_recognition: 'Face recognition events per second',
+    face_recognition_speed: 'Face recognition inference time',
+    image_embedding: 'Image embedding events per second',
+    image_embedding_speed: 'Image embedding inference time',
+    text_embedding: 'Text embedding events per second',
+    text_embedding_speed: 'Text embedding inference time',
+    plate_recognition: 'License plate recognition events per second',
+    plate_recognition_speed: 'License plate recognition inference time',
+    object_description_events_per_second: 'Object description events per second',
+    object_description_speed: 'Object description inference time',
+    // Service stats
+    uptime: 'Service uptime',
+    version: 'Frigate version',
+    latest_version: 'Latest available Frigate version',
+    last_updated: 'Last stats update time',
+    total: 'Total storage',
+    used: 'Used storage',
+    free: 'Free storage',
+    available: 'Available storage',
+    mount_type: 'Filesystem type',
+    camera_frame_size: 'Camera frame size in shared memory',
+    min_shm: 'Minimum shared memory required',
+    shm_frame_count: 'Number of frames in shared memory',
+};
+/** Units for Frigate stats fields */
+export const STATS_UNITS = {
+    camera_fps: 'fps',
+    process_fps: 'fps',
+    skipped_fps: 'fps',
+    detection_fps: 'fps',
+    inference_speed: 'ms',
+    uptime: 's',
+    audio_dBFS: 'dBFS',
+    total: 'MB',
+    used: 'MB',
+    free: 'MB',
+    available: 'MB',
+    camera_frame_size: 'MB',
+    min_shm: 'MB',
+    face_recognition_speed: 'ms',
+    image_embedding_speed: 'ms',
+    text_embedding_speed: 'ms',
+    plate_recognition_speed: 'ms',
+    object_description_speed: 'ms',
+};
+//# sourceMappingURL=statsMetadata.js.map

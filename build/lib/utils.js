@@ -1,13 +1,9 @@
-import type { FrigateAdapterConfig } from '../types.js';
-
-function generateObjectsConfig(config: FrigateAdapterConfig): string {
+function generateObjectsConfig(config) {
     const objects = config.dockerFrigate.objects;
     if (!objects?.min_score) {
         return '';
     }
-
     let result = 'objects:\n';
-
     // Generate filters section
     result += '  filters:\n';
     result += `    person:\n`;
@@ -15,15 +11,13 @@ function generateObjectsConfig(config: FrigateAdapterConfig): string {
     if (objects.threshold !== undefined) {
         result += `      threshold: ${objects.threshold / 100}\n`;
     }
-
     return result;
 }
-
-export function createFrigateConfigFile(config: FrigateAdapterConfig): string {
+export function createFrigateConfigFile(config) {
     if (config.dockerFrigate.configType === 'yaml' && config.dockerFrigate.yaml) {
         return config.dockerFrigate.yaml;
     }
-    const cameras: string[] = [];
+    const cameras = [];
     for (const camera of config.dockerFrigate.cameras || []) {
         if (camera.enabled && camera.name && camera.inputs_path) {
             // Generate camera-specific objects config if min_score is set
@@ -37,7 +31,6 @@ export function createFrigateConfigFile(config: FrigateAdapterConfig): string {
           min_score: ${minScore}
 ${threshold ? `          threshold: ${threshold}\n` : ''}`;
             }
-
             cameras.push(`  ${camera.name}:
     ffmpeg:
       ${camera.ffmpeg_hwaccel_args ? `hwaccel_args: ${camera.ffmpeg_hwaccel_args}` : ''}
@@ -63,20 +56,18 @@ ${cameraObjectsConfig}    snapshots:
   port: ${config.mqttPort}
 
 detectors:
-  ${
-      config.dockerFrigate.detectors === 'cpu'
-          ? `cpu:
+  ${config.dockerFrigate.detectors === 'cpu'
+        ? `cpu:
     type: cpu
 `
-          : config.dockerFrigate.detectors === 'coral'
+        : config.dockerFrigate.detectors === 'coral'
             ? `coral:
     type: edgetpu
     device: ${config.dockerFrigate.detectorsCoralType || 'usb'}
 `
             : `standard_detector:
     type: auto
-`
-  }
+`}
 face_recognition:
   enabled: ${config.dockerFrigate.face_recognition?.enabled ? 'true' : 'false'}
   model_size: ${config.dockerFrigate.face_recognition?.model_size || 'medium'}
@@ -95,3 +86,4 @@ version: 0.16-0
 `;
     return text;
 }
+//# sourceMappingURL=utils.js.map
