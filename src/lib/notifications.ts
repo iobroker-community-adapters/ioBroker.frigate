@@ -7,6 +7,7 @@ import type { FrigateAdapterConfig, FrigateMessage, NotificationMessage } from '
 export interface NotificationContext {
     adapter: ioBroker.Adapter & {
         config: FrigateAdapterConfig;
+        frigateBaseUrl: string;
         sleep: (ms: number) => Promise<void>;
     };
     requestClient: AxiosInstance;
@@ -87,7 +88,7 @@ export async function prepareEventNotification(ctx: NotificationContext, data: F
         let imageUrl = '';
         let fileName = '';
         if (data.before.has_snapshot) {
-            imageUrl = `http://${ctx.adapter.config.friurl}/api/events/${data.before.id}/snapshot.jpg`;
+            imageUrl = `${ctx.adapter.frigateBaseUrl}/api/events/${data.before.id}/snapshot.jpg`;
         }
         if (data.after) {
             state = 'Event After';
@@ -96,7 +97,7 @@ export async function prepareEventNotification(ctx: NotificationContext, data: F
             score = data.after.top_score;
             zones = data.after.entered_zones;
             if (data.after.has_snapshot) {
-                imageUrl = `http://${ctx.adapter.config.friurl}/api/events/${data.after.id}/snapshot.jpg`;
+                imageUrl = `${ctx.adapter.frigateBaseUrl}/api/events/${data.after.id}/snapshot.jpg`;
             }
         }
 
@@ -134,15 +135,15 @@ export async function prepareEventNotification(ctx: NotificationContext, data: F
                 let clipState = 'Event Before';
                 score = data.before.top_score;
                 zones = data.before.entered_zones;
-                let clipUrl = `http://${ctx.adapter.config.friurl}/api/events/${data.before.id}/clip.mp4`;
-                let clipm3u8 = `http://${ctx.adapter.config.friurl}/vod/event/${data.before.id}/master.m3u8`;
+                let clipUrl = `${ctx.adapter.frigateBaseUrl}/api/events/${data.before.id}/clip.mp4`;
+                let clipm3u8 = `${ctx.adapter.frigateBaseUrl}/vod/event/${data.before.id}/master.m3u8`;
 
                 if (data.after?.has_clip) {
                     clipState = 'Event After';
                     score = data.after.top_score;
                     zones = data.after.entered_zones;
-                    clipUrl = `http://${ctx.adapter.config.friurl}/api/events/${data.after.id}/clip.mp4`;
-                    clipm3u8 = `http://${ctx.adapter.config.friurl}/vod/event/${data.after.id}/master.m3u8`;
+                    clipUrl = `${ctx.adapter.frigateBaseUrl}/api/events/${data.after.id}/clip.mp4`;
+                    clipm3u8 = `${ctx.adapter.frigateBaseUrl}/vod/event/${data.after.id}/master.m3u8`;
                 }
 
                 if (ctx.adapter.config.notificationEventClipLink) {

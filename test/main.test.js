@@ -629,3 +629,66 @@ describe('Audio ON/OFF parent check', () => {
         assert.strictEqual(parseMessageData('frigate/front_door/review_status', 'DETECTION'), 'DETECTION');
     });
 });
+
+describe('Frigate base URL construction', () => {
+    function buildBaseUrl(friurl) {
+        if (friurl?.startsWith('http')) {
+            return friurl;
+        }
+        return `http://${friurl}`;
+    }
+
+    it('should use http:// by default for plain host:port', () => {
+        assert.strictEqual(buildBaseUrl('192.168.1.100:5000'), 'http://192.168.1.100:5000');
+    });
+
+    it('should use http:// for port 8971 without explicit https', () => {
+        assert.strictEqual(buildBaseUrl('192.168.1.100:8971'), 'http://192.168.1.100:8971');
+    });
+
+    it('should keep https:// when explicitly provided', () => {
+        assert.strictEqual(buildBaseUrl('https://192.168.1.100:8971'), 'https://192.168.1.100:8971');
+    });
+
+    it('should keep http:// when explicitly provided', () => {
+        assert.strictEqual(buildBaseUrl('http://192.168.1.100:5000'), 'http://192.168.1.100:5000');
+    });
+
+    it('should handle localhost', () => {
+        assert.strictEqual(buildBaseUrl('localhost:5000'), 'http://localhost:5000');
+    });
+
+    it('should handle hostname without port', () => {
+        assert.strictEqual(buildBaseUrl('frigate.local'), 'http://frigate.local');
+    });
+
+    it('should handle https with custom port', () => {
+        assert.strictEqual(buildBaseUrl('https://frigate.local:9443'), 'https://frigate.local:9443');
+    });
+});
+
+describe('Auth login decision', () => {
+    function shouldLogin(username, password) {
+        return Boolean(username && password);
+    }
+
+    it('should login when both username and password are set', () => {
+        assert.strictEqual(shouldLogin('admin', 'secret'), true);
+    });
+
+    it('should not login when username is empty', () => {
+        assert.strictEqual(shouldLogin('', 'secret'), false);
+    });
+
+    it('should not login when password is empty', () => {
+        assert.strictEqual(shouldLogin('admin', ''), false);
+    });
+
+    it('should not login when both are empty', () => {
+        assert.strictEqual(shouldLogin('', ''), false);
+    });
+
+    it('should not login when both are undefined', () => {
+        assert.strictEqual(shouldLogin(undefined, undefined), false);
+    });
+});

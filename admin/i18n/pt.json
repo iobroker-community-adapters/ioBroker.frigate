@@ -139,5 +139,10 @@
     "USB": "USB",
     "Use self-hosted Frigate in Docker": "Utilize o Frigate auto-hospedado no Docker.",
     "Wait time after Events end for Clip creation in seconds": "Tempo de espera após o término dos eventos para a criação do clipe, em segundos.",
-    "YAML configuration file": "Arquivo de configuração YAML"
+    "YAML configuration file": "Arquivo de configuração YAML",
+    "Frigate Username": "Nome de utilizador Frigate",
+    "Frigate Password": "Palavra-passe Frigate",
+    "frigate_auth_help": "Opcional: Apenas necessário para Frigate autenticado (porta 8971)",
+    "frigate_host_hint": "Insira o endereço IP do ioBroker na configuração do Frigate em mqtt -> host",
+    "frigate_url_help": "ex. 192.168.1.100:5000 — para HTTPS prefixe com https:// (ex. https://192.168.1.100:8971)"
 }

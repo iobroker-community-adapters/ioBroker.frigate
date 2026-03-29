@@ -52,6 +52,8 @@ export type NotificationMessage = {
 
 export interface FrigateAdapterConfigTyped {
     friurl: string;
+    frigateUsername: string;
+    frigatePassword: string;
     mqttMode: 'broker' | 'client';
     mqttPort: number;
     mqttHost: string;
@@ -131,6 +133,8 @@ export interface FrigateAdapterConfigTyped {
 
 export interface FrigateAdapterConfig extends FrigateAdapterConfigTyped {
     friurl: string;
+    frigateUsername: string;
+    frigatePassword: string;
     mqttMode: 'broker' | 'client';
     mqttPort: number | string;
     mqttHost: string;

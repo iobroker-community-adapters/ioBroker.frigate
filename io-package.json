@@ -215,13 +215,17 @@
     ]
   },
   "encryptedNative": [
-    "mqttPassword"
+    "mqttPassword",
+    "frigatePassword"
   ],
   "protectedNative": [
-    "mqttPassword"
+    "mqttPassword",
+    "frigatePassword"
   ],
   "native": {
     "friurl": "localhost:5000",
+    "frigateUsername": "",
+    "frigatePassword": "",
     "mqttMode": "broker",
     "mqttPort": 1883,
     "mqttHost": "",

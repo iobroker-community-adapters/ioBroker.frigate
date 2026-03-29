@@ -7,16 +7,16 @@ export async function fetchEventHistory(ctx) {
         }
         try {
             const response = await ctx.requestClient({
-                url: `http://${ctx.adapter.config.friurl}/api/events`,
+                url: `${ctx.adapter.frigateBaseUrl}/api/events`,
                 method: 'get',
                 params,
             });
             if (response.data) {
                 ctx.adapter.log.debug(`fetchEventHistory successful ${device}`);
                 for (const event of response.data) {
-                    event.websnap = `http://${ctx.adapter.config.friurl}/api/events/${event.id}/snapshot.jpg`;
-                    event.webclip = `http://${ctx.adapter.config.friurl}/api/events/${event.id}/clip.mp4`;
-                    event.webm3u8 = `http://${ctx.adapter.config.friurl}/vod/event/${event.id}/master.m3u8`;
+                    event.websnap = `${ctx.adapter.frigateBaseUrl}/api/events/${event.id}/snapshot.jpg`;
+                    event.webclip = `${ctx.adapter.frigateBaseUrl}/api/events/${event.id}/clip.mp4`;
+                    event.webm3u8 = `${ctx.adapter.frigateBaseUrl}/vod/event/${event.id}/master.m3u8`;
                     event.thumbnail = `data:image/jpeg;base64,${event.thumbnail}`;
                     delete event.path_data;
                 }
@@ -35,7 +35,7 @@ export async function fetchEventHistory(ctx) {
             }
         }
         catch (error) {
-            ctx.adapter.log.warn(`fetchEventHistory error from http://${ctx.adapter.config.friurl}/api/events`);
+            ctx.adapter.log.warn(`fetchEventHistory error from ${ctx.adapter.frigateBaseUrl}/api/events`);
             if (error.response && error.response.status >= 500) {
                 ctx.adapter.log.warn('Cannot reach server. You can ignore this after restarting the frigate server.');
             }
@@ -47,7 +47,7 @@ export async function createCameraDevices(ctx) {
     ctx.adapter.log.info('Create Device information and fetch Event History');
     const data = await ctx
         .requestClient({
-        url: `http://${ctx.adapter.config.friurl}/api/config`,
+        url: `${ctx.adapter.frigateBaseUrl}/api/config`,
         method: 'get',
     })
         .then(response => {
@@ -55,7 +55,7 @@ export async function createCameraDevices(ctx) {
         return response.data;
     })
         .catch(error => {
-        ctx.adapter.log.warn(`createCameraDevices error from http://${ctx.adapter.config.friurl}/api/config`);
+        ctx.adapter.log.warn(`createCameraDevices error from ${ctx.adapter.frigateBaseUrl}/api/config`);
         ctx.adapter.log.error(error instanceof Error ? error.message : String(error));
         error.response && ctx.adapter.log.error(JSON.stringify(error.response.data));
     });

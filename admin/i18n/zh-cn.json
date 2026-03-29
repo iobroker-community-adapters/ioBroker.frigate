@@ -139,5 +139,10 @@
     "USB": "USB",
     "Use self-hosted Frigate in Docker": "使用 Docker 中的自托管 Frigate",
     "Wait time after Events end for Clip creation in seconds": "事件结束后等待创建剪辑的时间（秒）",
-    "YAML configuration file": "YAML 配置文件"
+    "YAML configuration file": "YAML 配置文件",
+    "Frigate Username": "Frigate 用户名",
+    "Frigate Password": "Frigate 密码",
+    "frigate_auth_help": "可选：仅在启用 Frigate 认证时需要（端口 8971）",
+    "frigate_host_hint": "在 Frigate 配置的 mqtt -> host 中输入 ioBroker IP 地址",
+    "frigate_url_help": "例如 192.168.1.100:5000 — 使用 HTTPS 时请加 https:// 前缀（如 https://192.168.1.100:8971）"
 }

@@ -50,7 +50,7 @@ export async function handleStateChange(ctx, id, state) {
         const encodedCameraId = encodeURIComponent(cameraId);
         const encodedLabel = encodeURIComponent(label != null ? label.toString() : '');
         ctx.requestClient({
-            url: `http://${ctx.adapter.config.friurl}/api/events/${encodedCameraId}/${encodedLabel}/create`,
+            url: `${ctx.adapter.frigateBaseUrl}/api/events/${encodedCameraId}/${encodedLabel}/create`,
             method: 'post',
             data: body,
         })
@@ -59,7 +59,7 @@ export async function handleStateChange(ctx, id, state) {
             ctx.adapter.log.info(JSON.stringify(response.data));
         })
             .catch(error => {
-            ctx.adapter.log.warn(`createEvent error from http://${ctx.adapter.config.friurl}/api/events`);
+            ctx.adapter.log.warn(`createEvent error from ${ctx.adapter.frigateBaseUrl}/api/events`);
             ctx.adapter.log.error(error instanceof Error ? error.message : String(error));
         });
     }
