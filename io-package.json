@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "frigate",
-    "version": "2.3.1",
+    "version": "2.3.2",
     "news": {
+      "2.3.2": {
+        "en": "Added support of shm_size",
+        "de": "Unterstützung von shm size hinzugefügt",
+        "ru": "Добавлена поддержка shm size",
+        "pt": "Adicionado suporte de shm size",
+        "nl": "Ondersteuning van shm size toegevoegd",
+        "fr": "Ajout du support de shm size",
+        "it": "Aggiunto supporto di shm size",
+        "es": "Apoyo añadido de shm size",
+        "pl": "Dodano wsparcie dla shm _ size",
+        "uk": "Додано підтримку shm size",
+        "zh-cn": "Shm 大小的添加支持"
+      },
       "2.3.1": {
         "en": "Added Frigate API authentication support for port 8971 (username/password login with JWT)\nAutomatic token refresh on 401 responses",
         "de": "Hinzugefügt Frigate API Authentifizierungsunterstützung für Port 8971 (Benutzername/Passwort-Login mit JWT)\nAutomatische Token-Erfrischung auf 401 Antworten",
@@ -80,19 +93,6 @@
         "pl": "Dodany próg wykrywania osób w powiadomieniach",
         "uk": "Додано поріг для виявлення особи в повідомленнях",
         "zh-cn": "在通知中添加检测人的门槛值"
-      },
-      "2.1.0": {
-        "en": "Code optimizations and refactoring\nmissing jsonConfig sizes have been added\ndependencies have been updated",
-        "de": "Codeoptimierungen und Refactoring\nfehlende jsonConfig Größen wurden hinzugefügt\nabhängigkeiten wurden aktualisiert",
-        "ru": "Оптимизация кода и рефакторинг\nдобавлены недостающие размеры jsonConfig\nобновлены зависимости",
-        "pt": "Otimizações de código e refatoração\nfaltam os tamanhos do jsonConfig\nas dependências foram atualizadas",
-        "nl": "Code optimalisaties en refactoring\nontbrekende jsonConfig maten zijn toegevoegd\nafhankelijkheden zijn bijgewerkt",
-        "fr": "Optimisations et refacturation du code\nles tailles jsonConfig manquantes ont été ajoutées\nles dépendances ont été mises à jour",
-        "it": "Ottimizzazione del codice e rifattori\nmancanti dimensioni jsonConfig sono stati aggiunti\nle dipendenze sono state aggiornate",
-        "es": "Optimizaciones de código y refactorización\ndesaparecidos jsonConfig tamaños se han añadido\nlas dependencias se han actualizado",
-        "pl": "Optymalizacja kodu i refakturowanie\nbrakujące rozmiary jsonConfig zostały dodane\nuzależnienia zostały zaktualizowane",
-        "uk": "Оптимізація коду та рефакторинг\nвідсутні розміри jsonConfig\nбуло оновлено залежності",
-        "zh-cn": "代码优化和重构\n已添加缺失的 json 大小\n依赖关系已更新"
       }
     },
     "titleLang": {

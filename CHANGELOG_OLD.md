@@ -1,4 +1,8 @@
 # Older changes
+## 2.1.3 (2026-03-19)
+- (@GermanBluefox) Remove a wrong log message about missing docker
+- (@GermanBluefox) Send on connection the topic onConnect to receive camera_activity topic
+
 ## 2.1.2 (2026-03-14)
 - (@GermanBluefox) Corrected the writing of ON/OFF states
 

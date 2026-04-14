@@ -33,7 +33,7 @@ Adapter for [Frigate NVR](https://frigate.video/) — an open-source, self-hoste
     Placeholder for the next version (at the beginning of the line):
   ### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 2.3.2 (2026-04-14)
 - (@GermanBluefox) Added support of shm_size
 
 ### 2.3.1 (2026-03-29)
@@ -78,10 +78,6 @@ Adapter for [Frigate NVR](https://frigate.video/) — an open-source, self-hoste
 - (Eistee82) Added configurable MQTT topic prefix
 - (Eistee82) Added i18n translations for new MQTT configuration fields
 - (mcm1957) dependencies have been updated
-
-### 2.1.3 (2026-03-19)
-- (@GermanBluefox) Remove a wrong log message about missing docker
-- (@GermanBluefox) Send on connection the topic onConnect to receive camera_activity topic
 
 ## License
 

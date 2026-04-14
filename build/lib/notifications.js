@@ -285,6 +285,7 @@ async function sendToInstance(adapter, instance, user, text, fileName, type) {
         });
     }
     else {
+        // Telegram
         await adapter.sendToAsync(instance, {
             ...(user ? { user } : {}),
             message: fileName || text,
