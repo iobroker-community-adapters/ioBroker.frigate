@@ -774,6 +774,22 @@
                             "tooltip": "Additional FFMPEG arguments for the input stream (optional)"
                         },
                         {
+                            "attr": "use_go2rtc",
+                            "title": "Restream via go2rtc",
+                            "type": "checkbox",
+                            "default": false,
+                            "tooltip": "Read the camera stream only once and let Frigate (and other clients) consume it from go2rtc at rtsp://127.0.0.1:8554/<name>"
+                        },
+                        {
+                            "attr": "_text_go2rtc",
+                            "container": "text",
+                            "copyToClipboard": true,
+                            "alsoDependsOn": ["use_go2rtc"],
+                            "type": "textSendTo",
+                            "command": "showLink",
+                            "jsonData": "{\"ip\": \"\"}"
+                        },
+                        {
                             "attr": "inputs_roles_detect",
                             "title": "Object Detection",
                             "type": "checkbox",

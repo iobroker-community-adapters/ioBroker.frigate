@@ -114,6 +114,7 @@ export interface FrigateAdapterConfigTyped {
         cameras: {
             ffmpeg_hwaccel_args: string;
             inputs_path: string;
+            use_go2rtc?: boolean;
             inputs_roles_detect: boolean;
             inputs_roles_record: boolean;
             inputs_roles_snapshots: boolean;
@@ -198,6 +199,7 @@ export interface FrigateAdapterConfig extends FrigateAdapterConfigTyped {
             name: string;
             ffmpeg_hwaccel_args: string;
             inputs_path: string;
+            use_go2rtc?: boolean;
             inputs_roles_detect: boolean;
             inputs_roles_record: boolean;
             inputs_roles_snapshots: boolean;

@@ -24,6 +24,7 @@ export function createFrigateConfigFile(config: FrigateAdapterConfig): string {
         return config.dockerFrigate.yaml;
     }
     const cameras: string[] = [];
+    const go2rtcStreams: string[] = [];
     for (const camera of config.dockerFrigate.cameras || []) {
         if (camera.enabled && camera.name && camera.inputs_path) {
             // Generate camera-specific objects config if min_score is set
@@ -38,12 +39,19 @@ export function createFrigateConfigFile(config: FrigateAdapterConfig): string {
 ${threshold ? `          threshold: ${threshold}\n` : ''}`;
             }
 
+            const useGo2rtc = !!camera.use_go2rtc;
+            if (useGo2rtc) {
+                go2rtcStreams.push(`    ${camera.name}:\n      - ${camera.inputs_path}`);
+            }
+            const inputPath = useGo2rtc ? `rtsp://127.0.0.1:8554/${camera.name}` : camera.inputs_path;
+            const inputArgsLine = useGo2rtc ? '          input_args: preset-rtsp-restream\n' : '';
+
             cameras.push(`  ${camera.name}:
     ffmpeg:
       ${camera.ffmpeg_hwaccel_args ? `hwaccel_args: ${camera.ffmpeg_hwaccel_args}` : ''}
       inputs:
-        - path: ${camera.inputs_path}
-${camera.inputs_roles_detect || camera.inputs_roles_record || camera.inputs_roles_snapshots ? '          roles:\n' : ''}${camera.inputs_roles_detect ? '            - detect\n' : ''}${camera.inputs_roles_record ? '            - record\n' : ''}${camera.inputs_roles_snapshots ? '            - snapshots\n' : ''}
+        - path: ${inputPath}
+${inputArgsLine}${camera.inputs_roles_detect || camera.inputs_roles_record || camera.inputs_roles_snapshots ? '          roles:\n' : ''}${camera.inputs_roles_detect ? '            - detect\n' : ''}${camera.inputs_roles_record ? '            - record\n' : ''}${camera.inputs_roles_snapshots ? '            - snapshots\n' : ''}
     detect:
       enabled: ${camera.inputs_roles_detect ? 'true' : 'false'}
 ${camera.detect_width ? `      width: ${camera.detect_width}` : ''}
@@ -58,11 +66,18 @@ ${cameraObjectsConfig}    snapshots:
 `);
         }
     }
+    const go2rtcBlock = go2rtcStreams.length
+        ? `go2rtc:
+  streams:
+${go2rtcStreams.join('\n')}
+
+`
+        : '';
     const text = `mqtt:
   host: 172.17.0.1
   port: ${config.mqttPort}
 
-detectors:
+${go2rtcBlock}detectors:
   ${
       config.dockerFrigate.detectors === 'cpu'
           ? `cpu:
