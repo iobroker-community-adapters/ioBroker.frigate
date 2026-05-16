@@ -2,7 +2,8 @@ import fs, { existsSync } from 'node:fs';
 import https from 'node:https';
 import { join } from 'node:path';
 import { createServer, type Server } from 'node:net';
-import { tmpdir } from 'node:os';
+import { tmpdir, networkInterfaces } from 'node:os';
+import { lookup } from 'node:dns/promises';
 import { fileURLToPath } from 'node:url';
 
 import axios, { type AxiosInstance } from 'axios';
@@ -575,8 +576,105 @@ class FrigateAdapter extends Adapter {
         return new Promise<void>(resolve => this.setTimeout(resolve, ms));
     }
 
+    private async detectIpAddress(hostname: string): Promise<string> {
+        const isIPv4 = (value: string): boolean => /^\d{1,3}(\.\d{1,3}){3}$/.test(value);
+        const ipv4ToInt = (ip: string): number =>
+            ip.split('.').reduce((acc, oct) => ((acc << 8) | parseInt(oct, 10)) >>> 0, 0) >>> 0;
+
+        // Resolve hostname to the IPv4 the browser used to reach the admin.
+        let browserIp = hostname;
+        if (!isIPv4(browserIp)) {
+            try {
+                const result = await lookup(hostname, { family: 4 });
+                browserIp = result.address;
+            } catch (error) {
+                this.log.debug(
+                    `DNS lookup for "${hostname}" failed: ${error instanceof Error ? error.message : String(error)}`,
+                );
+            }
+        }
+
+        if (!isIPv4(browserIp)) {
+            return hostname;
+        }
+
+        // Pick the local interface whose subnet contains the browser IP:
+        // (interfaceIp & netmask) === (browserIp & netmask)
+        const browserIpInt = ipv4ToInt(browserIp);
+        const interfaces = networkInterfaces();
+        for (const name of Object.keys(interfaces)) {
+            for (const info of interfaces[name] || []) {
+                if (info.family !== 'IPv4' || info.internal) {
+                    continue;
+                }
+                const maskInt = ipv4ToInt(info.netmask);
+                if ((ipv4ToInt(info.address) & maskInt) === (browserIpInt & maskInt)) {
+                    return info.address;
+                }
+            }
+        }
+
+        // No interface in the browser's subnet — fall back to the first non-internal IPv4.
+        for (const name of Object.keys(interfaces)) {
+            for (const info of interfaces[name] || []) {
+                if (info.family === 'IPv4' && !info.internal) {
+                    return info.address;
+                }
+            }
+        }
+
+        return hostname;
+    }
+
     onMessage = (obj: ioBroker.Message): void => {
-        if (obj?.command === 'readConfig') {
+        if (obj?.command === 'showLink') {
+            let data: { href: string; name: string } = { href: '', name: '' };
+            // parse href
+            if (typeof obj.message === 'string') {
+                try {
+                    data = JSON.parse(obj.message) as { href: string; name: string };
+                } catch (error) {
+                    this.log.error('Cannot parse config. Please use valid JSON');
+                    this.log.error(error instanceof Error ? error.message : String(error));
+                    this.sendTo(
+                        obj.from,
+                        obj.command,
+                        { error: 'Cannot parse config. Please use valid JSON' },
+                        obj.callback,
+                    );
+                    return;
+                }
+            } else {
+                data = obj.message as { href: string; name: string };
+            }
+            try {
+                const url = new URL(data.href);
+                this.detectIpAddress(url.hostname)
+                    .then(ip => {
+                        this.sendTo(
+                            obj.from,
+                            obj.command,
+                            { text: `rtsp://${ip}:8554/${data.name}`, style: { color: 'blue' } },
+                            obj.callback,
+                        );
+                    })
+                    .catch(error => {
+                        this.log.error('Failed to detect IP address for showLink');
+                        this.log.error(error instanceof Error ? error.message : String(error));
+                        this.sendTo(
+                            obj.from,
+                            obj.command,
+                            { text: `rtsp://${url.hostname}:8554/${data.name}`, style: { color: 'blue' } },
+                            obj.callback,
+                        );
+                    });
+            } catch (error) {
+                this.log.error('Invalid URL in showLink command');
+                this.log.error(error instanceof Error ? error.message : String(error));
+                this.sendTo(obj.from, obj.command, { error: 'Invalid URL in showLink command' }, obj.callback);
+                return;
+            }
+        } else if (obj?.command === 'readConfig') {
             this.log.info('readConfig command received');
             let config: FrigateAdapterConfig;
             if (typeof obj.message === 'string') {

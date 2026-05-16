@@ -35,6 +35,8 @@ Adapter for [Frigate NVR](https://frigate.video/) — an open-source, self-hoste
 -->
 ### **WORK IN PROGRESS**
 - (copilot) Adapter requires node.js >= 22 now
+- (copilot) Added re-streaming support for live video feeds (experimental)
+- (copilot) Added support for license plate recognition events from Frigate
 
 ### 2.3.2 (2026-04-14)
 - (@GermanBluefox) Added support of shm_size

@@ -21,16 +21,26 @@ export function createFrigateConfigFile(config) {
     const go2rtcStreams = [];
     for (const camera of config.dockerFrigate.cameras || []) {
         if (camera.enabled && camera.name && camera.inputs_path) {
-            // Generate camera-specific objects config if min_score is set
+            // Generate camera-specific objects config if track list and/or min_score are set
             let cameraObjectsConfig = '';
-            if (camera.objects_min_score) {
-                const minScore = Number(camera.objects_min_score) / 100;
-                const threshold = camera.objects_threshold ? Number(camera.objects_threshold) / 100 : null;
-                cameraObjectsConfig = `    objects:
-      filters:
+            const trackList = (camera.objects_track || '')
+                .split(',')
+                .map(s => s.trim())
+                .filter(Boolean);
+            const hasFilters = !!camera.objects_min_score;
+            if (trackList.length || hasFilters) {
+                cameraObjectsConfig = '    objects:\n';
+                if (trackList.length) {
+                    cameraObjectsConfig += `      track:\n${trackList.map(o => `        - ${o}`).join('\n')}\n`;
+                }
+                if (hasFilters) {
+                    const minScore = Number(camera.objects_min_score) / 100;
+                    const threshold = camera.objects_threshold ? Number(camera.objects_threshold) / 100 : null;
+                    cameraObjectsConfig += `      filters:
         person:
           min_score: ${minScore}
 ${threshold ? `          threshold: ${threshold}\n` : ''}`;
+                }
             }
             const useGo2rtc = !!camera.use_go2rtc;
             if (useGo2rtc) {
@@ -86,6 +96,11 @@ face_recognition:
   enabled: ${config.dockerFrigate.face_recognition?.enabled ? 'true' : 'false'}
   model_size: ${config.dockerFrigate.face_recognition?.model_size || 'medium'}
   min_area: ${config.dockerFrigate.face_recognition?.min_area || 400}
+
+lpr:
+  enabled: ${config.dockerFrigate.lpr?.enabled ? 'true' : 'false'}
+  device: ${config.dockerFrigate.lpr?.device || 'CPU'}
+  model_size: ${config.dockerFrigate.lpr?.model_size || 'small'}
 
 cameras:
 ${cameras.join('\n')}

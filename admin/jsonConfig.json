@@ -573,6 +573,60 @@
                     "lg": 4,
                     "xl": 4
                 },
+                "dockerFrigate.lpr.enabled": {
+                    "hidden": "data.dockerFrigate.configType !== 'ui'",
+                    "newLine": true,
+                    "type": "checkbox",
+                    "label": "Enable license plate recognition",
+                    "tooltip": "Enable Frigate's built-in license plate recognition (LPR). Requires Frigate >= 0.15. Cameras must track 'car' to detect plates.",
+                    "xs": 12,
+                    "sm": 12,
+                    "md": 4,
+                    "lg": 4,
+                    "xl": 4
+                },
+                "dockerFrigate.lpr.device": {
+                    "type": "select",
+                    "label": "LPR device",
+                    "options": [
+                        {
+                            "value": "CPU",
+                            "label": "CPU"
+                        },
+                        {
+                            "value": "GPU",
+                            "label": "GPU"
+                        }
+                    ],
+                    "tooltip": "Run the LPR model on CPU or GPU. GPU is faster but requires a supported GPU configured for Frigate.",
+                    "hidden": "data.dockerFrigate.configType !== 'ui' || !data.dockerFrigate.lpr?.enabled",
+                    "xs": 12,
+                    "sm": 12,
+                    "md": 4,
+                    "lg": 4,
+                    "xl": 4
+                },
+                "dockerFrigate.lpr.model_size": {
+                    "type": "select",
+                    "label": "LPR model size",
+                    "options": [
+                        {
+                            "value": "small",
+                            "label": "Small (default, less RAM)"
+                        },
+                        {
+                            "value": "large",
+                            "label": "Large (more accurate, more RAM)"
+                        }
+                    ],
+                    "tooltip": "Small is the default and fits most setups. Large is more accurate but uses significantly more RAM (~3 GB).",
+                    "hidden": "data.dockerFrigate.configType !== 'ui' || !data.dockerFrigate.lpr?.enabled",
+                    "xs": 12,
+                    "sm": 12,
+                    "md": 4,
+                    "lg": 4,
+                    "xl": 4
+                },
                 "dockerFrigate.record.enabled": {
                     "hidden": "data.dockerFrigate.configType !== 'ui'",
                     "newLine": true,
@@ -783,11 +837,13 @@
                         {
                             "attr": "_text_go2rtc",
                             "container": "text",
+                            "label": "go2rtc Stream URL",
                             "copyToClipboard": true,
                             "alsoDependsOn": ["use_go2rtc"],
                             "type": "textSendTo",
                             "command": "showLink",
-                            "jsonData": "{\"ip\": \"\"}"
+                            "hidden": "!data.use_go2rtc",
+                            "jsonData": "{\"href\": \"${_href}\", \"name\": \"${data.name}\"}"
                         },
                         {
                             "attr": "inputs_roles_detect",
@@ -834,6 +890,13 @@
                             "validator": "!data.objects_threshold || !data.objects_min_score || data.objects_threshold >= data.objects_min_score",
                             "validatorErrorText": "Threshold must be greater than or equal to Min Score",
                             "tooltip": "Confidence threshold (0-100%) for confirmed detection. Must be >= Min Score. Leave empty to use global setting.",
+                            "hidden": "!data.inputs_roles_detect || !globalData.dockerFrigate?.detect?.enabled"
+                        },
+                        {
+                            "attr": "objects_track",
+                            "title": "Track Objects",
+                            "type": "text",
+                            "tooltip": "Comma-separated list of objects to track for this camera (e.g. person, car, dog). Leave empty to use Frigate's default (person).",
                             "hidden": "!data.inputs_roles_detect || !globalData.dockerFrigate?.detect?.enabled"
                         },
                         {
