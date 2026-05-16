@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "frigate",
-    "version": "2.3.2",
+    "version": "3.0.0",
     "news": {
+      "3.0.0": {
+        "en": "Adapter requires node.js >= 22 now\nAdded re-streaming support for live video feeds (experimental)\nAdded support for license plate recognition events from Frigate",
+        "de": "Adapter benötigt node.js >= 22 jetzt\nUnterstützung für Live-Video-Feeds (experimental) hinzugefügt\nUnterstützung für Kennzeichenerkennungsveranstaltungen von Frigate",
+        "ru": "Адаптер требует node.js >= 22 сейчас\nДобавлена поддержка потоковой передачи видео в прямом эфире (экспериментальная)\nДобавлена поддержка мероприятий по распознаванию номерных знаков от Frigate",
+        "pt": "Adaptador requer nod.js >= 22 agora\nAdicionado suporte de re-streaming para feeds de vídeo ao vivo (experimental)\nAdicionado suporte para eventos de reconhecimento de placa de licença de Frigate",
+        "nl": "Voor de adapter zijn node.js < 22 nu nodig\nToegevoegd re-streaming ondersteuning voor live video feeds (experimenteel)\nToegevoegd ondersteuning voor kentekenherkenning evenementen van Frigate",
+        "fr": "Adaptateur nécessite node.js >= 22 maintenant\nAjout du support de restreaming pour les flux vidéo en direct (expérimental)\nAjout du support pour les événements de reconnaissance de plaques d'immatriculation de Frigate",
+        "it": "Adattatore richiede node.js >= 22 ora\nAggiunto supporto di ri-streaming per feed video dal vivo (esperimental)\nAggiunto supporto per gli eventi di riconoscimento targa da Frigate",
+        "es": "Adaptador requiere node.js ю= 22 ahora\nAgregado soporte de re-streaming para vídeos en vivo (experimental)\nApoyo adicional para eventos de reconocimiento de placas de la fragata",
+        "pl": "Adapter wymaga node.js > = 22\nDodano wsparcie restreamingu dla transmisji wideo na żywo (eksperymentalne)\nDodano wsparcie dla rozpoznawania tablic rejestracyjnych z Frigate",
+        "uk": "Адаптер вимагає node.js >= 22 тепер\nДодана підтримка потокового відео живих товарів (експериментально)\nДодана підтримка заходів розпізнавання ліцензійних пластин від Frigate",
+        "zh-cn": "适配器需要节点.js 现在22\n添加对视频直播的再流支持(实验性)\n增加护卫舰对牌照识别活动的支持"
+      },
       "2.3.2": {
         "en": "Added support of shm_size",
         "de": "Unterstützung von shm size hinzugefügt",
@@ -80,19 +93,6 @@
         "pl": "Korekta zapisu stanów ON / OFF",
         "uk": "Виправлено написання штатів ON/OFF",
         "zh-cn": "更正了ON/OFF国家的写法"
-      },
-      "2.1.1": {
-        "en": "Added threshold for person detection in notifications",
-        "de": "Zusätzlicher Schwellenwert für die Personenerkennung in Notifikationen",
-        "ru": "Добавлен порог обнаружения личности в уведомлениях",
-        "pt": "Limite adicional para detecção de pessoas nas notificações",
-        "nl": "Toegevoegde drempel voor persoonsdetectie in kennisgevingen",
-        "fr": "Seuil ajouté pour la détection des personnes dans les notifications",
-        "it": "Soglia aggiuntiva per il rilevamento della persona nelle notifiche",
-        "es": "Umbral añadido para la detección de personas en notificaciones",
-        "pl": "Dodany próg wykrywania osób w powiadomieniach",
-        "uk": "Додано поріг для виявлення особи в повідомленнях",
-        "zh-cn": "在通知中添加检测人的门槛值"
       }
     },
     "titleLang": {

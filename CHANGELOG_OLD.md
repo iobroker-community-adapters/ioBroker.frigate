@@ -1,4 +1,12 @@
 # Older changes
+## 2.2.1 (2026-03-29)
+- (Eistee82) Added support for connecting to an external MQTT broker (e.g. Mosquitto) as an alternative to the built-in broker
+- (Eistee82) Added configurable MQTT topic prefix
+- (Eistee82) Added i18n translations for new MQTT configuration fields
+- (mcm1957) dependencies have been updated
+
+[Older changelogs can be found there](CHANGELOG_OLD.md)
+
 ## 2.1.3 (2026-03-19)
 - (@GermanBluefox) Remove a wrong log message about missing docker
 - (@GermanBluefox) Send on connection the topic onConnect to receive camera_activity topic
