@@ -122,7 +122,7 @@ export interface FrigateAdapterConfigTyped {
             detect_height: number;
             detect_fps: number;
             detect_enabled: boolean;
-            objects_track?: string;
+            objects_track?: string | string[];
             objects_min_score?: number;
             objects_threshold?: number;
             snapshots_enabled: boolean;
@@ -213,7 +213,7 @@ export interface FrigateAdapterConfig extends FrigateAdapterConfigTyped {
             detect_height: number | string;
             detect_fps: number | string;
             detect_enabled: boolean;
-            objects_track?: string;
+            objects_track?: string | string[];
             objects_min_score?: number | string;
             objects_threshold?: number | string;
             snapshots_enabled: boolean;

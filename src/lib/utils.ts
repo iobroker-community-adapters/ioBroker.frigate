@@ -29,8 +29,9 @@ export function createFrigateConfigFile(config: FrigateAdapterConfig): string {
         if (camera.enabled && camera.name && camera.inputs_path) {
             // Generate camera-specific objects config if track list and/or min_score are set
             let cameraObjectsConfig = '';
-            const trackList = (camera.objects_track || '')
-                .split(',')
+            const trackList = (
+                Array.isArray(camera.objects_track) ? camera.objects_track : (camera.objects_track || '').split(',')
+            )
                 .map(s => s.trim())
                 .filter(Boolean);
             const hasFilters = !!camera.objects_min_score;

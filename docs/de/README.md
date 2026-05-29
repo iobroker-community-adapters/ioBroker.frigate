@@ -82,34 +82,34 @@ Der Adapter aktualisiert den Token automatisch wenn er abläuft (bei 401-Antwort
 
 `frigate.0.stats.*` — Allgemeine Systeminformationen, alle paar Sekunden aktualisiert.
 
-| State | Beschreibung | Einheit |
-|-------|-------------|---------|
-| `stats.cameras.<name>.camera_fps` | Bilder pro Sekunde vom Kamera-Feed | fps |
-| `stats.cameras.<name>.process_fps` | Verarbeitete Bilder pro Sekunde | fps |
-| `stats.cameras.<name>.skipped_fps` | Übersprungene Bilder (Verarbeitungsüberlastung) | fps |
-| `stats.cameras.<name>.detection_fps` | Objekterkennung pro Sekunde | fps |
-| `stats.cameras.<name>.detection_enabled` | Objekterkennung aktiv | — |
-| `stats.cameras.<name>.audio_dBFS` | Audio-Pegel | dBFS |
-| `stats.cameras.<name>.audio_rms` | Audio-RMS-Amplitude | — |
-| `stats.detectors.<name>.inference_speed` | Zeit pro Inferenz | ms |
-| `stats.service.uptime` | Laufzeit des Dienstes | s |
-| `stats.service.version` | Frigate-Version | — |
-| `stats.service.storage.<mount>.total` | Gesamtspeicher | MB |
-| `stats.service.storage.<mount>.used` | Belegter Speicher | MB |
-| `stats.service.storage.<mount>.free` | Freier Speicher | MB |
+| State                                    | Beschreibung                                    | Einheit  |
+|------------------------------------------|-------------------------------------------------|----------|
+| `stats.cameras.<name>.camera_fps`        | Bilder pro Sekunde vom Kamera-Feed              | fps      |
+| `stats.cameras.<name>.process_fps`       | Verarbeitete Bilder pro Sekunde                 | fps      |
+| `stats.cameras.<name>.skipped_fps`       | Übersprungene Bilder (Verarbeitungsüberlastung) | fps      |
+| `stats.cameras.<name>.detection_fps`     | Objekterkennung pro Sekunde                     | fps      |
+| `stats.cameras.<name>.detection_enabled` | Objekterkennung aktiv                           | —        |
+| `stats.cameras.<name>.audio_dBFS`        | Audio-Pegel                                     | dBFS     |
+| `stats.cameras.<name>.audio_rms`         | Audio-RMS-Amplitude                             | —        |
+| `stats.detectors.<name>.inference_speed` | Zeit pro Inferenz                               | ms       |
+| `stats.service.uptime`                   | Laufzeit des Dienstes                           | s        |
+| `stats.service.version`                  | Frigate-Version                                 | —        |
+| `stats.service.storage.<mount>.total`    | Gesamtspeicher                                  | MB       |
+| `stats.service.storage.<mount>.used`     | Belegter Speicher                               | MB       |
+| `stats.service.storage.<mount>.free`     | Freier Speicher                                 | MB       |
 
 ### Events
 
 `frigate.0.events.*` — Letztes Event mit Vorher/Nachher-Informationen.
 
-| State | Beschreibung |
-|-------|-------------|
-| `events.after.camera` | Kamera die das Event erkannt hat |
-| `events.after.label` | Objekttyp (person, car, etc.) |
-| `events.after.top_score` | Höchster Konfidenzwert |
-| `events.after.has_snapshot` | Snapshot verfügbar |
-| `events.after.has_clip` | Clip verfügbar |
-| `events.history.json` | JSON-Array der letzten X Events |
+| State                       | Beschreibung                     |
+|-----------------------------|----------------------------------|
+| `events.after.camera`       | Kamera die das Event erkannt hat |
+| `events.after.label`        | Objekttyp (person, car, etc.)    |
+| `events.after.top_score`    | Höchster Konfidenzwert           |
+| `events.after.has_snapshot` | Snapshot verfügbar               |
+| `events.after.has_clip`     | Clip verfügbar                   |
+| `events.history.json`       | JSON-Array der letzten X Events  |
 
 Jedes Event in der History enthält URLs für Snapshots und Clips:
 - `websnap` — Snapshot-URL
@@ -121,50 +121,50 @@ Jedes Event in der History enthält URLs für Snapshots und Clips:
 
 `frigate.0.<kamera_name>.*` — Status und Erkennungs-States pro Kamera.
 
-| State | Typ | Schreibbar | Beschreibung |
-|-------|-----|-----------|-------------|
-| `<cam>.motion` | boolean | nein | Bewegung erkannt |
-| `<cam>.person` | number | nein | Anzahl erkannter Personen |
-| `<cam>.car` | number | nein | Anzahl erkannter Autos |
-| `<cam>.person_snapshot` | string | nein | Base64-JPEG der letzten Person |
-| `<cam>.detect_state` | boolean | ja | Objekterkennung ein/aus |
-| `<cam>.recordings_state` | boolean | ja | Aufnahmen ein/aus |
-| `<cam>.snapshots_state` | boolean | ja | Snapshots ein/aus |
-| `<cam>.audio_state` | boolean | ja | Audioerkennung ein/aus |
-| `<cam>.birdseye_state` | boolean | ja | Birdseye-Ansicht ein/aus |
-| `<cam>.birdseye_mode_state` | string | ja | Birdseye-Modus (objects/continuous/motion) |
-| `<cam>.review_status` | string | nein | Aktivitätslevel (NONE/DETECTION/ALERT) |
+| State                       | Typ     | Schreibbar | Beschreibung                               |
+|-----------------------------|---------|------------|--------------------------------------------|
+| `<cam>.motion`              | boolean | nein       | Bewegung erkannt                           |
+| `<cam>.person`              | number  | nein       | Anzahl erkannter Personen                  |
+| `<cam>.car`                 | number  | nein       | Anzahl erkannter Autos                     |
+| `<cam>.person_snapshot`     | string  | nein       | Base64-JPEG der letzten Person             |
+| `<cam>.detect_state`        | boolean | ja         | Objekterkennung ein/aus                    |
+| `<cam>.recordings_state`    | boolean | ja         | Aufnahmen ein/aus                          |
+| `<cam>.snapshots_state`     | boolean | ja         | Snapshots ein/aus                          |
+| `<cam>.audio_state`         | boolean | ja         | Audioerkennung ein/aus                     |
+| `<cam>.birdseye_state`      | boolean | ja         | Birdseye-Ansicht ein/aus                   |
+| `<cam>.birdseye_mode_state` | string  | ja         | Birdseye-Modus (objects/continuous/motion) |
+| `<cam>.review_status`       | string  | nein       | Aktivitätslevel (NONE/DETECTION/ALERT)     |
 
 ### Kamera-Fernsteuerung
 
 `frigate.0.<kamera_name>.remote.*` — Schreibbare States zur Kamerasteuerung.
 
-| State | Typ | Beschreibung |
-|-------|-----|-------------|
-| `remote.ptz` | string | PTZ-Befehle (z.B. `preset_preset1`, `MOVE_LEFT`, `ZOOM_IN`, `STOP`) |
-| `remote.createEvent` | string | Manuelles Event mit Label erstellen |
-| `remote.createEventBody` | string | JSON-Body für manuelle Event-Erstellung |
-| `remote.motionThreshold` | number | Bewegungserkennungs-Schwellwert (1-255) |
-| `remote.motionContourArea` | number | Minimale Konturfläche für Bewegung |
-| `remote.birdseyeMode` | string | Birdseye-Modus (objects, continuous, motion) |
-| `remote.improveContrast` | boolean | Kontrastverbesserung für Erkennung |
-| `remote.pauseNotifications` | boolean | Benachrichtigungen für diese Kamera pausieren |
-| `remote.pauseNotificationsForTime` | number | Benachrichtigungen für X Minuten pausieren |
-| `remote.notificationText` | string | Eigener Benachrichtigungstext für diese Kamera |
-| `remote.notificationMinScore` | number | Eigener Mindest-Score für Benachrichtigungen |
+| State                              | Typ     | Beschreibung                                                        |
+|------------------------------------|---------|---------------------------------------------------------------------|
+| `remote.ptz`                       | string  | PTZ-Befehle (z.B. `preset_preset1`, `MOVE_LEFT`, `ZOOM_IN`, `STOP`) |
+| `remote.createEvent`               | string  | Manuelles Event mit Label erstellen                                 |
+| `remote.createEventBody`           | string  | JSON-Body für manuelle Event-Erstellung                             |
+| `remote.motionThreshold`           | number  | Bewegungserkennungs-Schwellwert (1-255)                             |
+| `remote.motionContourArea`         | number  | Minimale Konturfläche für Bewegung                                  |
+| `remote.birdseyeMode`              | string  | Birdseye-Modus (objects, continuous, motion)                        |
+| `remote.improveContrast`           | boolean | Kontrastverbesserung für Erkennung                                  |
+| `remote.pauseNotifications`        | boolean | Benachrichtigungen für diese Kamera pausieren                       |
+| `remote.pauseNotificationsForTime` | number  | Benachrichtigungen für X Minuten pausieren                          |
+| `remote.notificationText`          | string  | Eigener Benachrichtigungstext für diese Kamera                      |
+| `remote.notificationMinScore`      | number  | Eigener Mindest-Score für Benachrichtigungen                        |
 
 ### Zonen
 
 Zonen-Geräte werden automatisch aus der Frigate-Konfiguration erstellt. Der Adapter aggregiert Objektzähler über alle Kameras die sich eine Zone teilen.
 
-| State | Typ | Beschreibung |
-|-------|-----|-------------|
-| `<zone>.person` | number | Personen in der Zone gesamt (alle Kameras) |
-| `<zone>.person_active` | number | Sich aktiv bewegende Personen |
-| `<zone>.person_stationary` | number | Stehende Personen |
-| `<zone>.car` | number | Autos in der Zone gesamt |
-| `<zone>.total_objects` | number | Gesamtzahl aller Objekte |
-| `<zone>.active` | boolean | Irgendein Objekt in der Zone erkannt |
+| State                      | Typ     | Beschreibung                               |
+|----------------------------|---------|--------------------------------------------|
+| `<zone>.person`            | number  | Personen in der Zone gesamt (alle Kameras) |
+| `<zone>.person_active`     | number  | Sich aktiv bewegende Personen              |
+| `<zone>.person_stationary` | number  | Stehende Personen                          |
+| `<zone>.car`               | number  | Autos in der Zone gesamt                   |
+| `<zone>.total_objects`     | number  | Gesamtzahl aller Objekte                   |
+| `<zone>.active`            | boolean | Irgendein Objekt in der Zone erkannt       |
 
 Beispiel: Wenn die Kameras `klingel` und `vorgarten` beide die Zone `Vorgarten` haben und jede eine Person erkennt, dann ist `Vorgarten.person` = 2.
 
@@ -172,27 +172,27 @@ Beispiel: Wenn die Kameras `klingel` und `vorgarten` beide die Zone `Vorgarten` 
 
 `frigate.0.notifications.*` — Steuerung des Frigate-eigenen Benachrichtigungssystems.
 
-| State | Typ | Schreibbar | Beschreibung |
-|-------|-----|-----------|-------------|
-| `notifications.enabled` | boolean | ja | Frigate-Benachrichtigungen ein/aus |
-| `notifications.suspend` | number | ja | Für X Minuten unterbrechen |
-| `notifications.suspended` | number | nein | UNIX-Zeitstempel wann Unterbrechung endet |
+| State                     | Typ     | Schreibbar | Beschreibung                              |
+|---------------------------|---------|------------|-------------------------------------------|
+| `notifications.enabled`   | boolean | ja         | Frigate-Benachrichtigungen ein/aus        |
+| `notifications.suspend`   | number  | ja         | Für X Minuten unterbrechen                |
+| `notifications.suspended` | number  | nein       | UNIX-Zeitstempel wann Unterbrechung endet |
 
 ### Automatisch verfügbare States
 
 Diese States werden automatisch erstellt wenn Frigate die entsprechenden MQTT-Topics publiziert:
 
-| State | Beschreibung |
-|-------|-------------|
-| `<cam>.audio_dBFS` | Audio-Pegel in dBFS |
-| `<cam>.audio_rms` | Audio-RMS-Pegel |
-| `<cam>.audio_transcription` | Transkribierter Audio-Text |
-| `<cam>.audio_<typ>` | Audio-Typ-Erkennung (speech, bark, etc.) |
-| `<cam>.status_detect` | Zustand der Detect-Rolle (online/offline/disabled) |
-| `<cam>.status_audio` | Zustand der Audio-Rolle |
-| `<cam>.status_record` | Zustand der Record-Rolle |
-| `<cam>.classification_<modell>` | Klassifizierungsergebnisse |
-| `<cam>.ptz_autotracker_active` | PTZ-Autotracker aktiv |
+| State                           | Beschreibung                                       |
+|---------------------------------|----------------------------------------------------|
+| `<cam>.audio_dBFS`              | Audio-Pegel in dBFS                                |
+| `<cam>.audio_rms`               | Audio-RMS-Pegel                                    |
+| `<cam>.audio_transcription`     | Transkribierter Audio-Text                         |
+| `<cam>.audio_<typ>`             | Audio-Typ-Erkennung (speech, bark, etc.)           |
+| `<cam>.status_detect`           | Zustand der Detect-Rolle (online/offline/disabled) |
+| `<cam>.status_audio`            | Zustand der Audio-Rolle                            |
+| `<cam>.status_record`           | Zustand der Record-Rolle                           |
+| `<cam>.classification_<modell>` | Klassifizierungsergebnisse                         |
+| `<cam>.ptz_autotracker_active`  | PTZ-Autotracker aktiv                              |
 
 ---
 
@@ -223,14 +223,14 @@ Clips werden nach der konfigurierten Wartezeit (Standard: 5 Sekunden) nach Event
 
 Verwende Platzhalter in deinem Benachrichtigungstext:
 
-| Platzhalter | Beschreibung |
-|-------------|-------------|
-| `{{source}}` | Kameraname |
-| `{{type}}` | Objekttyp (person, car, etc.) |
-| `{{state}}` | Event-Zustand (Event Before/Event After) |
-| `{{status}}` | Event-Status (new/update/end) |
-| `{{score}}` | Konfidenzwert |
-| `{{zones}}` | Betretene Zonen (kommagetrennt) |
+| Platzhalter  | Beschreibung                             |
+|--------------|------------------------------------------|
+| `{{source}}` | Kameraname                               |
+| `{{type}}`   | Objekttyp (person, car, etc.)            |
+| `{{state}}`  | Event-Zustand (Event Before/Event After) |
+| `{{status}}` | Event-Status (new/update/end)            |
+| `{{score}}`  | Konfidenzwert                            |
+| `{{zones}}`  | Betretene Zonen (kommagetrennt)          |
 
 Beispiel: `{{source}}: {{type}} erkannt ({{score}}) in {{zones}}`
 
@@ -287,12 +287,12 @@ on({ id: 'frigate.0.Vorgarten.person', change: 'ne' }, (obj) => {
 
 ## Voraussetzungen
 
-| Komponente | Mindestversion |
-|------------|---------------|
-| Node.js | >= 20 |
-| js-controller | >= 6.0.5 |
-| Admin | >= 7.7.29 |
-| Frigate | >= 0.14 |
+| Komponente    | Mindestversion |
+|---------------|----------------|
+| Node.js       | >= 20          |
+| js-controller | >= 6.0.5       |
+| Admin         | >= 7.7.29      |
+| Frigate       | >= 0.14        |
 
 ---
 

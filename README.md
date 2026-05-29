@@ -33,6 +33,9 @@ Adapter for [Frigate NVR](https://frigate.video/) — an open-source, self-hoste
     Placeholder for the next version (at the beginning of the line):
   ### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+- (@GermanBluefox) Replaced the track of objects with drop down menu
+
 ### 3.0.0 (2026-05-16)
 - (copilot) Adapter requires node.js >= 22 now
 - (copilot) Added re-streaming support for live video feeds (experimental)

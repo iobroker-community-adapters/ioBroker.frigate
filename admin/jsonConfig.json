@@ -895,8 +895,145 @@
                         {
                             "attr": "objects_track",
                             "title": "Track Objects",
-                            "type": "text",
-                            "tooltip": "Comma-separated list of objects to track for this camera (e.g. person, car, dog). Leave empty to use Frigate's default (person).",
+                            "type": "select",
+                            "multiple": true,
+                            "options": [
+                                {
+                                    "name": "People & Vehicles",
+                                    "items": [
+                                        { "value": "person", "label": "Person" },
+                                        { "value": "bicycle", "label": "Bicycle" },
+                                        { "value": "car", "label": "Car" },
+                                        { "value": "motorcycle", "label": "Motorcycle" },
+                                        { "value": "airplane", "label": "Airplane" },
+                                        { "value": "bus", "label": "Bus" },
+                                        { "value": "train", "label": "Train" },
+                                        { "value": "boat", "label": "Boat" }
+                                    ]
+                                },
+                                {
+                                    "name": "Traffic & Street",
+                                    "items": [
+                                        { "value": "traffic light", "label": "Traffic light" },
+                                        { "value": "fire hydrant", "label": "Fire hydrant" },
+                                        { "value": "street sign", "label": "Street sign" },
+                                        { "value": "stop sign", "label": "Stop sign" },
+                                        { "value": "parking meter", "label": "Parking meter" },
+                                        { "value": "bench", "label": "Bench" }
+                                    ]
+                                },
+                                {
+                                    "name": "Animals",
+                                    "items": [
+                                        { "value": "bird", "label": "Bird" },
+                                        { "value": "cat", "label": "Cat" },
+                                        { "value": "dog", "label": "Dog" },
+                                        { "value": "horse", "label": "Horse" },
+                                        { "value": "sheep", "label": "Sheep" },
+                                        { "value": "cow", "label": "Cow" },
+                                        { "value": "elephant", "label": "Elephant" },
+                                        { "value": "bear", "label": "Bear" },
+                                        { "value": "zebra", "label": "Zebra" },
+                                        { "value": "giraffe", "label": "Giraffe" }
+                                    ]
+                                },
+                                {
+                                    "name": "Accessories",
+                                    "items": [
+                                        { "value": "hat", "label": "Hat" },
+                                        { "value": "backpack", "label": "Backpack" },
+                                        { "value": "umbrella", "label": "Umbrella" },
+                                        { "value": "shoe", "label": "Shoe" },
+                                        { "value": "eye glasses", "label": "Eye glasses" },
+                                        { "value": "handbag", "label": "Handbag" },
+                                        { "value": "tie", "label": "Tie" },
+                                        { "value": "suitcase", "label": "Suitcase" }
+                                    ]
+                                },
+                                {
+                                    "name": "Sports",
+                                    "items": [
+                                        { "value": "frisbee", "label": "Frisbee" },
+                                        { "value": "skis", "label": "Skis" },
+                                        { "value": "snowboard", "label": "Snowboard" },
+                                        { "value": "sports ball", "label": "Sports ball" },
+                                        { "value": "kite", "label": "Kite" },
+                                        { "value": "baseball bat", "label": "Baseball bat" },
+                                        { "value": "baseball glove", "label": "Baseball glove" },
+                                        { "value": "skateboard", "label": "Skateboard" },
+                                        { "value": "surfboard", "label": "Surfboard" },
+                                        { "value": "tennis racket", "label": "Tennis racket" }
+                                    ]
+                                },
+                                {
+                                    "name": "Kitchen & Food",
+                                    "items": [
+                                        { "value": "bottle", "label": "Bottle" },
+                                        { "value": "plate", "label": "Plate" },
+                                        { "value": "wine glass", "label": "Wine glass" },
+                                        { "value": "cup", "label": "Cup" },
+                                        { "value": "fork", "label": "Fork" },
+                                        { "value": "knife", "label": "Knife" },
+                                        { "value": "spoon", "label": "Spoon" },
+                                        { "value": "bowl", "label": "Bowl" },
+                                        { "value": "banana", "label": "Banana" },
+                                        { "value": "apple", "label": "Apple" },
+                                        { "value": "sandwich", "label": "Sandwich" },
+                                        { "value": "orange", "label": "Orange" },
+                                        { "value": "broccoli", "label": "Broccoli" },
+                                        { "value": "carrot", "label": "Carrot" },
+                                        { "value": "hot dog", "label": "Hot dog" },
+                                        { "value": "pizza", "label": "Pizza" },
+                                        { "value": "donut", "label": "Donut" },
+                                        { "value": "cake", "label": "Cake" }
+                                    ]
+                                },
+                                {
+                                    "name": "Furniture & Household",
+                                    "items": [
+                                        { "value": "chair", "label": "Chair" },
+                                        { "value": "couch", "label": "Couch" },
+                                        { "value": "potted plant", "label": "Potted plant" },
+                                        { "value": "bed", "label": "Bed" },
+                                        { "value": "mirror", "label": "Mirror" },
+                                        { "value": "dining table", "label": "Dining table" },
+                                        { "value": "window", "label": "Window" },
+                                        { "value": "desk", "label": "Desk" },
+                                        { "value": "toilet", "label": "Toilet" },
+                                        { "value": "door", "label": "Door" }
+                                    ]
+                                },
+                                {
+                                    "name": "Electronics",
+                                    "items": [
+                                        { "value": "tv", "label": "TV" },
+                                        { "value": "laptop", "label": "Laptop" },
+                                        { "value": "mouse", "label": "Mouse" },
+                                        { "value": "remote", "label": "Remote" },
+                                        { "value": "keyboard", "label": "Keyboard" },
+                                        { "value": "cell phone", "label": "Cell phone" },
+                                        { "value": "microwave", "label": "Microwave" },
+                                        { "value": "oven", "label": "Oven" },
+                                        { "value": "toaster", "label": "Toaster" },
+                                        { "value": "sink", "label": "Sink" },
+                                        { "value": "refrigerator", "label": "Refrigerator" },
+                                        { "value": "blender", "label": "Blender" }
+                                    ]
+                                },
+                                {
+                                    "name": "Other",
+                                    "items": [
+                                        { "value": "book", "label": "Book" },
+                                        { "value": "clock", "label": "Clock" },
+                                        { "value": "vase", "label": "Vase" },
+                                        { "value": "scissors", "label": "Scissors" },
+                                        { "value": "teddy bear", "label": "Teddy bear" },
+                                        { "value": "hair drier", "label": "Hair drier" },
+                                        { "value": "toothbrush", "label": "Toothbrush" }
+                                    ]
+                                }
+                            ],
+                            "tooltip": "Select the objects to track for this camera (e.g. person, car, dog). Leave empty to use Frigate's default (person).",
                             "hidden": "!data.inputs_roles_detect || !globalData.dockerFrigate?.detect?.enabled"
                         },
                         {

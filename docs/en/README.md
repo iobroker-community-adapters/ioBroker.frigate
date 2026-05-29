@@ -82,34 +82,34 @@ The adapter automatically refreshes the token if it expires (401 response trigge
 
 `frigate.0.stats.*` — General system information updated every few seconds.
 
-| State | Description | Unit |
-|-------|-------------|------|
-| `stats.cameras.<name>.camera_fps` | Frames per second from camera feed | fps |
-| `stats.cameras.<name>.process_fps` | Frames per second being processed | fps |
-| `stats.cameras.<name>.skipped_fps` | Frames skipped (processing overload) | fps |
-| `stats.cameras.<name>.detection_fps` | Object detection runs per second | fps |
-| `stats.cameras.<name>.detection_enabled` | Object detection active | — |
-| `stats.cameras.<name>.audio_dBFS` | Audio level | dBFS |
-| `stats.cameras.<name>.audio_rms` | Audio RMS amplitude | — |
-| `stats.detectors.<name>.inference_speed` | Time per inference | ms |
-| `stats.service.uptime` | Service uptime | s |
-| `stats.service.version` | Frigate version | — |
-| `stats.service.storage.<mount>.total` | Total storage | MB |
-| `stats.service.storage.<mount>.used` | Used storage | MB |
-| `stats.service.storage.<mount>.free` | Free storage | MB |
+| State                                    | Description                          | Unit  |
+|------------------------------------------|--------------------------------------|-------|
+| `stats.cameras.<name>.camera_fps`        | Frames per second from camera feed   | fps   |
+| `stats.cameras.<name>.process_fps`       | Frames per second being processed    | fps   |
+| `stats.cameras.<name>.skipped_fps`       | Frames skipped (processing overload) | fps   |
+| `stats.cameras.<name>.detection_fps`     | Object detection runs per second     | fps   |
+| `stats.cameras.<name>.detection_enabled` | Object detection active              | —     |
+| `stats.cameras.<name>.audio_dBFS`        | Audio level                          | dBFS  |
+| `stats.cameras.<name>.audio_rms`         | Audio RMS amplitude                  | —     |
+| `stats.detectors.<name>.inference_speed` | Time per inference                   | ms    |
+| `stats.service.uptime`                   | Service uptime                       | s     |
+| `stats.service.version`                  | Frigate version                      | —     |
+| `stats.service.storage.<mount>.total`    | Total storage                        | MB    |
+| `stats.service.storage.<mount>.used`     | Used storage                         | MB    |
+| `stats.service.storage.<mount>.free`     | Free storage                         | MB    |
 
 ### Events
 
 `frigate.0.events.*` — Last event with before/after information.
 
-| State | Description |
-|-------|-------------|
-| `events.after.camera` | Camera that detected the event |
-| `events.after.label` | Object type (person, car, etc.) |
-| `events.after.top_score` | Highest confidence score |
-| `events.after.has_snapshot` | Snapshot available |
-| `events.after.has_clip` | Clip available |
-| `events.history.json` | JSON array of the last X events |
+| State                       | Description                     |
+|-----------------------------|---------------------------------|
+| `events.after.camera`       | Camera that detected the event  |
+| `events.after.label`        | Object type (person, car, etc.) |
+| `events.after.top_score`    | Highest confidence score        |
+| `events.after.has_snapshot` | Snapshot available              |
+| `events.after.has_clip`     | Clip available                  |
+| `events.history.json`       | JSON array of the last X events |
 
 Each event in the history includes URLs for snapshots and clips:
 - `websnap` — Snapshot URL
@@ -121,50 +121,50 @@ Each event in the history includes URLs for snapshots and clips:
 
 `frigate.0.<camera_name>.*` — Status and detection states per camera.
 
-| State | Type | Writable | Description |
-|-------|------|----------|-------------|
-| `<cam>.motion` | boolean | no | Motion currently detected |
-| `<cam>.person` | number | no | Number of persons detected |
-| `<cam>.car` | number | no | Number of cars detected |
-| `<cam>.person_snapshot` | string | no | Base64 JPEG of last detected person |
-| `<cam>.detect_state` | boolean | yes | Enable/disable object detection |
-| `<cam>.recordings_state` | boolean | yes | Enable/disable recordings |
-| `<cam>.snapshots_state` | boolean | yes | Enable/disable snapshots |
-| `<cam>.audio_state` | boolean | yes | Enable/disable audio detection |
-| `<cam>.birdseye_state` | boolean | yes | Enable/disable birdseye view |
-| `<cam>.birdseye_mode_state` | string | yes | Birdseye mode (objects/continuous/motion) |
-| `<cam>.review_status` | string | no | Activity level (NONE/DETECTION/ALERT) |
+| State                       | Type    | Writable  | Description                               |
+|-----------------------------|---------|-----------|-------------------------------------------|
+| `<cam>.motion`              | boolean | no        | Motion currently detected                 |
+| `<cam>.person`              | number  | no        | Number of persons detected                |
+| `<cam>.car`                 | number  | no        | Number of cars detected                   |
+| `<cam>.person_snapshot`     | string  | no        | Base64 JPEG of last detected person       |
+| `<cam>.detect_state`        | boolean | yes       | Enable/disable object detection           |
+| `<cam>.recordings_state`    | boolean | yes       | Enable/disable recordings                 |
+| `<cam>.snapshots_state`     | boolean | yes       | Enable/disable snapshots                  |
+| `<cam>.audio_state`         | boolean | yes       | Enable/disable audio detection            |
+| `<cam>.birdseye_state`      | boolean | yes       | Enable/disable birdseye view              |
+| `<cam>.birdseye_mode_state` | string  | yes       | Birdseye mode (objects/continuous/motion) |
+| `<cam>.review_status`       | string  | no        | Activity level (NONE/DETECTION/ALERT)     |
 
 ### Camera Remote Controls
 
 `frigate.0.<camera_name>.remote.*` — Writable states to control cameras.
 
-| State | Type | Description |
-|-------|------|-------------|
-| `remote.ptz` | string | PTZ commands (e.g. `preset_preset1`, `MOVE_LEFT`, `ZOOM_IN`, `STOP`) |
-| `remote.createEvent` | string | Create manual event with label |
-| `remote.createEventBody` | string | JSON body for manual event creation |
-| `remote.motionThreshold` | number | Motion detection threshold (1-255) |
-| `remote.motionContourArea` | number | Motion contour area minimum size |
-| `remote.birdseyeMode` | string | Birdseye mode (objects, continuous, motion) |
-| `remote.improveContrast` | boolean | Toggle contrast improvement for detection |
-| `remote.pauseNotifications` | boolean | Pause notifications for this camera |
-| `remote.pauseNotificationsForTime` | number | Pause notifications for X minutes |
-| `remote.notificationText` | string | Custom notification text for this camera |
-| `remote.notificationMinScore` | number | Custom min score for notifications |
+| State                              | Type    | Description                                                          |
+|------------------------------------|---------|----------------------------------------------------------------------|
+| `remote.ptz`                       | string  | PTZ commands (e.g. `preset_preset1`, `MOVE_LEFT`, `ZOOM_IN`, `STOP`) |
+| `remote.createEvent`               | string  | Create manual event with label                                       |
+| `remote.createEventBody`           | string  | JSON body for manual event creation                                  |
+| `remote.motionThreshold`           | number  | Motion detection threshold (1-255)                                   |
+| `remote.motionContourArea`         | number  | Motion contour area minimum size                                     |
+| `remote.birdseyeMode`              | string  | Birdseye mode (objects, continuous, motion)                          |
+| `remote.improveContrast`           | boolean | Toggle contrast improvement for detection                            |
+| `remote.pauseNotifications`        | boolean | Pause notifications for this camera                                  |
+| `remote.pauseNotificationsForTime` | number  | Pause notifications for X minutes                                    |
+| `remote.notificationText`          | string  | Custom notification text for this camera                             |
+| `remote.notificationMinScore`      | number  | Custom min score for notifications                                   |
 
 ### Zones
 
 Zone devices are automatically created from the Frigate configuration. The adapter aggregates object counts across all cameras that share a zone.
 
-| State | Type | Description |
-|-------|------|-------------|
-| `<zone>.person` | number | Total persons in zone (all cameras) |
-| `<zone>.person_active` | number | Actively moving persons |
-| `<zone>.person_stationary` | number | Stationary persons |
-| `<zone>.car` | number | Total cars in zone |
-| `<zone>.total_objects` | number | Total objects of all types |
-| `<zone>.active` | boolean | Any object detected in zone |
+| State                      | Type    | Description                         |
+|----------------------------|---------|-------------------------------------|
+| `<zone>.person`            | number  | Total persons in zone (all cameras) |
+| `<zone>.person_active`     | number  | Actively moving persons             |
+| `<zone>.person_stationary` | number  | Stationary persons                  |
+| `<zone>.car`               | number  | Total cars in zone                  |
+| `<zone>.total_objects`     | number  | Total objects of all types          |
+| `<zone>.active`            | boolean | Any object detected in zone         |
 
 Example: If cameras `klingel` and `vorgarten` both have zone `Vorgarten`, and each detects a person, then `Vorgarten.person` = 2.
 
@@ -172,27 +172,27 @@ Example: If cameras `klingel` and `vorgarten` both have zone `Vorgarten`, and ea
 
 `frigate.0.notifications.*` — Control Frigate's built-in notification system.
 
-| State | Type | Writable | Description |
-|-------|------|----------|-------------|
-| `notifications.enabled` | boolean | yes | Enable/disable Frigate notifications |
-| `notifications.suspend` | number | yes | Suspend for X minutes |
-| `notifications.suspended` | number | no | UNIX timestamp when suspension ends |
+| State                     | Type    | Writable  | Description                          |
+|---------------------------|---------|-----------|--------------------------------------|
+| `notifications.enabled`   | boolean | yes       | Enable/disable Frigate notifications |
+| `notifications.suspend`   | number  | yes       | Suspend for X minutes                |
+| `notifications.suspended` | number  | no        | UNIX timestamp when suspension ends  |
 
 ### Automatically Available States
 
 These states are automatically created when Frigate publishes the corresponding MQTT topics:
 
-| State | Description |
-|-------|-------------|
-| `<cam>.audio_dBFS` | Audio level in dBFS |
-| `<cam>.audio_rms` | Audio RMS level |
-| `<cam>.audio_transcription` | Transcribed audio text |
-| `<cam>.audio_<type>` | Audio type detection (speech, bark, etc.) |
-| `<cam>.status_detect` | Health of detect role (online/offline/disabled) |
-| `<cam>.status_audio` | Health of audio role |
-| `<cam>.status_record` | Health of record role |
-| `<cam>.classification_<model>` | Classification results |
-| `<cam>.ptz_autotracker_active` | PTZ autotracker active |
+| State                          | Description                                     |
+|--------------------------------|-------------------------------------------------|
+| `<cam>.audio_dBFS`             | Audio level in dBFS                             |
+| `<cam>.audio_rms`              | Audio RMS level                                 |
+| `<cam>.audio_transcription`    | Transcribed audio text                          |
+| `<cam>.audio_<type>`           | Audio type detection (speech, bark, etc.)       |
+| `<cam>.status_detect`          | Health of detect role (online/offline/disabled) |
+| `<cam>.status_audio`           | Health of audio role                            |
+| `<cam>.status_record`          | Health of record role                           |
+| `<cam>.classification_<model>` | Classification results                          |
+| `<cam>.ptz_autotracker_active` | PTZ autotracker active                          |
 
 ---
 
@@ -223,14 +223,14 @@ Clips are sent after the configured wait time (default: 5 seconds) after the eve
 
 Use placeholders in your notification text:
 
-| Placeholder | Description |
-|-------------|-------------|
-| `{{source}}` | Camera name |
-| `{{type}}` | Object type (person, car, etc.) |
-| `{{state}}` | Event state (Event Before/Event After) |
-| `{{status}}` | Event status (new/update/end) |
-| `{{score}}` | Confidence score |
-| `{{zones}}` | Entered zones (comma-separated) |
+| Placeholder  | Description                            |
+|--------------|----------------------------------------|
+| `{{source}}` | Camera name                            |
+| `{{type}}`   | Object type (person, car, etc.)        |
+| `{{state}}`  | Event state (Event Before/Event After) |
+| `{{status}}` | Event status (new/update/end)          |
+| `{{score}}`  | Confidence score                       |
+| `{{zones}}`  | Entered zones (comma-separated)        |
 
 Example: `{{source}}: {{type}} detected ({{score}}) in {{zones}}`
 
@@ -287,12 +287,12 @@ on({ id: 'frigate.0.Vorgarten.person', change: 'ne' }, (obj) => {
 
 ## Requirements
 
-| Component | Minimum Version |
-|-----------|----------------|
-| Node.js | >= 20 |
-| js-controller | >= 6.0.5 |
-| Admin | >= 7.7.29 |
-| Frigate | >= 0.14 |
+| Component     | Minimum Version |
+|---------------|-----------------|
+| Node.js       | >= 20           |
+| js-controller | >= 6.0.5        |
+| Admin         | >= 7.7.29       |
+| Frigate       | >= 0.14         |
 
 ---
 
