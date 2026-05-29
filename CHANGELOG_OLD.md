@@ -1,4 +1,34 @@
 # Older changes
+## 2.2.2 (2026-03-29)
+
+**New Features:**
+- (Eistee82) Added per-camera motion threshold control (`remote.motionThreshold`)
+- (Eistee82) Added per-camera motion contour area control (`remote.motionContourArea`)
+- (Eistee82) Added per-camera birdseye mode control (`remote.birdseyeMode`)
+- (Eistee82) Added per-camera improve contrast toggle (`remote.improveContrast`)
+- (Eistee82) Added Frigate notification control via MQTT (`notifications.enabled`, `notifications.suspend`)
+- (Eistee82) Added automatic zone device creation from Frigate config
+- (Eistee82) Audio details (dBFS, RMS, transcription, audio types) are now automatically available
+- (Eistee82) Camera health status (detect/audio/record role status) is now automatically available
+- (Eistee82) Classification states and review status are now automatically available
+
+**Modernization:**
+- (Eistee82) Migrated adapter to ESM (ECMAScript Modules) — requires js-controller >= 6.0.5
+- (Eistee82) Upgraded aedes MQTT broker from 0.51 to 1.x
+- (Eistee82) Replaced uuid dependency with built-in `crypto.randomUUID()`
+- (Eistee82) Replaced json-bigint dependency with native `JSON.parse`
+- (Eistee82) Refactored monolithic main.ts into focused modules
+- (Eistee82) Include build directory in the repository for direct GitHub installation
+
+**Bug Fixes:**
+- (Eistee82) Fixed a critical bug: motion ON was always parsed as false due to operator precedence
+- (Eistee82) Fixed snapshot notification missing image parameter
+- (Eistee82) Fixed duplicate MQTT message processing in built-in broker mode
+- (Eistee82) Fixed tmp directory cleanup deleting files from other programs
+- (Eistee82) Converted synchronous filesystem operations to async
+- (Eistee82) Debounced event history fetching to prevent excessive API calls
+- (Eistee82) Improved error logging consistency across all catch blocks
+
 ## 2.2.1 (2026-03-29)
 - (Eistee82) Added support for connecting to an external MQTT broker (e.g. Mosquitto) as an alternative to the built-in broker
 - (Eistee82) Added configurable MQTT topic prefix
