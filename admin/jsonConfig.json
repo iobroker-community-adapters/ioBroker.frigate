@@ -899,7 +899,7 @@
                             "multiple": true,
                             "options": [
                                 {
-                                    "name": "People & Vehicles",
+                                    "label": "People & Vehicles",
                                     "items": [
                                         { "value": "person", "label": "Person" },
                                         { "value": "bicycle", "label": "Bicycle" },
@@ -912,7 +912,7 @@
                                     ]
                                 },
                                 {
-                                    "name": "Traffic & Street",
+                                    "label": "Traffic & Street",
                                     "items": [
                                         { "value": "traffic light", "label": "Traffic light" },
                                         { "value": "fire hydrant", "label": "Fire hydrant" },
@@ -923,7 +923,7 @@
                                     ]
                                 },
                                 {
-                                    "name": "Animals",
+                                    "label": "Animals",
                                     "items": [
                                         { "value": "bird", "label": "Bird" },
                                         { "value": "cat", "label": "Cat" },
@@ -938,7 +938,7 @@
                                     ]
                                 },
                                 {
-                                    "name": "Accessories",
+                                    "label": "Accessories",
                                     "items": [
                                         { "value": "hat", "label": "Hat" },
                                         { "value": "backpack", "label": "Backpack" },
@@ -951,7 +951,7 @@
                                     ]
                                 },
                                 {
-                                    "name": "Sports",
+                                    "label": "Sports",
                                     "items": [
                                         { "value": "frisbee", "label": "Frisbee" },
                                         { "value": "skis", "label": "Skis" },
@@ -966,7 +966,7 @@
                                     ]
                                 },
                                 {
-                                    "name": "Kitchen & Food",
+                                    "label": "Kitchen & Food",
                                     "items": [
                                         { "value": "bottle", "label": "Bottle" },
                                         { "value": "plate", "label": "Plate" },
@@ -989,7 +989,7 @@
                                     ]
                                 },
                                 {
-                                    "name": "Furniture & Household",
+                                    "label": "Furniture & Household",
                                     "items": [
                                         { "value": "chair", "label": "Chair" },
                                         { "value": "couch", "label": "Couch" },
@@ -1004,7 +1004,7 @@
                                     ]
                                 },
                                 {
-                                    "name": "Electronics",
+                                    "label": "Electronics",
                                     "items": [
                                         { "value": "tv", "label": "TV" },
                                         { "value": "laptop", "label": "Laptop" },
@@ -1021,7 +1021,7 @@
                                     ]
                                 },
                                 {
-                                    "name": "Other",
+                                    "label": "Other",
                                     "items": [
                                         { "value": "book", "label": "Book" },
                                         { "value": "clock", "label": "Clock" },
