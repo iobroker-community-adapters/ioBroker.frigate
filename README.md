@@ -33,7 +33,7 @@ Adapter for [Frigate NVR](https://frigate.video/) — an open-source, self-hoste
     Placeholder for the next version (at the beginning of the line):
   ### **WORK IN PROGRESS**
 -->
-### 3.0.1 (2026-05-29)
+### **WORK IN PROGRESS**
 - (@GermanBluefox) Replaced the track of objects with drop down menu
 
 ### 3.0.0 (2026-05-16)

@@ -3,19 +3,6 @@
     "name": "frigate",
     "version": "3.0.1",
     "news": {
-      "3.0.1": {
-        "en": "Replaced the track of objects with drop down menu",
-        "de": "Ersetzt die Spur der Objekte mit Dropdown-Menü",
-        "ru": "Заменили дорожку объектов выпадающим меню",
-        "pt": "Substituiu a faixa de objetos pelo menu suspenso",
-        "nl": "Het spoor van objecten vervangen door drop-down menu",
-        "fr": "Remplace la piste des objets par le menu déroulant",
-        "it": "Sostituito la traccia degli oggetti con menu a discesa",
-        "es": "Reemplaza la pista de objetos con menú desplegable",
-        "pl": "Zastąpiono utwór obiektów menu rozwijane",
-        "uk": "Заміна доріжки об'єктів з випаданням меню",
-        "zh-cn": "将对象的音轨替换为下放菜单"
-      },
       "3.0.0": {
         "en": "Adapter requires node.js >= 22 now\nAdded re-streaming support for live video feeds (experimental)\nAdded support for license plate recognition events from Frigate",
         "de": "Adapter benötigt node.js >= 22 jetzt\nUnterstützung für Live-Video-Feeds (experimental) hinzugefügt\nUnterstützung für Kennzeichenerkennungsveranstaltungen von Frigate",
