@@ -38,7 +38,6 @@
 - (Eistee82) Added i18n translations for new MQTT configuration fields
 - (mcm1957) dependencies have been updated
 
-
 ## 2.1.3 (2026-03-19)
 - (@GermanBluefox) Remove a wrong log message about missing docker
 - (@GermanBluefox) Send on connection the topic onConnect to receive camera_activity topic
