@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "frigate",
-    "version": "3.0.2",
+    "version": "3.0.3",
     "news": {
+      "3.0.3": {
+        "en": "Added button to re-create the docker container",
+        "de": "Button hinzugefügt, um den Docker-Container neu zu erstellen",
+        "ru": "Добавлена кнопка для воссоздания контейнера Docker",
+        "pt": "Botão adicionado para recriar o recipiente docker",
+        "nl": "Toegevoegde knop om de docker container opnieuw aan te maken",
+        "fr": "Ajout du bouton pour recréer le conteneur Docker",
+        "it": "Pulsante aggiunto per ricreare il contenitore docker",
+        "es": "Botón añadido para re-crear el contenedor del docker",
+        "pl": "Dodano przycisk do odtworzenia kontenera dokerów",
+        "uk": "Додана кнопка для відтворення контейнера",
+        "zh-cn": "添加按钮以重新创建嵌入容器"
+      },
       "3.0.2": {
         "en": "Replaced the track of objects with drop down menu",
         "de": "Ersetzt die Spur der Objekte mit Dropdown-Menü",
@@ -80,19 +93,6 @@
         "pl": "Dodano wsparcie dla podłączenia do zewnętrznego brokera MQTT (np. Mosquitto) jako alternatywy dla brokera built- in\nDodano konfigurowalny prefiks motywu MQTT\nDodano tłumaczenie i18n dla nowych pól konfiguracyjnych MQTT\nuzależnienia zostały zaktualizowane",
         "uk": "Додана підтримка підключення до зовнішнього брокера MQTT (наприклад, Mosquitto) як альтернатива вбудованому брокеру\nДодано налаштування MQTT prefix\nДодано i18n переклади для нових полів конфігурації MQTT\nбуло оновлено залежності",
         "zh-cn": "添加支持连接到外部 MQTT 经纪人( 如蚊子) , 作为内置经纪人的替代品\n添加可配置的 MQTT 主题前缀\n为新的 MQTT 配置字段添加了 i18n 翻译\n依赖关系已更新"
-      },
-      "2.1.3": {
-        "en": "Remove wrong log message about missing docker\nSend on connection the topic onConnect to receive camera_activity topic",
-        "de": "Entfernen Sie die falsche Log-Nachricht über fehlende Docker\nSenden Sie die Verbindung zum Thema onConnect um camera_aktivität Thema zu erhalten",
-        "ru": "Удалить неправильное сообщение журнала о пропавшем докере\nОтправить на подключение тему onConnect для получения темы camera_activity",
-        "pt": "Remover a mensagem de registo errada sobre o docker em falta\nEnviar na conexão o tópico emConectar para receber o tópico câmera_atividade",
-        "nl": "Verkeerde logbericht over ontbrekende docker verwijderen\nVerstuur op verbinding het onderwerp opConnect om camera_activiteit onderwerp te ontvangen",
-        "fr": "Supprimer le mauvais message de journal sur le Docker manquant\nEnvoyer sur connexion le sujet surConnect pour recevoir le sujet camera_activity",
-        "it": "Rimuovi il messaggio di registro sbagliato su mancante docker\nInviare sul collegamento l'argomento suConnect per ricevere argomento camera_attività",
-        "es": "Eliminar el mensaje de registro incorrecto sobre el docker perdido\nEnvíe el tema sobreConnect para recibir el tema de la cámara_actividad",
-        "pl": "Usuń błędną wiadomość dziennika o brakującym dokerze\nWyślij na podłączenie temat onConnect, aby otrzymać temat camera _ activity",
-        "uk": "Видалити неправильне повідомлення про відсутність docker\nНадіслати на підключення теми наConnect, щоб отримати тему камери_активності",
-        "zh-cn": "删除错误的日志信息 \n发送连接到 Connect 上的话题以接收相机_ 活动主题"
       }
     },
     "titleLang": {

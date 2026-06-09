@@ -1,4 +1,7 @@
 # Older changes
+## 2.3.0 (2026-03-29)
+- (Eistee82) Many new features, improvements, and bug fixes in development for the next major release (see 2.2.2)
+
 ## 2.2.2 (2026-03-29)
 
 **New Features:**
