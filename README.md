@@ -33,6 +33,9 @@ Adapter for [Frigate NVR](https://frigate.video/) — an open-source, self-hoste
     Placeholder for the next version (at the beginning of the line):
   ### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+- (@GermanBluefox) Added button to re-create the docker container
+
 ### 3.0.2 (2026-05-30)
 - (@GermanBluefox) Replaced the track of objects with drop down menu
 

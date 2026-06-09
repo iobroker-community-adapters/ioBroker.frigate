@@ -604,7 +604,52 @@ class FrigateAdapter extends Adapter {
                 },
             }, obj.callback);
         }
+        else if (obj?.command === 'recreateContainer') {
+            void this.recreateContainer(obj);
+        }
     };
+    async recreateContainer(obj) {
+        if (!this.config.dockerFrigate?.enabled) {
+            this.sendTo(obj.from, obj.command, { error: 'Docker mode is not enabled for this instance' }, obj.callback);
+            return;
+        }
+        try {
+            const dockerPlugin = this.getPluginInstance('docker');
+            const dockerManager = dockerPlugin?.getDockerManager?.();
+            if (!dockerManager) {
+                this.sendTo(obj.from, obj.command, { error: 'Docker plugin is not available' }, obj.callback);
+                return;
+            }
+            // getDefaultContainerName() only returns the prefix (e.g. "iob_frigate_0").
+            // The real container is named "<prefix>_<service>" (e.g. "iob_frigate_0_frigate"),
+            // so look up the actual container(s) belonging to this instance dynamically.
+            const prefix = dockerManager.getDefaultContainerName();
+            const containers = await dockerManager.containerList(true);
+            const ownContainers = containers.filter(c => {
+                const name = (c.names || '').replace(/^\//, '');
+                return name === prefix || name.startsWith(`${prefix}_`);
+            });
+            if (!ownContainers.length) {
+                this.log.warn(`No Frigate container found (prefix "${prefix}"). Restarting instance to (re-)create it...`);
+            }
+            for (const container of ownContainers) {
+                const name = (container.names || '').replace(/^\//, '') || container.id;
+                this.log.info(`Removing Frigate container "${name}" on user request...`);
+                await dockerManager.containerRemove(container.id);
+            }
+            this.log.info('Restarting instance to re-create the Frigate container...');
+            this.sendTo(obj.from, obj.command, {
+                result: 'Frigate container deleted. The instance is restarting and will re-create the container.',
+            }, obj.callback);
+            // Give the message time to reach the admin GUI before the instance restarts
+            this.setTimeout(() => this.restart(), 1500);
+        }
+        catch (error) {
+            const message = error instanceof Error ? error.message : String(error);
+            this.log.error(`Cannot re-create Frigate container: ${message}`);
+            this.sendTo(obj.from, obj.command, { error: message }, obj.callback);
+        }
+    }
     onUnload = (callback) => {
         try {
             if (this.mqttClient) {

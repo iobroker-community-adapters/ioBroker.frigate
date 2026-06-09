@@ -19,6 +19,7 @@
 
         "strict": true,
         "target": "es2022",
+        "rootDir": "./src/",
         "inlineSourceMap": false,
         "useUnknownInCatchVariables": false,
         "types": ["node", "@iobroker/types"]
