@@ -155,18 +155,20 @@ Each event in the history includes URLs for snapshots and clips:
 
 ### Zones
 
-Zone devices are automatically created from the Frigate configuration. The adapter aggregates object counts across all cameras that share a zone.
+Zone devices are automatically created from the Frigate configuration.
 
-| State                      | Type    | Description                         |
-|----------------------------|---------|-------------------------------------|
-| `<zone>.person`            | number  | Total persons in zone (all cameras) |
-| `<zone>.person_active`     | number  | Actively moving persons             |
-| `<zone>.person_stationary` | number  | Stationary persons                  |
-| `<zone>.car`               | number  | Total cars in zone                  |
-| `<zone>.total_objects`     | number  | Total objects of all types          |
-| `<zone>.active`            | boolean | Any object detected in zone         |
+The plain object count (e.g. `<zone>.person`, `<zone>.car`) comes directly from Frigate's MQTT occupancy topics (`frigate/<zone>/<object>` and `frigate/<zone>/all`), so it always matches what Frigate reports. The adapter additionally provides an active/stationary breakdown and a summary, derived from the event stream.
 
-Example: If cameras `klingel` and `vorgarten` both have zone `Vorgarten`, and each detects a person, then `Vorgarten.person` = 2.
+| State                      | Type    | Description                                         | Source           |
+|----------------------------|---------|-----------------------------------------------------|------------------|
+| `<zone>.person`            | number  | Persons currently in zone                           | Frigate MQTT     |
+| `<zone>.all`               | number  | All objects currently in zone                       | Frigate MQTT     |
+| `<zone>.person_active`     | number  | Actively moving persons                             | event aggregator |
+| `<zone>.person_stationary` | number  | Stationary persons                                  | event aggregator |
+| `<zone>.total_objects`     | number  | Total objects of all types (active + stationary)    | event aggregator |
+| `<zone>.active`            | boolean | Any object detected in zone                         | event aggregator |
+
+The active/stationary states use the object's `current_zones` and are reset to 0 once the object leaves the zone or the event ends.
 
 ### Frigate Notification Control
 

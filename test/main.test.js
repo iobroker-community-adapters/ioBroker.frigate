@@ -17,6 +17,8 @@ function removePathData(obj) {
             for (const key in obj) {
                 if (key === 'path_data' || key === 'gpu_usages') {
                     delete obj[key];
+                } else if (key === 'current_zones') {
+                    continue;
                 } else if (Array.isArray(obj[key]) && obj[key].length === 0) {
                     delete obj[key];
                 } else if (obj[key] && typeof obj[key] === 'object' && Object.keys(obj[key]).length === 0) {
@@ -165,6 +167,13 @@ describe('removePathData', () => {
         removePathData(obj);
         assert.strictEqual(obj.zones, undefined, 'Empty array should be removed');
         assert.strictEqual(obj.label, 'car');
+    });
+
+    it('should keep empty current_zones array', () => {
+        const obj = { current_zones: [], entered_zones: ['yard'], label: 'person' };
+        removePathData(obj);
+        assert.deepStrictEqual(obj.current_zones, [], 'Empty current_zones must be preserved');
+        assert.deepStrictEqual(obj.entered_zones, ['yard']);
     });
 
     it('should remove empty objects', () => {
@@ -690,5 +699,149 @@ describe('Auth login decision', () => {
 
     it('should not login when both are undefined', () => {
         assert.strictEqual(shouldLogin(undefined, undefined), false);
+    });
+});
+
+/**
+ * Simulate the zone aggregation (processEvent + updateZoneStates) without ioBroker.
+ * Mirrors the logic in src/lib/zoneAggregator.ts exactly (per-label active/stationary
+ * states, summary states, current_zones handling and reset-to-zero).
+ */
+function createZoneSim(knownZoneNames) {
+    const knownZones = new Set(knownZoneNames);
+    const zoneEvents = new Map(); // zone -> Map(eventId -> { label, stationary })
+    const writtenLabels = new Map(); // zone -> Set(label)
+    const states = {}; // stateId -> value
+
+    function updateZoneStates() {
+        for (const zone of knownZones) {
+            const events = zoneEvents.get(zone);
+            const counts = new Map();
+            let totalAll = 0;
+
+            if (events) {
+                for (const [, ev] of events) {
+                    if (!counts.has(ev.label)) {
+                        counts.set(ev.label, { total: 0, active: 0, stationary: 0 });
+                    }
+                    const c = counts.get(ev.label);
+                    c.total++;
+                    totalAll++;
+                    if (ev.stationary) {
+                        c.stationary++;
+                    } else {
+                        c.active++;
+                    }
+                }
+            }
+
+            for (const [label, c] of counts) {
+                states[`${zone}.${label}_active`] = c.active;
+                states[`${zone}.${label}_stationary`] = c.stationary;
+            }
+
+            const previousLabels = writtenLabels.get(zone);
+            if (previousLabels) {
+                for (const label of previousLabels) {
+                    if (!counts.has(label)) {
+                        states[`${zone}.${label}_active`] = 0;
+                        states[`${zone}.${label}_stationary`] = 0;
+                    }
+                }
+            }
+            writtenLabels.set(zone, new Set(counts.keys()));
+
+            states[`${zone}.total_objects`] = totalAll;
+            states[`${zone}.active`] = totalAll > 0;
+        }
+    }
+
+    function processEvent(data) {
+        const eventData = data.after || data.before;
+        if (!eventData || !eventData.id) {
+            return;
+        }
+        const eventId = eventData.id;
+        const label = eventData.label;
+        if (!label) {
+            return;
+        }
+        const eventType = data.type;
+        const zones = Array.isArray(eventData.current_zones)
+            ? eventData.current_zones
+            : eventData.entered_zones || [];
+        const isStationary = eventData.stationary === true;
+
+        if (eventType === 'end') {
+            for (const [, events] of zoneEvents) {
+                events.delete(eventId);
+            }
+        } else {
+            for (const [zoneName, events] of zoneEvents) {
+                if (!zones.includes(zoneName)) {
+                    events.delete(eventId);
+                }
+            }
+            for (const zone of zones) {
+                if (!knownZones.has(zone)) {
+                    continue;
+                }
+                if (!zoneEvents.has(zone)) {
+                    zoneEvents.set(zone, new Map());
+                }
+                zoneEvents.get(zone).set(eventId, { label, stationary: isStationary });
+            }
+        }
+
+        updateZoneStates();
+    }
+
+    return { processEvent, states };
+}
+
+describe('Zone aggregation reset', () => {
+    it('sets per-label active count when an object enters a zone', () => {
+        const sim = createZoneSim(['Carport']);
+        sim.processEvent({ type: 'new', after: { id: 'e1', label: 'person', current_zones: ['Carport'] } });
+        assert.strictEqual(sim.states['Carport.person_active'], 1);
+        assert.strictEqual(sim.states['Carport.total_objects'], 1);
+        assert.strictEqual(sim.states['Carport.active'], true);
+    });
+
+    it('resets per-label states to 0 when the object leaves the zone (current_zones empty)', () => {
+        const sim = createZoneSim(['Carport']);
+        sim.processEvent({ type: 'new', after: { id: 'e1', label: 'person', current_zones: ['Carport'] } });
+        // Same event still active but no longer in the zone -> must reset, not stick at 1
+        sim.processEvent({ type: 'update', after: { id: 'e1', label: 'person', current_zones: [] } });
+        assert.strictEqual(sim.states['Carport.person_active'], 0);
+        assert.strictEqual(sim.states['Carport.person_stationary'], 0);
+        assert.strictEqual(sim.states['Carport.total_objects'], 0);
+        assert.strictEqual(sim.states['Carport.active'], false);
+    });
+
+    it('resets per-label states to 0 when the event ends', () => {
+        const sim = createZoneSim(['Carport']);
+        sim.processEvent({ type: 'new', after: { id: 'e1', label: 'person', current_zones: ['Carport'] } });
+        sim.processEvent({ type: 'end', after: { id: 'e1', label: 'person', current_zones: ['Carport'] } });
+        assert.strictEqual(sim.states['Carport.person_active'], 0);
+        assert.strictEqual(sim.states['Carport.total_objects'], 0);
+    });
+
+    it('only resets the disappeared label, keeping others', () => {
+        const sim = createZoneSim(['Carport']);
+        sim.processEvent({ type: 'new', after: { id: 'e1', label: 'person', current_zones: ['Carport'] } });
+        sim.processEvent({ type: 'new', after: { id: 'e2', label: 'car', current_zones: ['Carport'] } });
+        // person leaves, car stays
+        sim.processEvent({ type: 'update', after: { id: 'e1', label: 'person', current_zones: [] } });
+        assert.strictEqual(sim.states['Carport.person_active'], 0);
+        assert.strictEqual(sim.states['Carport.car_active'], 1);
+        assert.strictEqual(sim.states['Carport.total_objects'], 1);
+    });
+
+    it('falls back to entered_zones when current_zones is absent', () => {
+        const sim = createZoneSim(['Carport']);
+        sim.processEvent({ type: 'new', after: { id: 'e1', label: 'person', entered_zones: ['Carport'] } });
+        assert.strictEqual(sim.states['Carport.person_active'], 1);
+        assert.strictEqual(sim.states['Carport.total_objects'], 1);
     });
 });
