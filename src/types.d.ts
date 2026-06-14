@@ -7,6 +7,7 @@ export type FrigateMessage = {
         label: string;
         top_score: number;
         entered_zones: string[];
+        current_zones?: string[];
         data: { detections: any };
         snapshot: { path_data?: string };
         path_data?: string;
@@ -21,6 +22,7 @@ export type FrigateMessage = {
         label: string;
         top_score: number;
         entered_zones: string[];
+        current_zones?: string[];
         data: { detections: any };
         snapshot: { path_data?: string };
         path_data?: string;

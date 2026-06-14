@@ -1,8 +1,10 @@
 /**
- * Tracks active events per zone and maintains aggregate object counts.
- * Zones are defined in Frigate config per camera. When an event enters a zone,
- * the zone counter increments. When the event ends, it decrements.
- * This gives a cross-camera view of objects per zone, split by active/stationary.
+ * Tracks active events per zone and maintains the active/stationary breakdown plus a summary
+ * (total_objects, active) per zone. Zones are defined in Frigate config per camera.
+ * The plain per-label occupancy count (`<zone>.<label>`) is intentionally NOT maintained here;
+ * it comes directly from Frigate's authoritative MQTT occupancy topics. This aggregator only
+ * adds the active/stationary split derived from the event stream, using each object's
+ * current_zones and resetting states to 0 once the object leaves the zone or the event ends.
  */
 export class ZoneAggregator {
     ctx;
@@ -10,6 +12,8 @@ export class ZoneAggregator {
     zoneEvents = new Map();
     /** Known zone names from Frigate config */
     knownZones = new Set();
+    /** zone → Set of labels for which per-label states were written, so they can be reset to 0 */
+    writtenLabels = new Map();
     constructor(ctx) {
         this.ctx = ctx;
     }
@@ -55,7 +59,11 @@ export class ZoneAggregator {
             return;
         }
         const eventType = data.type;
-        const zones = eventData.entered_zones || [];
+        // Use current_zones (zones the object currently occupies). entered_zones is cumulative
+        // over the event lifetime and would keep counting an object that already left the zone.
+        // An empty current_zones array is meaningful (object left all zones) and must not fall
+        // back to entered_zones, so only fall back when the field is absent entirely.
+        const zones = Array.isArray(eventData.current_zones) ? eventData.current_zones : eventData.entered_zones || [];
         const isStationary = eventData.stationary === true;
         if (eventType === 'end') {
             for (const [, events] of this.zoneEvents) {
@@ -104,24 +112,26 @@ export class ZoneAggregator {
                     }
                 }
             }
-            // Write per-label states
+            // Write per-label states. The plain `${zone}.${label}` count is intentionally NOT
+            // written here: it is owned by the MQTT occupancy topic (frigate/<zone>/<label>),
+            // which Frigate keeps authoritative. The aggregator only adds the active/stationary split.
             for (const [label, c] of counts) {
-                await this.createZoneState(`${zone}.${label}`, `${label} in zone ${zone} (total)`, 'number', 'value', 0);
-                await this.ctx.adapter.setStateAsync(`${zone}.${label}`, c.total, true);
                 await this.createZoneState(`${zone}.${label}_active`, `${label} actively moving in zone ${zone}`, 'number', 'value', 0);
                 await this.ctx.adapter.setStateAsync(`${zone}.${label}_active`, c.active, true);
                 await this.createZoneState(`${zone}.${label}_stationary`, `${label} stationary in zone ${zone}`, 'number', 'value', 0);
                 await this.ctx.adapter.setStateAsync(`${zone}.${label}_stationary`, c.stationary, true);
             }
-            // Reset labels that had events before but now have 0
-            if (events) {
-                // Find labels we've written before by checking existing states
-                // We track this by checking if count is 0 for previously seen labels
-                for (const [, ev] of events) {
-                    // events still exist, handled above
-                    void ev;
+            // Reset states for labels that were written before but are no longer present in the zone.
+            const previousLabels = this.writtenLabels.get(zone);
+            if (previousLabels) {
+                for (const label of previousLabels) {
+                    if (!counts.has(label)) {
+                        await this.ctx.adapter.setStateAsync(`${zone}.${label}_active`, 0, true);
+                        await this.ctx.adapter.setStateAsync(`${zone}.${label}_stationary`, 0, true);
+                    }
                 }
             }
+            this.writtenLabels.set(zone, new Set(counts.keys()));
             // Write summary states
             await this.ctx.adapter.setStateAsync(`${zone}.total_objects`, totalAll, true);
             await this.ctx.adapter.setStateAsync(`${zone}.active`, totalAll > 0, true);

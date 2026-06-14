@@ -155,18 +155,20 @@ Jedes Event in der History enthält URLs für Snapshots und Clips:
 
 ### Zonen
 
-Zonen-Geräte werden automatisch aus der Frigate-Konfiguration erstellt. Der Adapter aggregiert Objektzähler über alle Kameras die sich eine Zone teilen.
+Zonen-Geräte werden automatisch aus der Frigate-Konfiguration erstellt.
 
-| State                      | Typ     | Beschreibung                               |
-|----------------------------|---------|--------------------------------------------|
-| `<zone>.person`            | number  | Personen in der Zone gesamt (alle Kameras) |
-| `<zone>.person_active`     | number  | Sich aktiv bewegende Personen              |
-| `<zone>.person_stationary` | number  | Stehende Personen                          |
-| `<zone>.car`               | number  | Autos in der Zone gesamt                   |
-| `<zone>.total_objects`     | number  | Gesamtzahl aller Objekte                   |
-| `<zone>.active`            | boolean | Irgendein Objekt in der Zone erkannt       |
+Der reine Objektzähler (z.B. `<zone>.person`, `<zone>.car`) kommt direkt aus den MQTT-Occupancy-Topics von Frigate (`frigate/<zone>/<objekt>` und `frigate/<zone>/all`) und entspricht damit immer dem, was Frigate meldet. Zusätzlich liefert der Adapter eine Aufteilung nach aktiv/stehend sowie eine Zusammenfassung, die aus dem Event-Stream abgeleitet werden.
 
-Beispiel: Wenn die Kameras `klingel` und `vorgarten` beide die Zone `Vorgarten` haben und jede eine Person erkennt, dann ist `Vorgarten.person` = 2.
+| State                      | Typ     | Beschreibung                                     | Quelle           |
+|----------------------------|---------|--------------------------------------------------|------------------|
+| `<zone>.person`            | number  | Personen aktuell in der Zone                     | Frigate MQTT     |
+| `<zone>.all`               | number  | Alle Objekte aktuell in der Zone                 | Frigate MQTT     |
+| `<zone>.person_active`     | number  | Sich aktiv bewegende Personen                    | Event-Aggregator |
+| `<zone>.person_stationary` | number  | Stehende Personen                                | Event-Aggregator |
+| `<zone>.total_objects`     | number  | Gesamtzahl aller Objekte (aktiv + stehend)       | Event-Aggregator |
+| `<zone>.active`            | boolean | Irgendein Objekt in der Zone erkannt             | Event-Aggregator |
+
+Die aktiv/stehend-States nutzen `current_zones` des Objekts und werden auf 0 zurückgesetzt, sobald das Objekt die Zone verlässt oder das Event endet.
 
 ### Frigate Benachrichtigungssteuerung
 

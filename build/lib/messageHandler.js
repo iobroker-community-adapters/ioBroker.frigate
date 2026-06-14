@@ -22,6 +22,12 @@ export function removePathData(obj) {
                 if (key === 'path_data' || key === 'gpu_usages') {
                     delete obj[key];
                 }
+                else if (key === 'current_zones') {
+                    // Keep current_zones even when empty: an empty array means the object
+                    // currently occupies no zone, which the zone aggregator must distinguish
+                    // from the field being absent (would otherwise fall back to entered_zones).
+                    continue;
+                }
                 else if (Array.isArray(obj[key]) && obj[key].length === 0) {
                     delete obj[key];
                 }
