@@ -54,6 +54,8 @@ Adapter for [Frigate NVR](https://frigate.video/) — an open-source, self-hoste
 - (Eistee82) Added Frigate API authentication support for port 8971 (username/password login with JWT)
 - (Eistee82) Automatic token refresh on 401 responses
 
+[Older changelogs can be found there](CHANGELOG_OLD.md)
+
 ## License
 
 MIT License
