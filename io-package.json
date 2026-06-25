@@ -42,19 +42,6 @@
         "uk": "Адаптер вимагає node.js >= 22 тепер\nДодана підтримка потокового відео живих товарів (експериментально)\nДодана підтримка заходів розпізнавання ліцензійних пластин від Frigate",
         "zh-cn": "适配器需要节点.js 现在22\n添加对视频直播的再流支持(实验性)\n增加护卫舰对牌照识别活动的支持"
       },
-      "2.3.2": {
-        "en": "Added support of shm_size",
-        "de": "Unterstützung von shm size hinzugefügt",
-        "ru": "Добавлена поддержка shm size",
-        "pt": "Adicionado suporte de shm size",
-        "nl": "Ondersteuning van shm size toegevoegd",
-        "fr": "Ajout du support de shm size",
-        "it": "Aggiunto supporto di shm size",
-        "es": "Apoyo añadido de shm size",
-        "pl": "Dodano wsparcie dla shm _ size",
-        "uk": "Додано підтримку shm size",
-        "zh-cn": "Shm 大小的添加支持"
-      },
       "2.3.1": {
         "en": "Added Frigate API authentication support for port 8971 (username/password login with JWT)\nAutomatic token refresh on 401 responses",
         "de": "Hinzugefügt Frigate API Authentifizierungsunterstützung für Port 8971 (Benutzername/Passwort-Login mit JWT)\nAutomatische Token-Erfrischung auf 401 Antworten",
