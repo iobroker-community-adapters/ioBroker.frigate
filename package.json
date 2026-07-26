@@ -27,7 +27,7 @@
     "@iobroker/adapter-core": "^3.4.3",
     "@iobroker/plugin-docker": "^1.0.3",
     "aedes": "^1.0.2",
-    "axios": "^1.17.0",
+    "axios": "^1.18.1",
     "mqtt": "^5.15.2"
   },
   "devDependencies": {
