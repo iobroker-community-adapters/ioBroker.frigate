@@ -12,7 +12,7 @@ import mqtt, { type MqttClient } from 'mqtt';
 
 import { type AdapterOptions, Adapter, getAbsoluteDefaultDataDir } from '@iobroker/adapter-core';
 
-import type { FrigateAdapterConfig, FrigateMessage } from './types.js';
+import type { FrigateAdapterConfig, FrigateDockerManager, FrigateMessage } from './types.js';
 import { createFrigateConfigFile } from './lib/utils.js';
 import Json2iob from './lib/json2iob.js';
 import { handleMqttMessage, type MessageHandlerContext } from './lib/messageHandler.js';
@@ -708,8 +708,168 @@ class FrigateAdapter extends Adapter {
             );
         } else if (obj?.command === 'recreateContainer') {
             void this.recreateContainer(obj);
+        } else if (obj?.command === 'restartContainer') {
+            void this.restartContainer(obj);
+        } else if (obj?.command === 'frigate:getCameras') {
+            void this.sendCameraList(obj);
+        } else if (obj?.command === 'snapshot') {
+            // Deliver a still image over the socket. The device manager widgets use this instead of the
+            // HTTP route of the web adapter, because the Devices UI is normally served from admin (8081)
+            // where /frigate.0/... does not exist.
+            const message = (typeof obj.message === 'string' ? { camera: obj.message } : obj.message) as {
+                camera?: string;
+                height?: number | string;
+                quality?: number | string;
+                bbox?: boolean;
+                timestamp?: boolean;
+            };
+
+            this.getSnapshot(message)
+                .then(data => obj.callback && this.sendTo(obj.from, obj.command, data, obj.callback))
+                .catch(
+                    (e: unknown) =>
+                        obj.callback &&
+                        this.sendTo(
+                            obj.from,
+                            obj.command,
+                            { error: e instanceof Error ? e.message : String(e) },
+                            obj.callback,
+                        ),
+                );
         }
     };
+
+    /**
+     * Read the current frame of one camera from Frigate and return it base64 encoded.
+     *
+     * Uses the authenticated client of the adapter, so it also works with the login on port 8971.
+     *
+     * @param message camera name plus the optional parameters of the Frigate endpoint
+     */
+    async getSnapshot(message: {
+        camera?: string;
+        height?: number | string;
+        quality?: number | string;
+        bbox?: boolean;
+        timestamp?: boolean;
+    }): Promise<{
+        data: string;
+        contentType: string;
+    }> {
+        const camera = message?.camera;
+        // Camera names are configuration keys - refuse anything that could leave /api/<camera>/
+        if (!camera || !/^[A-Za-z0-9_-]+$/.test(camera)) {
+            throw new Error(`Invalid camera name: "${camera}"`);
+        }
+        if (!this.frigateBaseUrl) {
+            throw new Error('No Frigate url set');
+        }
+
+        const params = new URLSearchParams();
+        const height = parseInt(message.height as string, 10);
+        const quality = parseInt(message.quality as string, 10);
+        if (height) {
+            params.append('height', String(height));
+        }
+        if (quality) {
+            params.append('quality', String(quality));
+        }
+        // Let Frigate draw the detection boxes / the timestamp into the picture
+        if (message.bbox) {
+            params.append('bbox', '1');
+        }
+        if (message.timestamp) {
+            params.append('timestamp', '1');
+        }
+        const query = params.toString();
+
+        const response = await this.requestClient.get(
+            `${this.frigateBaseUrl}/api/${camera}/latest.jpg${query ? `?${query}` : ''}`,
+            { responseType: 'arraybuffer' },
+        );
+
+        return {
+            data: Buffer.from(response.data as ArrayBuffer).toString('base64'),
+            contentType: (response.headers['content-type'] as string) || 'image/jpeg',
+        };
+    }
+
+    /**
+     * Answer the camera drop-down of the device widgets, see `frigate:getCameras` in src-devices.
+     *
+     * The reply is the `{ value, label }` array a jsonConfig `selectSendTo` control expects. Three
+     * sources are merged, because none of them alone covers every state the adapter can be in:
+     * the cameras Frigate reported at startup, the cameras configured for the Docker container (which
+     * exist before Frigate has ever answered), and the camera devices left in the object DB.
+     *
+     * @param obj the 'frigate:getCameras' message
+     */
+    private async sendCameraList(obj: ioBroker.Message): Promise<void> {
+        const cameras = new Set<string>();
+
+        for (const name of this.deviceArray) {
+            if (name) {
+                cameras.add(name);
+            }
+        }
+
+        for (const camera of this.config.dockerFrigate?.cameras || []) {
+            if (camera?.name) {
+                cameras.add(camera.name);
+            }
+        }
+
+        try {
+            // Zones are devices at the very same level, so cameras are told apart by the name that
+            // createCameraDevices() gives them ("Camera <key>" vs. the zones' "Zone <key>").
+            const devices = await this.getDevicesAsync();
+            for (const device of devices || []) {
+                const name = typeof device.common?.name === 'string' ? device.common.name : '';
+                if (name.startsWith('Camera ')) {
+                    cameras.add(device._id.substring(this.namespace.length + 1));
+                }
+            }
+        } catch (error) {
+            this.log.warn(`Cannot read the camera devices: ${error instanceof Error ? error.message : String(error)}`);
+        }
+
+        const list = [...cameras].sort((a, b) => a.localeCompare(b)).map(name => ({ value: name, label: name }));
+        this.log.debug(`Reporting ${list.length} camera(s) to ${obj.from}`);
+
+        if (obj.callback) {
+            this.sendTo(obj.from, obj.command, list, obj.callback);
+        }
+    }
+
+    /**
+     * Look up the Docker manager and the container(s) that belong to this instance.
+     *
+     * getDefaultContainerName() only returns the prefix (e.g. "iob_frigate_0"). The real container is named
+     * "<prefix>_<service>" (e.g. "iob_frigate_0_frigate"), so the containers are resolved dynamically.
+     *
+     * @param obj The message that triggered the lookup - used to report errors back to the admin GUI
+     * @returns The Docker manager together with the containers of this instance, or null if Docker is unavailable
+     */
+    private async getOwnContainers(obj: ioBroker.Message): Promise<{
+        dockerManager: FrigateDockerManager;
+        prefix: string;
+        ownContainers: { id: string; names: string }[];
+    } | null> {
+        const dockerPlugin = this.getPluginInstance('docker');
+        const dockerManager = dockerPlugin?.getDockerManager?.() as FrigateDockerManager | undefined;
+        if (!dockerManager) {
+            this.sendTo(obj.from, obj.command, { error: 'Docker plugin is not available' }, obj.callback);
+            return null;
+        }
+        const prefix = dockerManager.getDefaultContainerName();
+        const containers = await dockerManager.containerList(true);
+        const ownContainers = containers.filter(c => {
+            const name = (c.names || '').replace(/^\//, '');
+            return name === prefix || name.startsWith(`${prefix}_`);
+        });
+
+        return { dockerManager, prefix, ownContainers };
+    }
 
     private async recreateContainer(obj: ioBroker.Message): Promise<void> {
         if (!this.config.dockerFrigate?.enabled) {
@@ -717,21 +877,11 @@ class FrigateAdapter extends Adapter {
             return;
         }
         try {
-            const dockerPlugin = this.getPluginInstance('docker');
-            const dockerManager = dockerPlugin?.getDockerManager?.();
-            if (!dockerManager) {
-                this.sendTo(obj.from, obj.command, { error: 'Docker plugin is not available' }, obj.callback);
+            const found = await this.getOwnContainers(obj);
+            if (!found) {
                 return;
             }
-            // getDefaultContainerName() only returns the prefix (e.g. "iob_frigate_0").
-            // The real container is named "<prefix>_<service>" (e.g. "iob_frigate_0_frigate"),
-            // so look up the actual container(s) belonging to this instance dynamically.
-            const prefix = dockerManager.getDefaultContainerName();
-            const containers = await dockerManager.containerList(true);
-            const ownContainers = (containers as { id: string; names: string }[]).filter(c => {
-                const name = (c.names || '').replace(/^\//, '');
-                return name === prefix || name.startsWith(`${prefix}_`);
-            });
+            const { dockerManager, prefix, ownContainers } = found;
             if (!ownContainers.length) {
                 this.log.warn(
                     `No Frigate container found (prefix "${prefix}"). Restarting instance to (re-)create it...`,
@@ -756,6 +906,45 @@ class FrigateAdapter extends Adapter {
         } catch (error) {
             const message = error instanceof Error ? error.message : String(error);
             this.log.error(`Cannot re-create Frigate container: ${message}`);
+            this.sendTo(obj.from, obj.command, { error: message }, obj.callback);
+        }
+    }
+
+    /**
+     * Restart the Frigate Docker container without deleting it and without restarting the adapter instance.
+     *
+     * @param obj The 'restartContainer' message from the admin GUI
+     */
+    private async restartContainer(obj: ioBroker.Message): Promise<void> {
+        if (!this.config.dockerFrigate?.enabled) {
+            this.sendTo(obj.from, obj.command, { error: 'Docker mode is not enabled for this instance' }, obj.callback);
+            return;
+        }
+        try {
+            const found = await this.getOwnContainers(obj);
+            if (!found) {
+                return;
+            }
+            const { dockerManager, prefix, ownContainers } = found;
+            if (!ownContainers.length) {
+                this.log.warn(`No Frigate container found (prefix "${prefix}"), nothing to restart.`);
+                this.sendTo(
+                    obj.from,
+                    obj.command,
+                    { error: 'No Frigate container found. Is the container already created?' },
+                    obj.callback,
+                );
+                return;
+            }
+            for (const container of ownContainers) {
+                const name = (container.names || '').replace(/^\//, '') || container.id;
+                this.log.info(`Restarting Frigate container "${name}" on user request...`);
+                await dockerManager.containerRestart(container.id);
+            }
+            this.sendTo(obj.from, obj.command, { result: 'Frigate container restarted.' }, obj.callback);
+        } catch (error) {
+            const message = error instanceof Error ? error.message : String(error);
+            this.log.error(`Cannot restart Frigate container: ${message}`);
             this.sendTo(obj.from, obj.command, { error: message }, obj.callback);
         }
     }

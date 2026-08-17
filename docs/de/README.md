@@ -23,6 +23,8 @@ Adapter für [Frigate NVR](https://frigate.video/) — ein quelloffenes, selbst 
   - [Konfiguration](#benachrichtigungs-konfiguration)
   - [Textvorlage](#textvorlage-für-benachrichtigungen)
 - [Integration](#integration)
+  - [Live-Ansicht über den Web-Adapter](#live-ansicht-über-den-web-adapter)
+  - [Geräte-Manager-Widgets](#geräte-manager-widgets)
   - [vis-Integration](#vis-integration)
   - [Skripte & Automatisierung](#skripte--automatisierung)
 - [Voraussetzungen](#voraussetzungen)
@@ -239,6 +241,47 @@ Beispiel: `{{source}}: {{type}} erkannt ({{score}}) in {{zones}}`
 ---
 
 ## Integration
+
+### Live-Ansicht über den Web-Adapter
+
+Der Adapter registriert eine Web-Extension in `ioBroker.web`. Dadurch ist jede Kamera über den
+Webserver erreichbar, ohne Frigate selbst nach außen zu öffnen:
+
+| URL | Inhalt |
+| --- | --- |
+| `http(s)://iobroker-IP:8082/frigate.0/<kamera>/snapshot.jpg` | das aktuelle Bild als JPEG |
+| `http(s)://iobroker-IP:8082/frigate.0/<kamera>/stream.mjpeg` | fortlaufendes MJPEG, direkt in einem `<img src="...">` verwendbar |
+
+Beide akzeptieren die Query-Parameter des jeweiligen Frigate-Endpunkts, z. B. `?height=480` für ein
+kleineres Bild, `?fps=5` zum Begrenzen der Bildrate des Streams oder `?bbox=1&timestamp=1`, damit
+Frigate die Objektrahmen und den Zeitstempel ins Bild zeichnet.
+
+Warum der Umweg über den Web-Adapter und nicht direkt die Frigate-URL:
+
+- Frigate lauscht üblicherweise auf `127.0.0.1`, die URL funktioniert dann von keinem anderen Rechner
+- Port 8971 verlangt eine Anmeldung — das Token hat der Adapter, nicht der Browser
+- ein http-Frigate in einem https-ioBroker.web wird vom Browser als Mixed Content blockiert
+- diese Routen liegen hinter der Authentifizierung von ioBroker.web, der Frigate-Port nicht
+
+Zu beachten: Frigate kodiert den MJPEG-Stream für jeden Betrachter separat. Für ein dauerhaft
+laufendes Dashboard ist ein alle paar Sekunden neu geladener Snapshot die sparsamere Wahl; MJPEG
+lohnt sich für die Momente, in denen wirklich jemand hinsieht.
+
+### Geräte-Manager-Widgets
+
+Der Adapter bringt zwei Widgets für **ioBroker.devices** mit. Bei beiden wird die Kamera als
+gewöhnliches Objekt unterhalb des `frigate`-Namespace ausgewählt (z. B. `frigate.0.einfahrt`), und
+beide können Frigate die Objektrahmen und den Zeitstempel ins Bild zeichnen lassen.
+
+- **Frigate Snapshot** — lädt in einem einstellbaren Intervall ein Standbild neu. Es fragt den Adapter
+  über den ioBroker-Socket, funktioniert also überall dort, wo die Geräte-Oberfläche läuft, auch im
+  Admin, und nutzt die Frigate-Anmeldung des Adapters mit.
+- **Frigate Live** — zeigt den MJPEG-Stream, den der Browser selbst dekodiert. Der Stream kommt vom
+  **web**-Adapter, den die Geräte-Oberfläche nur erreicht, wenn sie in einer Web-Instanz läuft. Läuft
+  sie im Admin — der Normalfall —, muss die Web-Instanz in den Widget-Einstellungen eingetragen
+  werden, z. B. `http://192.168.1.5:8082`.
+
+Im Zweifel das Snapshot-Widget nehmen, das hat diese Einschränkung nicht.
 
 ### vis-Integration
 

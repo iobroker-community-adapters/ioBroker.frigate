@@ -23,6 +23,8 @@ Adapter for [Frigate NVR](https://frigate.video/) — an open-source, self-hoste
   - [Configuration](#notification-configuration)
   - [Notification Text Template](#notification-text-template)
 - [Integration](#integration)
+  - [Live view via the web adapter](#live-view-via-the-web-adapter)
+  - [Device manager widgets](#device-manager-widgets)
   - [vis Integration](#vis-integration)
   - [Scripts & Automation](#scripts--automation)
 - [Requirements](#requirements)
@@ -239,6 +241,47 @@ Example: `{{source}}: {{type}} detected ({{score}}) in {{zones}}`
 ---
 
 ## Integration
+
+### Live view via the web adapter
+
+The adapter registers a web extension in `ioBroker.web`, so every camera is available under the web
+server without exposing Frigate itself:
+
+| URL | Content |
+| --- | --- |
+| `http(s)://iobroker-IP:8082/frigate.0/<camera>/snapshot.jpg` | the current frame as JPEG |
+| `http(s)://iobroker-IP:8082/frigate.0/<camera>/stream.mjpeg` | continuous MJPEG, usable in a plain `<img src="...">` |
+
+Both accept the query parameters of the corresponding Frigate endpoint, e.g. `?height=480` for a
+smaller picture, `?fps=5` to limit the frame rate of the stream, or `?bbox=1&timestamp=1` to let
+Frigate draw the bounding boxes and the timestamp into the image.
+
+Why go through the web adapter instead of using the Frigate URL directly:
+
+- Frigate is usually bound to `127.0.0.1`, so its URL does not work from any other machine
+- port 8971 requires a login — the adapter holds the token, the browser does not
+- an http Frigate inside an https ioBroker.web is blocked by the browser as mixed content
+- these routes are covered by the ioBroker.web authentication, Frigate's own port is not
+
+Note that Frigate encodes the MJPEG stream separately for every viewer. For a permanent dashboard
+prefer a snapshot that is reloaded every few seconds and keep MJPEG for the moments when somebody is
+really watching.
+
+### Device manager widgets
+
+The adapter ships two widgets for **ioBroker.devices**. Both let you pick a camera as a plain object
+below the `frigate` namespace (e.g. `frigate.0.driveway`) and can have Frigate draw the detection
+boxes and the timestamp into the picture.
+
+- **Frigate Snapshot** — reloads a still picture in a configurable interval. It asks the adapter over
+  the ioBroker socket, so it works wherever the Devices UI runs, including inside admin, and it
+  reuses the Frigate login of the adapter.
+- **Frigate Live** — shows the MJPEG stream, which the browser decodes natively. It loads the stream
+  from the **web** adapter, which the Devices UI can only reach when it runs inside a web instance.
+  When it runs in admin — the usual case — enter the web instance in the widget settings, e.g.
+  `http://192.168.1.5:8082`.
+
+If in doubt use the snapshot widget, it has no such restriction.
 
 ### vis Integration
 

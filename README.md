@@ -34,6 +34,9 @@ Adapter for [Frigate NVR](https://frigate.video/) — an open-source, self-hoste
   ### **WORK IN PROGRESS**
 -->
 ### **WORK IN PROGRESS**
+- (@GermanBluefox) Added a web extension: every camera is now served under `/frigate.0/<camera>/snapshot.jpg` and `/frigate.0/<camera>/stream.mjpeg` of the web adapter, behind the ioBroker authentication and without exposing Frigate itself
+- (@GermanBluefox) Added two widgets for ioBroker.devices: a snapshot tile that works everywhere, and a live MJPEG tile
+- (@GermanBluefox) Added the `snapshot` message, which returns the current picture of a camera as base64
 - (Eistee82) Fixed zone object counters (e.g. `<zone>.person`) staying at their last value after the object left the zone. Per-zone object counts are now sourced solely from the Frigate MQTT occupancy topics, and the zone aggregator resets its active/stationary states to 0 and uses `current_zones` instead of the cumulative `entered_zones`.
 
 ### 3.0.3 (2026-06-09)
@@ -54,7 +57,8 @@ Adapter for [Frigate NVR](https://frigate.video/) — an open-source, self-hoste
 - (Eistee82) Added Frigate API authentication support for port 8971 (username/password login with JWT)
 - (Eistee82) Automatic token refresh on 401 responses
 
-[Older changelogs can be found there](CHANGELOG_OLD.md)
+### 2.3.0 (2026-03-29)
+- (Eistee82) Many new features, improvements, and bug fixes in development for the next major release (see 2.2.2)
 
 ## License
 

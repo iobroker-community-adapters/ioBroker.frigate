@@ -17,3 +17,7 @@ admin/i18n/flat.txt
 admin/i18n/*/flat.txt
 #ignore .commitinfo created by ioBroker release script
 .commitinfo
+
+# Intermediate build of the device widgets - only admin/dm-widgets/ is shipped
+/src-devices/build/
+/src-devices/.__mf__temp/

@@ -1,0 +1,19 @@
+{
+  "frigate_LiveCamera": "Imagen en vivo Frigate",
+  "frigate_SnapshotCamera": "Instantánea Frigate",
+  "frigate_bbox": "Dibujar recuadros de detección",
+  "frigate_camera": "Cámara",
+  "frigate_camera_help": "La lista proviene de la instancia seleccionada. Si permanece vacía, la instancia no está en ejecución o aún no conoce ninguna cámara.",
+  "frigate_fps": "Imágenes por segundo",
+  "frigate_fps_help": "Frigate codifica el flujo para cada espectador — un valor bajo ahorra CPU",
+  "frigate_instance": "Instancia de Frigate",
+  "frigate_loading": "Cargando…",
+  "frigate_no_camera": "Ninguna cámara seleccionada",
+  "frigate_pollingInterval": "Intervalo de sondeo (ms)",
+  "frigate_pollingInterval_help": "Con qué frecuencia se solicita una nueva imagen",
+  "frigate_stream_failed": "No se pudo cargar el flujo",
+  "frigate_stream_needs_web": "Flujo inaccesible. Indique la instancia web en los ajustes.",
+  "frigate_timestamp": "Dibujar marca de tiempo",
+  "frigate_webUrl": "Instancia web",
+  "frigate_webUrl_help": "p. ej. http://192.168.1.5:8082 — necesario si la interfaz de Dispositivos corre en admin. Dejar vacío dentro de una instancia web."
+}

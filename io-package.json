@@ -138,9 +138,13 @@
     "adminUI": {
       "config": "json"
     },
+    "webExtension": "build/lib/web.js",
     "dependencies": [
       {
         "js-controller": ">=7.1.0"
+      },
+      {
+        "web": ">=2.0.0"
       }
     ],
     "globalDependencies": [
@@ -199,7 +203,47 @@
           "cancel"
         ]
       }
-    ]
+    ],
+    "deviceWidgets": {
+      "components": [
+        {
+          "name": "SnapshotComponent",
+          "label": "Frigate Snapshot",
+          "description": {
+            "en": "Periodically updated still picture of a Frigate camera",
+            "de": "Regelmäßig aktualisiertes Standbild einer Frigate-Kamera",
+            "ru": "Периодически обновляемый снимок камеры Frigate",
+            "pt": "Imagem fixa da câmera Frigate atualizada periodicamente",
+            "nl": "Periodiek vernieuwd stilstaand beeld van een Frigate-camera",
+            "fr": "Image fixe d une caméra Frigate mise à jour périodiquement",
+            "it": "Immagine fissa di una telecamera Frigate aggiornata periodicamente",
+            "es": "Imagen fija de una cámara Frigate actualizada periódicamente",
+            "pl": "Okresowo odświeżany obraz z kamery Frigate",
+            "uk": "Періодично оновлюване зображення з камери Frigate",
+            "zh-cn": "定期更新的 Frigate 摄像机静态图像"
+          },
+          "icon": "frigate.png"
+        },
+        {
+          "name": "LiveComponent",
+          "label": "Frigate Live",
+          "description": {
+            "en": "Live MJPEG stream of a Frigate camera via the web adapter",
+            "de": "Live-MJPEG-Stream einer Frigate-Kamera über den Web-Adapter",
+            "ru": "Живой MJPEG-поток камеры Frigate через веб-адаптер",
+            "pt": "Fluxo MJPEG ao vivo de uma câmera Frigate através do adaptador web",
+            "nl": "Live MJPEG-stream van een Frigate-camera via de web-adapter",
+            "fr": "Flux MJPEG en direct d une caméra Frigate via l adaptateur web",
+            "it": "Flusso MJPEG dal vivo di una telecamera Frigate tramite l adattatore web",
+            "es": "Flujo MJPEG en vivo de una cámara Frigate a través del adaptador web",
+            "pl": "Strumień MJPEG na żywo z kamery Frigate przez adapter web",
+            "uk": "Живий MJPEG-потік камери Frigate через веб-адаптер",
+            "zh-cn": "通过 web 适配器播放的 Frigate 摄像机实时 MJPEG 流"
+          },
+          "icon": "frigate.png"
+        }
+      ]
+    }
   },
   "encryptedNative": [
     "mqttPassword",
@@ -219,6 +263,8 @@
     "mqttUsername": "",
     "mqttPassword": "",
     "mqttTopicPrefix": "frigate",
+    "webInstance": "*",
+    "route": "",
     "webnum": 10,
     "notificationMinScore": 0,
     "notificationActive": false,

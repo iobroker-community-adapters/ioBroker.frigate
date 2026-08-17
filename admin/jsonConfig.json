@@ -171,6 +171,48 @@
                     "lg": 4,
                     "xl": 4,
                     "newLine": true
+                },
+                "_headerWeb": {
+                    "type": "header",
+                    "text": "Camera proxy",
+                    "size": 4,
+                    "newLine": true
+                },
+                "_infoWeb": {
+                    "type": "staticText",
+                    "text": "web_extension_info",
+                    "xs": 12,
+                    "sm": 12,
+                    "md": 12,
+                    "lg": 12,
+                    "xl": 12,
+                    "newLine": true
+                },
+                "webInstance": {
+                    "type": "instance",
+                    "adapter": "web",
+                    "all": true,
+                    "allowDeactivate": true,
+                    "label": "Web instance for the camera proxy",
+                    "help": "web_instance_help",
+                    "xs": 12,
+                    "sm": 12,
+                    "md": 6,
+                    "lg": 4,
+                    "xl": 4,
+                    "newLine": true
+                },
+                "route": {
+                    "type": "text",
+                    "label": "Route prefix",
+                    "help": "web_route_help",
+                    "placeholder": "frigate.0/",
+                    "hidden": "!data.webInstance",
+                    "xs": 12,
+                    "sm": 12,
+                    "md": 6,
+                    "lg": 4,
+                    "xl": 4
                 }
             }
         },
@@ -773,6 +815,20 @@
                     "xl": 4,
                     "variant": "outlined",
                     "jsonData": "${JSON.stringify(data)}"
+                },
+                "_restartContainer": {
+                    "newLine": true,
+                    "type": "sendTo",
+                    "command": "restartContainer",
+                    "label": "Restart Frigate container",
+                    "variant": "outlined",
+                    "showProcess": true,
+                    "useNative": false,
+                    "xs": 12,
+                    "sm": 12,
+                    "md": 6,
+                    "lg": 4,
+                    "xl": 4
                 },
                 "_recreateContainer": {
                     "newLine": true,

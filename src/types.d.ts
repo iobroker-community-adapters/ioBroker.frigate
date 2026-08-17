@@ -145,6 +145,13 @@ export interface FrigateAdapterConfig extends FrigateAdapterConfigTyped {
     mqttUsername: string;
     mqttPassword: string;
     mqttTopicPrefix: string;
+    /**
+     * Web instance that loads the camera proxy: `web.0` for one instance, `*` for all of them.
+     * ioBroker.web only activates a web extension when this matches, so anything else turns it off.
+     */
+    webInstance: string;
+    /** URL prefix of the proxied camera routes. Empty falls back to `<namespace>/`, e.g. `frigate.0/` */
+    route: string;
     webnum: number | string;
     notificationMinScore: number | string;
     notificationActive: boolean;
@@ -224,4 +231,19 @@ export interface FrigateAdapterConfig extends FrigateAdapterConfigTyped {
             snapshots_retain_default: number | string;
         }[];
     };
+}
+
+/**
+ * Subset of the `@iobroker/plugin-docker` DockerManager API used by this adapter.
+ * The plugin instance itself is not typed, so the required methods are declared structurally.
+ */
+export interface FrigateDockerManager {
+    /** Returns the container name prefix of this instance, e.g. "iob_frigate_0" */
+    getDefaultContainerName: () => string;
+    /** List containers. If `all` is true, stopped containers are included too */
+    containerList: (all?: boolean) => Promise<{ id: string; names: string }[]>;
+    /** Stop (if needed) and remove a container by name or ID */
+    containerRemove: (container: string) => Promise<{ stdout: string; stderr: string }>;
+    /** Restart a container by name or ID */
+    containerRestart: (container?: string, timeoutSeconds?: number) => Promise<{ stdout: string; stderr: string }>;
 }

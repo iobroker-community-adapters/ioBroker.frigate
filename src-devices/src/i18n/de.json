@@ -1,0 +1,19 @@
+{
+  "frigate_LiveCamera": "Frigate-Livebild",
+  "frigate_SnapshotCamera": "Frigate-Standbild",
+  "frigate_bbox": "Objektrahmen einzeichnen",
+  "frigate_camera": "Kamera",
+  "frigate_camera_help": "Die Liste kommt von der gewählten Instanz. Bleibt sie leer, läuft die Instanz nicht oder kennt noch keine Kameras.",
+  "frigate_fps": "Bilder pro Sekunde",
+  "frigate_fps_help": "Frigate kodiert den Stream pro Betrachter – ein niedriger Wert spart CPU",
+  "frigate_instance": "Frigate-Instanz",
+  "frigate_loading": "Wird geladen…",
+  "frigate_no_camera": "Keine Kamera ausgewählt",
+  "frigate_pollingInterval": "Abrufintervall (ms)",
+  "frigate_pollingInterval_help": "Wie oft ein neues Bild angefordert wird",
+  "frigate_stream_failed": "Stream konnte nicht geladen werden",
+  "frigate_stream_needs_web": "Stream nicht erreichbar. Web-Instanz in den Einstellungen eintragen.",
+  "frigate_timestamp": "Zeitstempel einzeichnen",
+  "frigate_webUrl": "Web-Instanz",
+  "frigate_webUrl_help": "z. B. http://192.168.1.5:8082 – nötig, wenn die Geräte-Oberfläche im Admin läuft. Innerhalb einer Web-Instanz leer lassen."
+}

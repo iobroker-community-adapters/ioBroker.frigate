@@ -1,0 +1,19 @@
+{
+  "frigate_LiveCamera": "Живе зображення Frigate",
+  "frigate_SnapshotCamera": "Знімок Frigate",
+  "frigate_bbox": "Малювати рамки об’єктів",
+  "frigate_camera": "Камера",
+  "frigate_camera_help": "Список надходить від вибраного екземпляра. Якщо він залишається порожнім, екземпляр не запущено або він ще не знає жодної камери.",
+  "frigate_fps": "Кадрів на секунду",
+  "frigate_fps_help": "Frigate кодує потік для кожного глядача — низьке значення економить ЦП",
+  "frigate_instance": "Екземпляр Frigate",
+  "frigate_loading": "Завантаження…",
+  "frigate_no_camera": "Камеру не вибрано",
+  "frigate_pollingInterval": "Інтервал опитування (мс)",
+  "frigate_pollingInterval_help": "Як часто запитується нове зображення",
+  "frigate_stream_failed": "Не вдалося завантажити потік",
+  "frigate_stream_needs_web": "Потік недоступний. Вкажіть екземпляр web у налаштуваннях.",
+  "frigate_timestamp": "Малювати мітку часу",
+  "frigate_webUrl": "Екземпляр web",
+  "frigate_webUrl_help": "напр. http://192.168.1.5:8082 — потрібно, якщо інтерфейс Пристроїв працює в admin. Усередині web залиште порожнім."
+}
