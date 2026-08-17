@@ -234,6 +234,22 @@ export interface FrigateAdapterConfig extends FrigateAdapterConfigTyped {
 }
 
 /**
+ * Why the camera proxy is not reachable, as reported by `frigate:getWebUrl`.
+ *
+ * A stable code rather than a sentence: the widget maps it to a translated text, so the wording can
+ * change on either side without the two having to agree on it.
+ */
+export type WebUrlReason =
+    /** `native.webInstance` is empty - the proxy is switched off in the instance settings */
+    | 'disabled'
+    /** No enabled web instance matches `native.webInstance` */
+    | 'noInstance'
+    /** The web instance runs on a host without a reachable IPv4 */
+    | 'noAddress'
+    /** Looking it up failed; the detail is in the adapter log */
+    | 'error';
+
+/**
  * Subset of the `@iobroker/plugin-docker` DockerManager API used by this adapter.
  * The plugin instance itself is not typed, so the required methods are declared structurally.
  */

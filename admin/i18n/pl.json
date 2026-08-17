@@ -31,6 +31,7 @@
     "Cake": "Ciasto",
     "Camera input path must not be empty": "Ścieżka wejściowa kamery nie może być pusta",
     "Camera name must not be empty and must not contain spaces": "Nazwa kamery nie może być pusta i nie może zawierać spacji",
+    "Camera proxy": "Proxy kamer",
     "Camera specific: frigate.0.remote.notificationTextTemplate": "Specyficzne dla kamery: frigate.0.remote.notificationTextTemplate",
     "Cameras Configuration": "Konfiguracja kamer",
     "Cameras configuration": "Konfiguracja kamer",
@@ -170,6 +171,7 @@
     "Restart Frigate container": "Uruchom ponownie kontener Frigate",
     "Retain Snapshots": "Zachowaj migawki",
     "Retain recordings": "Zachowaj nagrania",
+    "Route prefix": "Prefiks trasy",
     "Sandwich": "Kanapka",
     "Scissors": "Nożyczki",
     "Select the objects to track for this camera (e.g. person, car, dog). Leave empty to use Frigate's default (person).": "Wybierz obiekty do śledzenia przez tę kamerę (np. osobę, samochód, psa). Pozostaw puste, aby użyć domyślnego ustawienia Frigate (osoba).",
@@ -238,6 +240,7 @@
     "Use self-hosted Frigate in Docker": "Użyj samodzielnie hostowanej Frigate w Dockerze",
     "Vase": "Wazon",
     "Wait time after Events end for Clip creation in seconds": "Czas oczekiwania po zakończeniu zdarzeń na utworzenie klipu w sekundach",
+    "Web instance for the camera proxy": "Instancja web dla proxy kamer",
     "Window": "Okno",
     "Wine glass": "Kieliszek do wina",
     "YAML configuration file": "Plik konfiguracyjny YAML",
@@ -250,5 +253,8 @@
     "frigate_url_help": "np. 192.168.1.100:5000 — dla HTTPS dodaj https:// (np. https://192.168.1.100:8971)",
     "px": "pikseli",
     "sec": "sek",
+    "web_extension_info": "Adapter może udostępniać zdjęcia i strumienie MJPEG przez adapter web. Trasy dziedziczą jego uwierzytelnianie oraz schemat http/https, więc nie trzeba otwierać dodatkowego portu.",
+    "web_instance_help": "„Wszystkie” (*) ładuje rozszerzenie do każdej instancji web. „Dezaktywuj” wyłącza proxy kamer.",
+    "web_route_help": "Pozostaw puste, aby użyć domyślnego <instancja>/, np. frigate.0/. Trasy to wtedy <prefiks><kamera>/snapshot.jpg i <prefiks><kamera>/stream.mjpeg.",
     "{{source}} {{type}} detected {{status}} {{score}} {{state}}": "Wykryto {{źródło}} {{typ}} {{status}} {{wynik}} {{stan}}"
 }

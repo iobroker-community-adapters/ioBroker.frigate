@@ -31,6 +31,7 @@
     "Cake": "Торт",
     "Camera input path must not be empty": "Шлях введення камери не повинен бути порожнім",
     "Camera name must not be empty and must not contain spaces": "Назва камери не повинна бути порожньою і не повинна містити пробіли",
+    "Camera proxy": "Проксі камер",
     "Camera specific: frigate.0.remote.notificationTextTemplate": "Для конкретної камери: frigate.0.remote.notificationTextTemplate",
     "Cameras Configuration": "Конфігурація камер",
     "Cameras configuration": "Налаштування камер",
@@ -170,6 +171,7 @@
     "Restart Frigate container": "Перезапустити контейнер Frigate",
     "Retain Snapshots": "Зберігання знімків",
     "Retain recordings": "Зберігати записи",
+    "Route prefix": "Префікс маршруту",
     "Sandwich": "Сендвіч",
     "Scissors": "Ножиці",
     "Select the objects to track for this camera (e.g. person, car, dog). Leave empty to use Frigate's default (person).": "Виберіть об’єкти для відстеження цією камерою (наприклад, людина, автомобіль, собака). Залиште поле порожнім, щоб використовувати налаштування Frigate за замовчуванням (людина).",
@@ -238,6 +240,7 @@
     "Use self-hosted Frigate in Docker": "Використовувати власний Frigate у Docker",
     "Vase": "Ваза",
     "Wait time after Events end for Clip creation in seconds": "Час очікування після закінчення події для створення кліпу в секундах",
+    "Web instance for the camera proxy": "Екземпляр web для проксі камер",
     "Window": "Вікно",
     "Wine glass": "Келих для вина",
     "YAML configuration file": "YAML-файл конфігурації",
@@ -250,5 +253,8 @@
     "frigate_url_help": "напр. 192.168.1.100:5000 — для HTTPS додайте https:// (напр. https://192.168.1.100:8971)",
     "px": "px",
     "sec": "сек",
+    "web_extension_info": "Адаптер може віддавати знімки та MJPEG-потоки через адаптер web. Маршрути успадковують його автентифікацію та схему http/https, тож додатковий порт відкривати не потрібно.",
+    "web_instance_help": "«Усі» (*) завантажує розширення в усі екземпляри web. «Деактивувати» вимикає проксі камер.",
+    "web_route_help": "Залиште порожнім для типового <екземпляр>/, напр. frigate.0/. Тоді маршрути будуть <префікс><камера>/snapshot.jpg і <префікс><камера>/stream.mjpeg.",
     "{{source}} {{type}} detected {{status}} {{score}} {{state}}": "{{source}} {{type}} виявлено {{status}} {{score}} {{state}}"
 }

@@ -84,6 +84,14 @@ export const commonConfigItems = {
         alsoDependsOn: ['instance'],
         sm: 12,
     },
+    // `name` is the display-name slot of WidgetSettingsBase, which renderTile() already prefers over
+    // the camera name - it only had no field in the dialog so far
+    name: {
+        type: 'text',
+        label: 'frigate_name',
+        help: 'frigate_name_help',
+        sm: 12,
+    },
     bbox: {
         type: 'checkbox',
         label: 'frigate_bbox',
@@ -105,6 +113,9 @@ export abstract class FrigateWidgetBase<
     TState extends FrigateWidgetState = FrigateWidgetState,
 > extends WidgetGeneric<TState, TSettings> {
     protected camera: CameraRef | null = null;
+
+    /** Last seen dialog state, so `componentDidUpdate` can spot the switch */
+    private dialogWasOpen = false;
 
     constructor(props: WidgetGenericProps<TSettings>) {
         super(props);
@@ -148,6 +159,22 @@ export abstract class FrigateWidgetBase<
                 this.startCamera();
             }
         }
+
+        // Tracked here rather than read from a `prevState` argument, so the signature stays the one
+        // the subclasses already override
+        if (this.dialogWasOpen !== this.state.dialogOpen) {
+            this.dialogWasOpen = this.state.dialogOpen;
+            this.onDialogToggled();
+        }
+    }
+
+    /**
+     * Called after the fullscreen dialog opened or closed; read `this.state.dialogOpen` for the new
+     * state. Widgets that deliver at a fixed rate use it to switch rate without waiting for the
+     * currently running interval to elapse.
+     */
+    protected onDialogToggled(): void {
+        // Nothing to do by default
     }
 
     protected setError(error: string): void {
@@ -170,13 +197,39 @@ export abstract class FrigateWidgetBase<
         };
     }
 
-    /** Style shared by the picture in the tile and in the dialog */
+    /** Style of the picture inside the tile, which has a fixed aspect ratio to fill */
     protected static imageStyle: React.CSSProperties = {
         width: '100%',
         height: '100%',
         objectFit: 'contain',
         display: 'block',
     };
+
+    /**
+     * Style of the enlarged picture.
+     *
+     * The dialog has no fixed height, so `height: 100%` would resolve against `auto` and let a tall
+     * frame grow past the viewport - which is what made the dialog scroll. `height: auto` keeps the
+     * aspect ratio, and the viewport-relative cap keeps the whole frame on screen. 80px is what the
+     * dialog costs around the picture: 2x32px paper margin plus 2x8px content padding.
+     */
+    protected static fullImageStyle: React.CSSProperties = {
+        width: '100%',
+        height: 'auto',
+        maxHeight: 'calc(100vh - 80px)',
+        objectFit: 'contain',
+        display: 'block',
+        margin: '0 auto',
+    };
+
+    /**
+     * Picture style for the view being rendered.
+     *
+     * @param full true while the fullscreen dialog is open
+     */
+    protected static styleFor(full?: boolean): React.CSSProperties {
+        return full ? FrigateWidgetBase.fullImageStyle : FrigateWidgetBase.imageStyle;
+    }
 
     protected renderPicture(full?: boolean): React.JSX.Element {
         if (!this.camera) {
@@ -235,7 +288,18 @@ export abstract class FrigateWidgetBase<
                 maxWidth="lg"
                 onClose={() => this.setState({ dialogOpen: false } as Partial<TState> as TState)}
             >
-                <DialogContent sx={{ position: 'relative', p: 1 }}>
+                {/* `overflow: hidden` instead of the default `auto`: the picture is capped to the
+                    viewport, so there is nothing to scroll to and a scrollbar would only shrink it */}
+                <DialogContent
+                    sx={{
+                        position: 'relative',
+                        p: 1,
+                        overflow: 'hidden',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                    }}
+                >
                     <IconButton
                         onClick={() => this.setState({ dialogOpen: false } as Partial<TState> as TState)}
                         sx={{ position: 'absolute', top: 4, right: 4, zIndex: 1 }}

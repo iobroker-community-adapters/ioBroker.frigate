@@ -31,6 +31,7 @@
     "Cake": "Taart",
     "Camera input path must not be empty": "Het invoerpad van de camera mag niet leeg zijn",
     "Camera name must not be empty and must not contain spaces": "De cameranaam mag niet leeg zijn en mag geen spaties bevatten",
+    "Camera proxy": "Cameraproxy",
     "Camera specific: frigate.0.remote.notificationTextTemplate": "Camera-specifiek: frigate.0.remote.notificationTextTemplate",
     "Cameras Configuration": "Configuratie van camera's",
     "Cameras configuration": "Camera-configuratie",
@@ -170,6 +171,7 @@
     "Restart Frigate container": "Frigate-container opnieuw starten",
     "Retain Snapshots": "Momentopnames bewaren",
     "Retain recordings": "Bewaar opnames",
+    "Route prefix": "Route-voorvoegsel",
     "Sandwich": "Sandwich",
     "Scissors": "Schaar",
     "Select the objects to track for this camera (e.g. person, car, dog). Leave empty to use Frigate's default (person).": "Selecteer de objecten die u met deze camera wilt volgen (bijv. persoon, auto, hond). Laat dit veld leeg om de standaardinstelling van Frigate (persoon) te gebruiken.",
@@ -238,6 +240,7 @@
     "Use self-hosted Frigate in Docker": "Gebruik zelf-gehoste Frigate in Docker",
     "Vase": "Vaas",
     "Wait time after Events end for Clip creation in seconds": "Wachttijd na einde evenement voor clipcreatie in seconden",
+    "Web instance for the camera proxy": "Web-instantie voor de cameraproxy",
     "Window": "Raam",
     "Wine glass": "Wijnglas",
     "YAML configuration file": "YAML-configuratiebestand",
@@ -250,5 +253,8 @@
     "frigate_url_help": "bijv. 192.168.1.100:5000 — voor HTTPS prefix met https:// (bijv. https://192.168.1.100:8971)",
     "px": "px",
     "sec": "sec",
+    "web_extension_info": "De adapter kan momentopnamen en MJPEG-streams via de web-adapter aanbieden. De routes erven de authenticatie en het http/https-schema, zodat er geen extra poort geopend hoeft te worden.",
+    "web_instance_help": "„Alle” (*) laadt de extensie in elke web-instantie. Met „deactiveren” wordt de cameraproxy uitgeschakeld.",
+    "web_route_help": "Laat leeg voor de standaard <instantie>/, bijv. frigate.0/. De routes zijn dan <voorvoegsel><camera>/snapshot.jpg en <voorvoegsel><camera>/stream.mjpeg.",
     "{{source}} {{type}} detected {{status}} {{score}} {{state}}": "{{source}} {{type}} gedetecteerd {{status}} {{score}} {{state}}"
 }

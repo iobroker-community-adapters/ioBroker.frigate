@@ -31,6 +31,7 @@
     "Cake": "Pastel",
     "Camera input path must not be empty": "La ruta de entrada de la cámara no debe estar vacía",
     "Camera name must not be empty and must not contain spaces": "El nombre de la cámara no debe estar vacío y no debe contener espacios",
+    "Camera proxy": "Proxy de cámaras",
     "Camera specific: frigate.0.remote.notificationTextTemplate": "Específico de cámara: frigate.0.remote.notificationTextTemplate",
     "Cameras Configuration": "Configuración de cámaras",
     "Cameras configuration": "Configuración de cámaras",
@@ -170,6 +171,7 @@
     "Restart Frigate container": "Reiniciar el contenedor Frigate",
     "Retain Snapshots": "Retener instantáneas",
     "Retain recordings": "Retener grabaciones",
+    "Route prefix": "Prefijo de ruta",
     "Sandwich": "Sándwich",
     "Scissors": "Tijeras",
     "Select the objects to track for this camera (e.g. person, car, dog). Leave empty to use Frigate's default (person).": "Seleccione los objetos que desea rastrear con esta cámara (por ejemplo, persona, coche, perro). Déjelo en blanco para usar la opción predeterminada de Frigate (persona).",
@@ -238,6 +240,7 @@
     "Use self-hosted Frigate in Docker": "Usar Frigate autoalojado en Docker",
     "Vase": "Florero",
     "Wait time after Events end for Clip creation in seconds": "Tiempo de espera después del fin del evento para la creación del clip en segundos",
+    "Web instance for the camera proxy": "Instancia web para el proxy de cámaras",
     "Window": "Ventana",
     "Wine glass": "Copa de vino",
     "YAML configuration file": "Archivo de configuración YAML",
@@ -250,5 +253,8 @@
     "frigate_url_help": "ej. 192.168.1.100:5000 — para HTTPS prefije con https:// (ej. https://192.168.1.100:8971)",
     "px": "px",
     "sec": "seg",
+    "web_extension_info": "El adaptador puede servir instantáneas y flujos MJPEG a través del adaptador web. Las rutas heredan su autenticación y su esquema http/https, por lo que no hay que abrir ningún puerto adicional.",
+    "web_instance_help": "«Todas» (*) carga la extensión en todas las instancias web. «Desactivar» apaga el proxy de cámaras.",
+    "web_route_help": "Déjelo vacío para el valor predeterminado <instancia>/, p. ej. frigate.0/. Las rutas serán <prefijo><cámara>/snapshot.jpg y <prefijo><cámara>/stream.mjpeg.",
     "{{source}} {{type}} detected {{status}} {{score}} {{state}}": "{{fuente}} {{tipo}} detectado {{estado}} {{puntuación}} {{estado}}"
 }

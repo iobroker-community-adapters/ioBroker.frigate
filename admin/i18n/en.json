@@ -31,6 +31,7 @@
     "Cake": "Cake",
     "Camera input path must not be empty": "Camera input path must not be empty",
     "Camera name must not be empty and must not contain spaces": "Camera name must not be empty and must not contain spaces",
+    "Camera proxy": "Camera proxy",
     "Camera specific: frigate.0.remote.notificationTextTemplate": "Camera specific: frigate.0.remote.notificationTextTemplate",
     "Cameras Configuration": "Cameras Configuration",
     "Cameras configuration": "Cameras configuration",
@@ -170,6 +171,7 @@
     "Restart Frigate container": "Restart Frigate container",
     "Retain Snapshots": "Retain Snapshots",
     "Retain recordings": "Retain recordings",
+    "Route prefix": "Route prefix",
     "Sandwich": "Sandwich",
     "Scissors": "Scissors",
     "Select the objects to track for this camera (e.g. person, car, dog). Leave empty to use Frigate's default (person).": "Select the objects to track for this camera (e.g. person, car, dog). Leave empty to use Frigate's default (person).",
@@ -238,6 +240,7 @@
     "Use self-hosted Frigate in Docker": "Use self-hosted Frigate in Docker",
     "Vase": "Vase",
     "Wait time after Events end for Clip creation in seconds": "Wait time after Events end for Clip creation in seconds",
+    "Web instance for the camera proxy": "Web instance for the camera proxy",
     "Window": "Window",
     "Wine glass": "Wine glass",
     "YAML configuration file": "YAML configuration file",
@@ -250,5 +253,8 @@
     "frigate_url_help": "e.g. 192.168.1.100:5000 — for HTTPS prefix with https:// (e.g. https://192.168.1.100:8971)",
     "px": "px",
     "sec": "sec",
+    "web_extension_info": "The adapter can serve snapshots and MJPEG streams through the web adapter. The routes inherit its authentication and http/https, so no additional port has to be opened.",
+    "web_instance_help": "\"All\" (*) loads the extension into every web instance. \"Deactivate\" turns the camera proxy off.",
+    "web_route_help": "Leave empty for the default <instance>/, e.g. frigate.0/. The routes are then <prefix><camera>/snapshot.jpg and <prefix><camera>/stream.mjpeg.",
     "{{source}} {{type}} detected {{status}} {{score}} {{state}}": "{{source}} {{type}} detected {{status}} {{score}} {{state}}"
 }

@@ -31,6 +31,7 @@
     "Cake": "蛋糕",
     "Camera input path must not be empty": "摄像头输入路径不能为空",
     "Camera name must not be empty and must not contain spaces": "摄像头名称不能为空且不能包含空格",
+    "Camera proxy": "摄像机代理",
     "Camera specific: frigate.0.remote.notificationTextTemplate": "特定摄像头：frigate.0.remote.notificationTextTemplate",
     "Cameras Configuration": "相机配置",
     "Cameras configuration": "摄像头配置",
@@ -170,6 +171,7 @@
     "Restart Frigate container": "重启 Frigate 容器",
     "Retain Snapshots": "保留快照",
     "Retain recordings": "保留录音",
+    "Route prefix": "路由前缀",
     "Sandwich": "三明治",
     "Scissors": "剪刀",
     "Select the objects to track for this camera (e.g. person, car, dog). Leave empty to use Frigate's default (person).": "选择此摄像头要跟踪的对象（例如，人、汽车、狗）。留空则使用 Frigate 的默认设置（人）。",
@@ -238,6 +240,7 @@
     "Use self-hosted Frigate in Docker": "使用 Docker 中的自托管 Frigate",
     "Vase": "花瓶",
     "Wait time after Events end for Clip creation in seconds": "事件结束后等待创建剪辑的时间（秒）",
+    "Web instance for the camera proxy": "用于摄像机代理的 web 实例",
     "Window": "窗户",
     "Wine glass": "酒杯",
     "YAML configuration file": "YAML 配置文件",
@@ -250,5 +253,8 @@
     "frigate_url_help": "例如 192.168.1.100:5000 — 使用 HTTPS 时请加 https:// 前缀（如 https://192.168.1.100:8971）",
     "px": "像素",
     "sec": "秒",
+    "web_extension_info": "适配器可通过 web 适配器提供快照和 MJPEG 视频流。这些路由沿用 web 的身份验证与 http/https 方案，因此无需额外开放端口。",
+    "web_instance_help": "“全部”（*）会把扩展加载到每个 web 实例。选择“停用”则关闭摄像机代理。",
+    "web_route_help": "留空则使用默认的 <实例>/，例如 frigate.0/。路由为 <前缀><摄像机>/snapshot.jpg 和 <前缀><摄像机>/stream.mjpeg。",
     "{{source}} {{type}} detected {{status}} {{score}} {{state}}": "{{source}} {{type}} 检测到 {{status}} {{score}} {{state}}"
 }

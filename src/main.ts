@@ -12,7 +12,7 @@ import mqtt, { type MqttClient } from 'mqtt';
 
 import { type AdapterOptions, Adapter, getAbsoluteDefaultDataDir } from '@iobroker/adapter-core';
 
-import type { FrigateAdapterConfig, FrigateDockerManager, FrigateMessage } from './types.js';
+import type { FrigateAdapterConfig, FrigateDockerManager, FrigateMessage, WebUrlReason } from './types.js';
 import { createFrigateConfigFile } from './lib/utils.js';
 import Json2iob from './lib/json2iob.js';
 import { handleMqttMessage, type MessageHandlerContext } from './lib/messageHandler.js';
@@ -576,45 +576,44 @@ class FrigateAdapter extends Adapter {
         return new Promise<void>(resolve => this.setTimeout(resolve, ms));
     }
 
-    private async detectIpAddress(hostname: string): Promise<string> {
-        const isIPv4 = (value: string): boolean => /^\d{1,3}(\.\d{1,3}){3}$/.test(value);
-        const ipv4ToInt = (ip: string): number =>
-            ip.split('.').reduce((acc, oct) => ((acc << 8) | parseInt(oct, 10)) >>> 0, 0) >>> 0;
+    private static isIPv4(value: string): boolean {
+        return /^\d{1,3}(\.\d{1,3}){3}$/.test(value);
+    }
 
-        // Resolve hostname to the IPv4 the browser used to reach the admin.
-        let browserIp = hostname;
-        if (!isIPv4(browserIp)) {
-            try {
-                const result = await lookup(hostname, { family: 4 });
-                browserIp = result.address;
-            } catch (error) {
-                this.log.debug(
-                    `DNS lookup for "${hostname}" failed: ${error instanceof Error ? error.message : String(error)}`,
-                );
-            }
-        }
+    private static ipv4ToInt(ip: string): number {
+        return ip.split('.').reduce((acc, oct) => ((acc << 8) | parseInt(oct, 10)) >>> 0, 0) >>> 0;
+    }
 
-        if (!isIPv4(browserIp)) {
-            return hostname;
-        }
-
-        // Pick the local interface whose subnet contains the browser IP:
+    /**
+     * Pick the address a given browser can actually reach.
+     *
+     * The interfaces are passed in rather than read here, because the host in question is not always
+     * our own: the web instance that serves the camera proxy may run somewhere else, and then its
+     * addresses come from `system.host.<name>.native.hardware.networkInterfaces`.
+     *
+     * @param interfaces network interfaces of the host to choose from
+     * @param browserIp IPv4 the browser used, already resolved
+     * @returns the chosen address, or '' when the host has no usable IPv4
+     */
+    private static pickReachableIp(interfaces: ReturnType<typeof networkInterfaces>, browserIp: string): string {
+        // Prefer the interface whose subnet contains the browser:
         // (interfaceIp & netmask) === (browserIp & netmask)
-        const browserIpInt = ipv4ToInt(browserIp);
-        const interfaces = networkInterfaces();
-        for (const name of Object.keys(interfaces)) {
-            for (const info of interfaces[name] || []) {
-                if (info.family !== 'IPv4' || info.internal) {
-                    continue;
-                }
-                const maskInt = ipv4ToInt(info.netmask);
-                if ((ipv4ToInt(info.address) & maskInt) === (browserIpInt & maskInt)) {
-                    return info.address;
+        if (FrigateAdapter.isIPv4(browserIp)) {
+            const browserIpInt = FrigateAdapter.ipv4ToInt(browserIp);
+            for (const name of Object.keys(interfaces)) {
+                for (const info of interfaces[name] || []) {
+                    if (info.family !== 'IPv4' || info.internal) {
+                        continue;
+                    }
+                    const maskInt = FrigateAdapter.ipv4ToInt(info.netmask);
+                    if ((FrigateAdapter.ipv4ToInt(info.address) & maskInt) === (browserIpInt & maskInt)) {
+                        return info.address;
+                    }
                 }
             }
         }
 
-        // No interface in the browser's subnet — fall back to the first non-internal IPv4.
+        // Nothing in the browser's subnet - fall back to the first non-internal IPv4.
         for (const name of Object.keys(interfaces)) {
             for (const info of interfaces[name] || []) {
                 if (info.family === 'IPv4' && !info.internal) {
@@ -623,7 +622,35 @@ class FrigateAdapter extends Adapter {
             }
         }
 
-        return hostname;
+        return '';
+    }
+
+    /**
+     * Resolve a hostname to an IPv4 address; returns the input unchanged when that is not possible.
+     *
+     * @param hostname hostname or address as the browser used it
+     */
+    private async resolveToIPv4(hostname: string): Promise<string> {
+        if (FrigateAdapter.isIPv4(hostname)) {
+            return hostname;
+        }
+        try {
+            const result = await lookup(hostname, { family: 4 });
+            return result.address;
+        } catch (error) {
+            this.log.debug(
+                `DNS lookup for "${hostname}" failed: ${error instanceof Error ? error.message : String(error)}`,
+            );
+            return hostname;
+        }
+    }
+
+    private async detectIpAddress(hostname: string): Promise<string> {
+        const browserIp = await this.resolveToIPv4(hostname);
+        if (!FrigateAdapter.isIPv4(browserIp)) {
+            return hostname;
+        }
+        return FrigateAdapter.pickReachableIp(networkInterfaces(), browserIp) || hostname;
     }
 
     onMessage = (obj: ioBroker.Message): void => {
@@ -712,6 +739,8 @@ class FrigateAdapter extends Adapter {
             void this.restartContainer(obj);
         } else if (obj?.command === 'frigate:getCameras') {
             void this.sendCameraList(obj);
+        } else if (obj?.command === 'frigate:getWebUrl') {
+            void this.getWebUrl(obj);
         } else if (obj?.command === 'snapshot') {
             // Deliver a still image over the socket. The device manager widgets use this instead of the
             // HTTP route of the web adapter, because the Devices UI is normally served from admin (8081)
@@ -792,6 +821,130 @@ class FrigateAdapter extends Adapter {
             data: Buffer.from(response.data as ArrayBuffer).toString('base64'),
             contentType: (response.headers['content-type'] as string) || 'image/jpeg',
         };
+    }
+
+    /**
+     * Build the base URL of one web instance, as seen from the browser that asked.
+     *
+     * @param instance the web instance object
+     * @param browserIp IPv4 the browser used, already resolved
+     * @returns e.g. `http://192.168.1.5:8082`, or '' when the host has no reachable address
+     */
+    private async buildWebInstanceUrl(instance: ioBroker.InstanceObject, browserIp: string): Promise<string> {
+        const native = (instance.native || {}) as {
+            port?: number | string;
+            secure?: boolean;
+            bind?: string;
+            publicUrl?: string;
+        };
+
+        // Someone who configured a public URL knows better than we can guess - it is the only value
+        // that survives a reverse proxy or an external domain.
+        if (native.publicUrl) {
+            return native.publicUrl.replace(/\/+$/, '');
+        }
+
+        const scheme = native.secure ? 'https' : 'http';
+        const port = parseInt(native.port as string, 10) || 8082;
+
+        // A concrete bind address is the address the instance really answers on; only the
+        // "listen everywhere" values leave the choice to us.
+        let host = '';
+        if (native.bind && native.bind !== '0.0.0.0' && native.bind !== '::') {
+            host = native.bind;
+        } else {
+            const hostObj = await this.getForeignObjectAsync(`system.host.${instance.common.host}`);
+            const interfaces = hostObj?.native?.hardware?.networkInterfaces;
+            if (interfaces) {
+                host = FrigateAdapter.pickReachableIp(interfaces, browserIp);
+            }
+            // Last resort: the host name itself, which at least resolves inside many LANs
+            host ||= instance.common.host;
+        }
+
+        return host ? `${scheme}://${host}:${port}` : '';
+    }
+
+    /**
+     * Work out where the camera proxy is reachable, so the Live widget does not have to be told by hand.
+     *
+     * The chain is the one the settings already describe: our own `native.webInstance` names the web
+     * instance that loads the extension, that instance object says which host it runs on and on which
+     * port, and the host object carries the network interfaces to pick an address from.
+     *
+     * @param obj the 'frigate:getWebUrl' message; `message.hostname` is the browser's own hostname
+     */
+    private async getWebUrl(obj: ioBroker.Message): Promise<void> {
+        const route = (this.config.route || `${this.namespace}/`).replace(/^\/+/, '');
+        // `reason` is a code the widget turns into a translated text; `detail` only reaches the log,
+        // so its wording stays free to change
+        const reply = (url: string, reason?: WebUrlReason, detail?: string): void => {
+            if (detail) {
+                this.log.debug(`Camera proxy not available (${reason}): ${detail}`);
+            }
+            if (obj.callback) {
+                this.sendTo(obj.from, obj.command, { url, route, reason }, obj.callback);
+            }
+        };
+
+        const message = (typeof obj.message === 'string' ? { hostname: obj.message } : obj.message || {}) as {
+            hostname?: string;
+        };
+
+        try {
+            const own = await this.getForeignObjectAsync(`system.adapter.${this.namespace}`);
+            const wanted = ((own?.native as { webInstance?: string })?.webInstance || '').trim();
+            if (!wanted) {
+                reply('', 'disabled');
+                return;
+            }
+
+            const view = await this.getObjectViewAsync('system', 'instance', {
+                startkey: 'system.adapter.web.',
+                endkey: 'system.adapter.web.香',
+            });
+
+            const candidates = (view?.rows || [])
+                .map(row => row.value)
+                // The key range ends above '.', so adapters like "web2" fall into it as well - only
+                // the name settles which rows are really web instances
+                .filter(
+                    (instance): instance is ioBroker.InstanceObject =>
+                        instance?.common?.name === 'web' && !!instance.common.enabled,
+                )
+                .filter(instance => {
+                    const namespace = instance._id.substring('system.adapter.'.length);
+                    return wanted === '*' || wanted === namespace;
+                })
+                .sort((a, b) => a._id.localeCompare(b._id));
+
+            if (!candidates.length) {
+                reply(
+                    '',
+                    'noInstance',
+                    wanted === '*'
+                        ? 'No enabled web instance found'
+                        : `Web instance "${wanted}" is not enabled or does not exist`,
+                );
+                return;
+            }
+
+            const browserIp = await this.resolveToIPv4(message.hostname || '');
+            for (const instance of candidates) {
+                const url = await this.buildWebInstanceUrl(instance, browserIp);
+                if (url) {
+                    this.log.debug(`Camera proxy of ${instance._id} resolved to ${url}/${route}`);
+                    reply(url);
+                    return;
+                }
+            }
+
+            reply('', 'noAddress', 'The host of the web instance has no reachable address');
+        } catch (error) {
+            const text = error instanceof Error ? error.message : String(error);
+            this.log.warn(`Cannot resolve the web URL: ${text}`);
+            reply('', 'error', text);
+        }
     }
 
     /**

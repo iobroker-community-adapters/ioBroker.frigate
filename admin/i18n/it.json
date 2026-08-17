@@ -31,6 +31,7 @@
     "Cake": "Torta",
     "Camera input path must not be empty": "Il percorso di ingresso della telecamera non deve essere vuoto",
     "Camera name must not be empty and must not contain spaces": "Il nome della telecamera non deve essere vuoto e non deve contenere spazi",
+    "Camera proxy": "Proxy telecamere",
     "Camera specific: frigate.0.remote.notificationTextTemplate": "Specifico per telecamera: frigate.0.remote.notificationTextTemplate",
     "Cameras Configuration": "Configurazione delle telecamere",
     "Cameras configuration": "Configurazione telecamere",
@@ -170,6 +171,7 @@
     "Restart Frigate container": "Riavvia il contenitore Frigate",
     "Retain Snapshots": "Conserva istantanee",
     "Retain recordings": "Conservare le registrazioni",
+    "Route prefix": "Prefisso del percorso",
     "Sandwich": "Sandwich",
     "Scissors": "Forbici",
     "Select the objects to track for this camera (e.g. person, car, dog). Leave empty to use Frigate's default (person).": "Seleziona gli oggetti da tracciare per questa telecamera (ad esempio, persona, auto, cane). Lascia vuoto per utilizzare l'impostazione predefinita di Frigate (persona).",
@@ -238,6 +240,7 @@
     "Use self-hosted Frigate in Docker": "Usa Frigate self-hosted in Docker",
     "Vase": "Vaso",
     "Wait time after Events end for Clip creation in seconds": "Tempo di attesa dopo la fine dell'evento per la creazione del clip in secondi",
+    "Web instance for the camera proxy": "Istanza web per il proxy telecamere",
     "Window": "Finestra",
     "Wine glass": "Bicchiere da vino",
     "YAML configuration file": "File di configurazione YAML",
@@ -250,5 +253,8 @@
     "frigate_url_help": "es. 192.168.1.100:5000 — per HTTPS prefissare con https:// (es. https://192.168.1.100:8971)",
     "px": "px",
     "sec": "sez",
+    "web_extension_info": "L'adattatore può fornire istantanee e flussi MJPEG tramite l'adattatore web. I percorsi ereditano la sua autenticazione e lo schema http/https, quindi non serve aprire altre porte.",
+    "web_instance_help": "«Tutte» (*) carica l'estensione in ogni istanza web. «Disattiva» spegne il proxy telecamere.",
+    "web_route_help": "Lasciare vuoto per il valore predefinito <istanza>/, ad es. frigate.0/. I percorsi saranno <prefisso><telecamera>/snapshot.jpg e <prefisso><telecamera>/stream.mjpeg.",
     "{{source}} {{type}} detected {{status}} {{score}} {{state}}": "{{source}} {{type}} rilevato {{status}} {{score}} {{state}}"
 }

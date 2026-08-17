@@ -31,6 +31,7 @@
     "Cake": "Kuchen",
     "Camera input path must not be empty": "Der Kamera-Eingabepfad darf nicht leer sein",
     "Camera name must not be empty and must not contain spaces": "Der Kameraname darf nicht leer sein und darf keine Leerzeichen enthalten",
+    "Camera proxy": "Kamera-Proxy",
     "Camera specific: frigate.0.remote.notificationTextTemplate": "Kameraspezifisch: frigate.0.remote.notificationTextTemplate",
     "Cameras Configuration": "Kamera-Konfiguration",
     "Cameras configuration": "Kamerakonfiguration",
@@ -170,6 +171,7 @@
     "Restart Frigate container": "Frigate-Container neu starten",
     "Retain Snapshots": "Snapshots aufbewahren",
     "Retain recordings": "Aufnahmen aufbewahren",
+    "Route prefix": "Routen-Präfix",
     "Sandwich": "Sandwich",
     "Scissors": "Schere",
     "Select the objects to track for this camera (e.g. person, car, dog). Leave empty to use Frigate's default (person).": "Wählen Sie die Objekte aus, die von dieser Kamera verfolgt werden sollen (z. B. Person, Auto, Hund). Lassen Sie das Feld leer, um die Standardeinstellung von Frigate (Person) zu verwenden.",
@@ -238,6 +240,7 @@
     "Use self-hosted Frigate in Docker": "Selbstgehostetes Frigate in Docker verwenden",
     "Vase": "Vase",
     "Wait time after Events end for Clip creation in seconds": "Wartezeit nach Ereignisende für Clip-Erstellung in Sekunden",
+    "Web instance for the camera proxy": "Web-Instanz für den Kamera-Proxy",
     "Window": "Fenster",
     "Wine glass": "Weinglas",
     "YAML configuration file": "YAML-Konfigurationsdatei",
@@ -250,5 +253,8 @@
     "frigate_url_help": "z.B. 192.168.1.100:5000 — für HTTPS mit https:// voranstellen (z.B. https://192.168.1.100:8971)",
     "px": "px",
     "sec": "Sek.",
+    "web_extension_info": "Der Adapter kann Snapshots und MJPEG-Streams über den Web-Adapter bereitstellen. Die Routen erben dessen Authentifizierung und http/https, sodass kein zusätzlicher Port geöffnet werden muss.",
+    "web_instance_help": "„Alle“ (*) lädt die Erweiterung in jede Web-Instanz. Mit „deaktivieren“ wird der Kamera-Proxy abgeschaltet.",
+    "web_route_help": "Leer lassen für den Standard <Instanz>/, z. B. frigate.0/. Die Routen lauten dann <Präfix><Kamera>/snapshot.jpg und <Präfix><Kamera>/stream.mjpeg.",
     "{{source}} {{type}} detected {{status}} {{score}} {{state}}": "{{source}} {{type}} erkannt {{status}} {{score}} {{state}}"
 }

@@ -83,21 +83,26 @@ export function toDataUrl(base64: string, contentType = 'image/jpeg'): string {
  * Build the URL of a route served by the web extension.
  *
  * With an empty `webUrl` the URL stays relative, which is what is needed when the Devices UI is
- * served by a web instance. Inside admin (port 8081) these routes do not exist, so there the user
- * has to name the web instance explicitly, e.g. `http://192.168.1.5:8082`.
+ * served by the very web instance that carries the extension.
  *
- * @param webUrl configured base URL of the web instance, may be empty
+ * @param webUrl base URL of the web instance, may be empty for a relative URL
+ * @param route route prefix the extension registered; empty falls back to the instance default
  * @param camera the camera reference
  * @param file the file below the camera route, e.g. `stream.mjpeg`
  * @param query additional query parameters
  */
 export function buildWebUrl(
     webUrl: string | undefined,
+    route: string | undefined,
     camera: CameraRef,
     file: string,
     query?: Record<string, string | number | undefined>,
 ): string {
     const base = (webUrl || '').replace(/\/+$/, '');
+    // The extension defaults its route to `<namespace>/`, so without a known prefix that is the
+    // same guess the adapter would make
+    const prefix = (route || `${camera.instance}/`).replace(/^\/+/, '').replace(/\/*$/, '/');
+
     const params = new URLSearchParams();
     for (const [key, value] of Object.entries(query || {})) {
         if (value !== undefined && value !== '' && value !== 0) {
@@ -105,5 +110,5 @@ export function buildWebUrl(
         }
     }
     const search = params.toString();
-    return `${base}/${camera.instance}/${camera.name}/${file}${search ? `?${search}` : ''}`;
+    return `${base}/${prefix}${camera.name}/${file}${search ? `?${search}` : ''}`;
 }

@@ -13,8 +13,14 @@ import FrigateWidgetBase, { type FrigateWidgetSettings, type FrigateWidgetState 
 import { toDataUrl } from './frigateCommon';
 
 export interface SnapshotSettings extends FrigateWidgetSettings {
-    /** Poll interval in milliseconds */
+    /** Poll interval of the tile in milliseconds */
     pollingInterval?: number;
+    /**
+     * Poll interval while the fullscreen dialog is open, in milliseconds. The dialog is what someone
+     * is actually looking at, so it may run faster than the tile without costing anything the rest
+     * of the time.
+     */
+    dialogPollingInterval?: number;
 }
 
 export interface SnapshotState extends FrigateWidgetState {
@@ -45,6 +51,16 @@ export class SnapshotComponent extends FrigateWidgetBase<SnapshotSettings, Snaps
                 sm: 12,
                 md: 6,
             },
+            dialogPollingInterval: {
+                type: 'number',
+                label: 'frigate_dialogPollingInterval',
+                help: 'frigate_dialogPollingInterval_help',
+                default: 500,
+                min: 200,
+                max: 600000,
+                sm: 12,
+                md: 6,
+            },
         });
     }
 
@@ -61,15 +77,38 @@ export class SnapshotComponent extends FrigateWidgetBase<SnapshotSettings, Snaps
         }
     }
 
+    /**
+     * Rate of the view that is currently on screen. The bounds match the ones the settings dialog
+     * enforces, so a value edited around them cannot push the polling faster than intended.
+     */
+    private getPollInterval(): number {
+        if (this.state.dialogOpen) {
+            return Math.max(200, parseInt(this.props.settings.dialogPollingInterval as unknown as string, 10) || 500);
+        }
+        return Math.max(500, parseInt(this.props.settings.pollingInterval as unknown as string, 10) || 2000);
+    }
+
+    /**
+     * Opening or closing the dialog switches the rate. Replace a waiting timer so the new interval
+     * applies at once; with a request in flight there is no timer, and the `finally` of `poll()`
+     * picks the new rate up anyway.
+     */
+    protected override onDialogToggled(): void {
+        if (this.pollTimer) {
+            clearTimeout(this.pollTimer);
+            this.pollTimer = null;
+            void this.poll();
+        }
+    }
+
     private scheduleNext(): void {
         if (this.destroyed) {
             return;
         }
-        const interval = Math.max(500, parseInt(this.props.settings.pollingInterval as unknown as string, 10) || 2000);
         this.pollTimer = setTimeout(() => {
             this.pollTimer = null;
             void this.poll();
-        }, interval);
+        }, this.getPollInterval());
     }
 
     /** One `snapshot` round trip. Never runs twice in parallel - a slow camera just lowers the rate. */
@@ -113,7 +152,7 @@ export class SnapshotComponent extends FrigateWidgetBase<SnapshotSettings, Snaps
         }
     }
 
-    protected renderImage(): React.JSX.Element | null {
+    protected renderImage(full?: boolean): React.JSX.Element | null {
         if (!this.state.frame) {
             return null;
         }
@@ -122,7 +161,7 @@ export class SnapshotComponent extends FrigateWidgetBase<SnapshotSettings, Snaps
             <img
                 src={toDataUrl(this.state.frame)}
                 alt={this.camera?.name}
-                style={FrigateWidgetBase.imageStyle}
+                style={FrigateWidgetBase.styleFor(full)}
             />
         );
     }
