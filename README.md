@@ -33,7 +33,7 @@ Adapter for [Frigate NVR](https://frigate.video/) — an open-source, self-hoste
     Placeholder for the next version (at the beginning of the line):
   ### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 3.1.0 (2026-08-17)
 - (@GermanBluefox) Added a web extension: every camera is now served under `/frigate.0/<camera>/snapshot.jpg` and `/frigate.0/<camera>/stream.mjpeg` of the web adapter, behind the ioBroker authentication and without exposing Frigate itself
 - (@GermanBluefox) Added two widgets for ioBroker.devices: a snapshot tile that works everywhere, and a live MJPEG tile
 - (@GermanBluefox) Added the `snapshot` message, which returns the current picture of a camera as base64
@@ -52,13 +52,6 @@ Adapter for [Frigate NVR](https://frigate.video/) — an open-source, self-hoste
 
 ### 2.3.2 (2026-04-14)
 - (@GermanBluefox) Added support of shm_size
-
-### 2.3.1 (2026-03-29)
-- (Eistee82) Added Frigate API authentication support for port 8971 (username/password login with JWT)
-- (Eistee82) Automatic token refresh on 401 responses
-
-### 2.3.0 (2026-03-29)
-- (Eistee82) Many new features, improvements, and bug fixes in development for the next major release (see 2.2.2)
 
 ## License
 

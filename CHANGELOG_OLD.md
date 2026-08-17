@@ -1,4 +1,11 @@
 # Older changes
+## 2.3.1 (2026-03-29)
+- (Eistee82) Added Frigate API authentication support for port 8971 (username/password login with JWT)
+- (Eistee82) Automatic token refresh on 401 responses
+
+## 2.3.0 (2026-03-29)
+- (Eistee82) Many new features, improvements, and bug fixes in development for the next major release (see 2.2.2)
+
 ## 2.3.0 (2026-03-29)
 - (Eistee82) Many new features, improvements, and bug fixes in development for the next major release (see 2.2.2)
 
