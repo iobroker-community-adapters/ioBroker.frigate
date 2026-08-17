@@ -65,7 +65,7 @@
         "release-major": "release-script major --yes",
         "prepublishOnly": "npm run build",
         "build": "tsc -p tsconfig.build.json && npm run devices-build",
-        "update-packages": "npx -y npm-check-updates",
+        "update-packages": "npx -y npm-check-updates --upgrade && cd src-devices && npx -y npm-check-updates --upgrade",
         "devices-0-clean": "node tasks --devices-0-clean",
         "devices-1-npm": "node tasks --devices-1-npm",
         "devices-2-build": "node tasks --devices-2-build",
