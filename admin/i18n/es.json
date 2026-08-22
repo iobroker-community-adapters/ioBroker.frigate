@@ -102,6 +102,7 @@
     "Frigate configuration type": "Tipo de configuración de Frigate",
     "Frigate directory location": "Ubicación del directorio de Frigate",
     "Frigate directory location must end with a slash (/) and must not be empty": "La ubicación del directorio de Frigate debe terminar con una barra (/)",
+    "Frigate writes the recording of an event to the disk only after the event has ended. If the clip is not ready yet, the download is repeated automatically with a growing delay.": "Frigate escribe la grabación de un evento en el disco solo después de que el evento haya terminado. Si el clip aún no está listo, la descarga se repite automáticamente con un retardo creciente.",
     "Frisbee": "Frisbee",
     "Furniture & Household": "Muebles y artículos para el hogar",
     "GPU": "GPU",

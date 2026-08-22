@@ -1,6 +1,82 @@
 import fs from 'node:fs';
 import { join } from 'node:path';
 import { randomUUID } from 'node:crypto';
+/** Maximum number of characters read from an error body */
+const MAX_ERROR_BODY = 4096;
+/** Number of attempts for a clip download before giving up */
+const CLIP_DOWNLOAD_ATTEMPTS = 3;
+/**
+ * Read the error body of a failed request.
+ * With `responseType: 'stream'` axios puts the body into a stream instead of parsing it, so the reason
+ * the server gave (for Frigate a JSON object with a `message`) would be lost without reading it here.
+ *
+ * @param data body of the error response: a stream, a buffer, a string or an already parsed object
+ */
+async function readErrorBody(data) {
+    if (!data) {
+        return '';
+    }
+    if (typeof data === 'string') {
+        return data.slice(0, MAX_ERROR_BODY);
+    }
+    if (Buffer.isBuffer(data)) {
+        return data.toString('utf8').slice(0, MAX_ERROR_BODY);
+    }
+    if (typeof data.on !== 'function') {
+        try {
+            return JSON.stringify(data).slice(0, MAX_ERROR_BODY);
+        }
+        catch {
+            return '';
+        }
+    }
+    return new Promise(resolve => {
+        const chunks = [];
+        let length = 0;
+        const stop = (timer) => {
+            clearTimeout(timer);
+            data.removeAllListeners?.('data');
+            resolve(chunks.join('').slice(0, MAX_ERROR_BODY));
+        };
+        // Never block the notification flow if the server keeps the connection open
+        const timeout = setTimeout(() => stop(), 5000);
+        timeout.unref?.();
+        const finish = () => stop(timeout);
+        data.on('data', (chunk) => {
+            if (length < MAX_ERROR_BODY) {
+                chunks.push(chunk.toString('utf8'));
+                length += chunk.length;
+            }
+        });
+        data.on('end', finish);
+        data.on('error', finish);
+    });
+}
+/**
+ * Extract the readable reason out of an error body.
+ * Frigate answers with `{"success": false, "message": "..."}`.
+ *
+ * @param body raw error body
+ */
+function parseErrorMessage(body) {
+    const text = body.trim();
+    if (!text) {
+        return '';
+    }
+    try {
+        const parsed = JSON.parse(text);
+        if (parsed && typeof parsed.message === 'string') {
+            return parsed.message;
+        }
+        if (typeof parsed === 'string') {
+            return parsed;
+        }
+    }
+    catch {
+        // not JSON, use the raw text
+    }
+    return text;
+}
 /** Download an HTTP stream response to a local file */
 async function downloadStreamToFile(requestClient, url, fileName, log) {
     let writer = null;
@@ -8,7 +84,7 @@ async function downloadStreamToFile(requestClient, url, fileName, log) {
         const response = await requestClient({ url, method: 'get', responseType: 'stream' });
         if (!response.data) {
             log.debug(`No data from ${url}`);
-            return false;
+            return { ok: false, retryable: true };
         }
         writer = fs.createWriteStream(fileName);
         const stream = writer;
@@ -24,20 +100,26 @@ async function downloadStreamToFile(requestClient, url, fileName, log) {
             response.data.pipe(stream);
         });
         log.debug(`Saved stream to ${fileName}`);
-        return true;
+        return { ok: true, retryable: false };
     }
     catch (error) {
+        const status = error.response?.status;
+        const message = parseErrorMessage(await readErrorBody(error.response?.data));
         log.warn(`Download error from ${url}`);
-        if (error.response && error.response.status >= 500) {
+        log.warn([status ? `Status ${status}` : '', message, !status ? String(error.message || error) : '']
+            .filter(part => part)
+            .join(': '));
+        if (status && status >= 500) {
             log.warn('Cannot reach server. You can ignore this after restarting the frigate server.');
         }
-        log.warn(error instanceof Error ? error.message : String(error));
         // createWriteStream created the file before the first chunk arrived, so a partial file has to be removed here
         if (writer) {
             writer.destroy();
             await fs.promises.unlink(fileName).catch(() => { });
         }
-        return false;
+        // 400 is what Frigate answers while the recording segments of the event are not written yet,
+        // and without a response the request never reached the server. Both can succeed on a retry.
+        return { ok: false, status, message, retryable: !status || status === 400 || status >= 500 };
     }
 }
 /** Delete a temp file, logging any errors */
@@ -53,6 +135,35 @@ async function cleanupTempFile(fileName, log) {
     catch (error) {
         log.error(error instanceof Error ? error.message : String(error));
     }
+}
+/**
+ * Download the clip of an event, retrying while Frigate reports that it cannot build it yet.
+ * Frigate writes the recording segments of an event only after it has ended, and answers
+ * `400 No recordings found for the specified time range` until they are on the disk.
+ *
+ * @param ctx notification context
+ * @param clipUrl url of the clip
+ * @param clipFileName local file to write the clip to
+ */
+async function downloadClipWithRetry(ctx, clipUrl, clipFileName) {
+    let waitTime = (ctx.adapter.config.notificationEventClipWaitTime || 10) * 1000;
+    for (let attempt = 1; attempt <= CLIP_DOWNLOAD_ATTEMPTS; attempt++) {
+        ctx.adapter.log.debug(`Wait ${waitTime / 1000} seconds for clip (attempt ${attempt})`);
+        await ctx.adapter.sleep(waitTime);
+        const result = await downloadStreamToFile(ctx.requestClient, clipUrl, clipFileName, ctx.adapter.log);
+        if (result.ok) {
+            return true;
+        }
+        if (!result.retryable || attempt === CLIP_DOWNLOAD_ATTEMPTS) {
+            if (result.status === 400) {
+                ctx.adapter.log.warn('Frigate has no recordings for this event. Increase "Wait time after Events end for Clip creation" or check the record settings of the camera in Frigate.');
+            }
+            return false;
+        }
+        // Give Frigate more time on every attempt
+        waitTime *= 2;
+    }
+    return false;
 }
 export async function prepareEventNotification(ctx, data) {
     if (!ctx.adapter.config.notificationActive) {
@@ -91,7 +202,7 @@ export async function prepareEventNotification(ctx, data) {
             fileName = join(ctx.tmpDir, `${randomUUID()}.jpg`);
             ctx.adapter.log.debug(`create uuid image to ${fileName}`);
             const downloaded = await downloadStreamToFile(ctx.requestClient, imageUrl, fileName, ctx.adapter.log);
-            if (!downloaded) {
+            if (!downloaded.ok) {
                 fileName = '';
             }
         }
@@ -147,9 +258,7 @@ export async function prepareEventNotification(ctx, data) {
                 }
                 if (ctx.adapter.config.notificationEventClip) {
                     clipFileName = join(ctx.tmpDir, `${randomUUID()}.mp4`);
-                    ctx.adapter.log.debug(`Wait ${ctx.adapter.config.notificationEventClipWaitTime} seconds for clip`);
-                    await ctx.adapter.sleep(ctx.adapter.config.notificationEventClipWaitTime * 1000);
-                    const downloaded = await downloadStreamToFile(ctx.requestClient, clipUrl, clipFileName, ctx.adapter.log);
+                    const downloaded = await downloadClipWithRetry(ctx, clipUrl, clipFileName);
                     if (downloaded) {
                         try {
                             await sendNotification(ctx, {

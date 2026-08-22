@@ -323,6 +323,7 @@
                 "notificationEventClipWaitTime": {
                     "type": "number",
                     "label": "Wait time after Events end for Clip creation in seconds",
+                    "help": "Frigate writes the recording of an event to the disk only after the event has ended. If the clip is not ready yet, the download is repeated automatically with a growing delay.",
                     "hidden": "!data.notificationActive || !data.notificationInstances",
                     "xs": 12,
                     "sm": 12,

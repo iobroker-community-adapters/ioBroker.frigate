@@ -102,6 +102,7 @@
     "Frigate configuration type": "Frigate 配置类型",
     "Frigate directory location": "Frigate 目录位置",
     "Frigate directory location must end with a slash (/) and must not be empty": "Frigate 目录位置必须以斜杠 (/) 结尾",
+    "Frigate writes the recording of an event to the disk only after the event has ended. If the clip is not ready yet, the download is repeated automatically with a growing delay.": "Frigate 只有在事件结束后才会把该事件的录像写入磁盘。如果片段尚未就绪，下载会自动重试，且每次的等待时间逐次延长。",
     "Frisbee": "飞盘",
     "Furniture & Household": "家具及家居用品",
     "GPU": "GPU",

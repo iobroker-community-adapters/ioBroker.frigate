@@ -96,7 +96,7 @@ class FrigateAdapter extends Adapter {
         }
         this.config.notificationMinScore = parseFloat(this.config.notificationMinScore) || 0;
         this.config.notificationEventClipWaitTime =
-            parseFloat(this.config.notificationEventClipWaitTime) || 5;
+            parseFloat(this.config.notificationEventClipWaitTime) || 10;
         this.config.webnum = parseInt(this.config.webnum, 10) || 5;
         this.config.mqttPort = parseInt((this.config.mqttPort || '1883'), 10) || 1883;
         this.config.mqttMode = this.config.mqttMode || 'broker';

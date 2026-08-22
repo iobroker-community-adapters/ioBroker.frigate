@@ -274,7 +274,7 @@
     "notificationEventSnapshotUpdateOnce": false,
     "notificationEventClip": true,
     "notificationEventClipLink": false,
-    "notificationEventClipWaitTime": 5,
+    "notificationEventClipWaitTime": 10,
     "notificationTextTemplate": "{{source}} {{type}} erkannt {{status}} {{score}}",
     "notificationExcludeList": "",
     "notificationExcludeZoneList": "",
