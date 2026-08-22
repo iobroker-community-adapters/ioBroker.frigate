@@ -142,6 +142,7 @@ export default class LiveComponent extends FrigateWidgetBase<LiveSettings, LiveS
         this.setState({ reloadCounter: this.state.reloadCounter + 1 });
     }
 
+    // eslint-disable-next-line class-methods-use-this
     protected stopCamera(): void {
         // intentionally empty
     }

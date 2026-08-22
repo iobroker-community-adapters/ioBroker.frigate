@@ -1,15 +1,22 @@
-import config from '@iobroker/eslint-config';
+import config, { reactConfig } from '@iobroker/eslint-config';
 
 export default [
     ...config,
+    ...reactConfig,
+    {
+        rules: {
+            'no-new-func': 'warn',
+            'no-extend-native': 'warn',
+            'no-eval': 'warn',
+        },
+    },
     {
         languageOptions: {
             parserOptions: {
-                allowDefaultProject: {
-                    allow: ['*.js', '*.mjs'],
+                projectService: {
+                    allowDefaultProject: ['*.js', '*.mjs', '*.ts'],
                 },
                 tsconfigRootDir: import.meta.dirname,
-                // project: './tsconfig.json',
             },
         },
     },
@@ -18,10 +25,9 @@ export default [
         rules: {
             'jsdoc/require-jsdoc': 'off',
             'jsdoc/require-param': 'off',
-            'jsdoc/check-param-names': 'off',
         },
     },
     {
-        ignores: ['build/**/*', 'admin/**/*', 'test/**/*', '**/*.mjs', 'src-devices/**/*'],
+        ignores: ['build/**/*', 'node_modules/**/*'],
     },
 ];

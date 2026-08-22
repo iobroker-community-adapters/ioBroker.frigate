@@ -173,6 +173,7 @@ export abstract class FrigateWidgetBase<
      * state. Widgets that deliver at a fixed rate use it to switch rate without waiting for the
      * currently running interval to elapse.
      */
+    // eslint-disable-next-line class-methods-use-this
     protected onDialogToggled(): void {
         // Nothing to do by default
     }
