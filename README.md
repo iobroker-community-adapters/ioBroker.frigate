@@ -34,6 +34,8 @@ Adapter for [Frigate NVR](https://frigate.video/) — an open-source, self-hoste
   ### **WORK IN PROGRESS**
 -->
 ### **WORK IN PROGRESS**
+- (@GermanBluefox) Added the missing translations for the LPR settings, the go2rtc restream column and the event history header, and corrected translations where the product name `Frigate`, state IDs and the `{{source}}`/`{{type}}` placeholders had been translated as words
+- (@GermanBluefox) Fixed stale `.jpg` / `.mp4` files in the tmp folder: the cleanup no longer depends on `notificationActive`, aborted downloads and failed notifications no longer leave files behind, and every instance now uses its own tmp folder (`iobroker-frigate.<instance>`)
 - (@GermanBluefox) Added a web extension: every camera is now served under `/frigate.0/<camera>/snapshot.jpg` and `/frigate.0/<camera>/stream.mjpeg` of the web adapter, behind the ioBroker authentication and without exposing Frigate itself
 - (@GermanBluefox) Added two widgets for ioBroker.devices: a snapshot tile that works everywhere, and a live MJPEG tile
 - (@GermanBluefox) Added the `snapshot` message, which returns the current picture of a camera as base64

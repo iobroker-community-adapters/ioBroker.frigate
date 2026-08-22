@@ -20,6 +20,7 @@ class FrigateAdapter extends Adapter {
     server;
     requestClient;
     json2iob;
+    // Set to an instance specific directory in onReady, so that parallel instances do not delete each other's files
     tmpDir = join(tmpdir(), 'iobroker-frigate');
     notificationMinScore = null;
     firstStart = true;
@@ -119,27 +120,11 @@ class FrigateAdapter extends Adapter {
         if (this.config.notificationExcludeList) {
             this.notificationExcludeArray = this.config.notificationExcludeList.replace(/\s/g, '').split(',');
         }
+        this.tmpDir = join(tmpdir(), `iobroker-${this.namespace}`);
         await fs.promises.mkdir(this.tmpDir, { recursive: true }).catch(() => { });
-        if (this.config.notificationActive) {
-            this.log.debug('Clean old images and clips');
-            let count = 0;
-            try {
-                const files = await fs.promises.readdir(this.tmpDir);
-                for (const file of files) {
-                    if (file.endsWith('.jpg') || file.endsWith('.mp4')) {
-                        this.log.debug(`Try to delete ${file}`);
-                        await fs.promises.unlink(join(this.tmpDir, file));
-                        count++;
-                        this.log.debug(`Deleted ${file}`);
-                    }
-                }
-                count && this.log.info(`Deleted ${count} old images and clips in tmp folder`);
-            }
-            catch (error) {
-                this.log.warn('Cannot delete old images and clips');
-                this.log.warn(error instanceof Error ? error.message : String(error));
-            }
-        }
+        await this.cleanTmpDir();
+        // Remove leftovers of adapter versions that used one shared directory for all instances
+        await this.cleanTmpDir(join(tmpdir(), 'iobroker-frigate'), true);
         await this.cleanOldObjects();
         await cleanTrackedObjects(this);
         this.trackedObjectsHistory = [];
@@ -160,6 +145,40 @@ class FrigateAdapter extends Adapter {
             this.initMqtt();
         }
     };
+    /**
+     * Delete all temporary images and clips.
+     * This runs independent of `notificationActive`, because the files are created as soon as one of the
+     * snapshot/clip options is enabled and stay on the disk if a download or a notification fails.
+     *
+     * @param dir directory to clean. Defaults to the temp directory of this instance
+     * @param removeDir remove the directory itself afterwards, if it is empty
+     */
+    async cleanTmpDir(dir = this.tmpDir, removeDir = false) {
+        this.log.debug(`Clean old images and clips in ${dir}`);
+        let count = 0;
+        try {
+            const files = await fs.promises.readdir(dir);
+            for (const file of files) {
+                if (file.endsWith('.jpg') || file.endsWith('.mp4')) {
+                    this.log.debug(`Try to delete ${file}`);
+                    await fs.promises.unlink(join(dir, file));
+                    count++;
+                    this.log.debug(`Deleted ${file}`);
+                }
+            }
+            count && this.log.info(`Deleted ${count} old images and clips in ${dir}`);
+            if (removeDir) {
+                await fs.promises.rmdir(dir).catch(() => { });
+            }
+        }
+        catch (error) {
+            if (error?.code === 'ENOENT') {
+                return;
+            }
+            this.log.warn(`Cannot delete old images and clips in ${dir}`);
+            this.log.warn(error instanceof Error ? error.message : String(error));
+        }
+    }
     async setupDocker() {
         const dockerManager = this.getPluginInstance('docker');
         if (!this.config.dockerFrigate.location) {
@@ -925,20 +944,24 @@ class FrigateAdapter extends Adapter {
         }
     }
     onUnload = (callback) => {
-        try {
-            if (this.mqttClient) {
-                this.mqttClient.end(true, () => {
+        const closeConnections = () => {
+            try {
+                if (this.mqttClient) {
+                    this.mqttClient.end(true, () => {
+                        this.aedes?.close(() => this.server?.close(() => callback?.()));
+                    });
+                }
+                else {
                     this.aedes?.close(() => this.server?.close(() => callback?.()));
-                });
+                }
             }
-            else {
-                this.aedes?.close(() => this.server?.close(() => callback?.()));
+            catch (e) {
+                this.log.error(`Error onUnload: ${e}`);
+                callback();
             }
-        }
-        catch (e) {
-            this.log.error(`Error onUnload: ${e}`);
-            callback();
-        }
+        };
+        // Do not leave images and clips of a running notification behind
+        void this.cleanTmpDir().then(closeConnections, closeConnections);
     };
     onStateChange = async (id, state) => {
         await handleStateChange({

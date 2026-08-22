@@ -24,23 +24,25 @@ async function downloadStreamToFile(
     fileName: string,
     log: ioBroker.Logger,
 ): Promise<boolean> {
+    let writer: fs.WriteStream | null = null;
     try {
         const response = await requestClient({ url, method: 'get', responseType: 'stream' });
         if (!response.data) {
             log.debug(`No data from ${url}`);
             return false;
         }
-        const writer = fs.createWriteStream(fileName);
+        writer = fs.createWriteStream(fileName);
+        const stream = writer;
         await new Promise<void>((resolve, reject) => {
             const onError = (error: Error): void => reject(error);
-            writer.on('finish', () => {
-                writer.removeListener('error', onError);
+            stream.on('finish', () => {
+                stream.removeListener('error', onError);
                 response.data.removeListener('error', onError);
                 resolve();
             });
-            writer.on('error', onError);
+            stream.on('error', onError);
             response.data.on('error', onError);
-            response.data.pipe(writer);
+            response.data.pipe(stream);
         });
         log.debug(`Saved stream to ${fileName}`);
         return true;
@@ -50,6 +52,11 @@ async function downloadStreamToFile(
             log.warn('Cannot reach server. You can ignore this after restarting the frigate server.');
         }
         log.warn(error instanceof Error ? error.message : String(error));
+        // createWriteStream created the file before the first chunk arrived, so a partial file has to be removed here
+        if (writer) {
+            writer.destroy();
+            await fs.promises.unlink(fileName).catch(() => {});
+        }
         return false;
     }
 }
@@ -69,6 +76,10 @@ async function cleanupTempFile(fileName: string, log: ioBroker.Logger): Promise<
 }
 
 export async function prepareEventNotification(ctx: NotificationContext, data: FrigateMessage): Promise<void> {
+    if (!ctx.adapter.config.notificationActive) {
+        // Do not download images and clips that would only be deleted again by sendNotification
+        return;
+    }
     let state = 'Event Before';
     let camera = data.before.camera;
     let label = data.before.label;
@@ -113,17 +124,20 @@ export async function prepareEventNotification(ctx: NotificationContext, data: F
         }
 
         if (fileName) {
-            await sendNotification(ctx, {
-                source: camera,
-                type: label,
-                state,
-                status,
-                image: fileName,
-                score,
-                zones,
-                id: data.before.id,
-            });
-            await cleanupTempFile(fileName, ctx.adapter.log);
+            try {
+                await sendNotification(ctx, {
+                    source: camera,
+                    type: label,
+                    state,
+                    status,
+                    image: fileName,
+                    score,
+                    zones,
+                    id: data.before.id,
+                });
+            } finally {
+                await cleanupTempFile(fileName, ctx.adapter.log);
+            }
         }
     }
 
@@ -170,16 +184,19 @@ export async function prepareEventNotification(ctx: NotificationContext, data: F
                         ctx.adapter.log,
                     );
                     if (downloaded) {
-                        await sendNotification(ctx, {
-                            source: camera,
-                            type: label,
-                            state: clipState,
-                            status,
-                            clip: clipFileName,
-                            score,
-                            zones,
-                        });
-                        await cleanupTempFile(clipFileName, ctx.adapter.log);
+                        try {
+                            await sendNotification(ctx, {
+                                source: camera,
+                                type: label,
+                                state: clipState,
+                                status,
+                                clip: clipFileName,
+                                score,
+                                zones,
+                            });
+                        } finally {
+                            await cleanupTempFile(clipFileName, ctx.adapter.log);
+                        }
                     }
                 }
             } else {

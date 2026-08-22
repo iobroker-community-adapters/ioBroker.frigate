@@ -344,6 +344,7 @@
       "type": "state",
       "common": {
         "name": "Events history",
+        "role": "state",
         "type": "json",
         "read": true,
         "write": false
@@ -363,6 +364,7 @@
       "type": "state",
       "common": {
         "name": "Tracked Objects History (Last 10)",
+        "role": "state",
         "type": "json",
         "read": true,
         "write": false

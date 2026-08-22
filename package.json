@@ -54,7 +54,7 @@
         "LICENSE"
     ],
     "scripts": {
-        "test:js": "mocha --config test/mocharc.custom.json test/utils.test.js test/main.test.js --exit",
+        "test:js": "mocha --config test/mocharc.custom.json test/utils.test.js test/main.test.js test/notifications.test.js --exit",
         "test:package": "mocha test/package --exit",
         "test:integration": "mocha test/integration --exit",
         "test": "npm run test:js && npm run test:package",

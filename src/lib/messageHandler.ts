@@ -107,22 +107,26 @@ export async function handleMqttMessage(ctx: MessageHandlerContext, topic: strin
             if (event === 'snapshot') {
                 data = `data:image/jpeg;base64,${payload.toString('base64')}`;
 
-                if (ctx.adapter.config.notificationCamera) {
+                if (ctx.adapter.config.notificationCamera && ctx.adapter.config.notificationActive) {
                     const fileName = join(ctx.tmpDir, `${randomUUID()}.jpg`);
                     ctx.adapter.log.debug(`Save ${event} image to ${fileName}`);
                     await fs.promises.writeFile(fileName, payload);
-                    await ctx.sendNotification({
-                        source: command,
-                        type: pathArray[1],
-                        state: event,
-                        image: fileName,
-                    });
                     try {
-                        ctx.adapter.log.debug(`Try to delete ${fileName}`);
-                        await fs.promises.unlink(fileName);
-                        ctx.adapter.log.debug(`Deleted ${fileName}`);
-                    } catch (error) {
-                        ctx.adapter.log.error(error instanceof Error ? error.message : String(error));
+                        await ctx.sendNotification({
+                            source: command,
+                            type: pathArray[1],
+                            state: event,
+                            image: fileName,
+                        });
+                    } finally {
+                        // Delete the image also if the notification failed, otherwise it stays in the tmp folder
+                        try {
+                            ctx.adapter.log.debug(`Try to delete ${fileName}`);
+                            await fs.promises.unlink(fileName);
+                            ctx.adapter.log.debug(`Deleted ${fileName}`);
+                        } catch (error) {
+                            ctx.adapter.log.error(error instanceof Error ? error.message : String(error));
+                        }
                     }
                 }
             } else if (event === 'state') {
