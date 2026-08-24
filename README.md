@@ -56,6 +56,8 @@ Adapter for [Frigate NVR](https://frigate.video/) — an open-source, self-hoste
 ### 2.3.2 (2026-04-14)
 - (@GermanBluefox) Added support of shm_size
 
+[Older changelogs can be found there](CHANGELOG_OLD.md)
+
 ## License
 
 MIT License
