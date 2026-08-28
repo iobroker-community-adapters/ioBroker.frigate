@@ -1,4 +1,7 @@
 # Older changes
+## 2.3.2 (2026-04-14)
+- (@GermanBluefox) Added support of shm_size
+
 ## 2.3.1 (2026-03-29)
 - (Eistee82) Added Frigate API authentication support for port 8971 (username/password login with JWT)
 - (Eistee82) Automatic token refresh on 401 responses
