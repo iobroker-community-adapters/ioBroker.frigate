@@ -11,7 +11,11 @@ services:
             - 'iobStopOnUnload=${config.dockerFrigate.stopIfInstanceStopped:-false}'
             - 'iobAutoImageUpdate=${config.dockerFrigate.autoImageUpdate:-true}'
             - 'iobCopyVolumes=./config=>config'
-            - 'iobBackup=frigate_data'
+            # No iobBackup here: the label only works for named volumes, and everything worth
+            # keeping lives in the directory below `dockerFrigate.location`, which is bind
+            # mounted. Nothing is lost by that - `config.yml` is generated from the instance
+            # settings, which an ioBroker backup contains anyway, and recordings and clips are
+            # far too large for one (that is why they get their own directory in the first place).
             - 'iobWaitForReady=true'
         ports:
             - '${config.dockerFrigate.bind:-127.0.0.1}:${config.dockerFrigate.port:-5000}:5000'

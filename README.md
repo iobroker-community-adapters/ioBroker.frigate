@@ -33,6 +33,10 @@ Adapter for [Frigate NVR](https://frigate.video/) — an open-source, self-hoste
     Placeholder for the next version (at the beginning of the line):
   ### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+- (@GermanBluefox) The Frigate directory can no longer be left empty by accident: the validator complained but did not stop the dialog from being saved. With an empty directory the plugin mounts named volumes instead of the chosen directory, while the adapter writes `config.yml` into the ioBroker data directory - Frigate then starts without its configuration
+- (@GermanBluefox) Removed the `iobBackup=frigate_data` label: no volume of that name exists, so it never marked anything. The label works for named volumes only, and everything worth keeping lives in the bind-mounted Frigate directory - `config.yml` is generated from the instance settings, which an ioBroker backup contains anyway, and recordings and clips are far too large for one
+
 ### 3.1.1 (2026-08-24)
 - (@GermanBluefox) Fixed the clip download failing with `Request failed with status code 400`: Frigate answers that while the recording segments of the event are not written yet, so the download is now retried with a growing delay and the message Frigate sent is written to the log instead of only the status code. The default wait time after the event end was raised from 5 to 10 seconds
 - (@GermanBluefox) Added the missing translations for the LPR settings, the go2rtc restream column and the event history header, and corrected translations where the product name `Frigate`, state IDs and the `{{source}}`/`{{type}}` placeholders had been translated as words
