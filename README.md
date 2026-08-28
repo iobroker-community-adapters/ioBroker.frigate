@@ -47,10 +47,10 @@ Adapter for [Frigate NVR](https://frigate.video/) — an open-source, self-hoste
 - (Eistee82) Fixed zone object counters (e.g. `<zone>.person`) staying at their last value after the object left the zone. Per-zone object counts are now sourced solely from the Frigate MQTT occupancy topics, and the zone aggregator resets its active/stationary states to 0 and uses `current_zones` instead of the cumulative `entered_zones`.
 
 ### 3.0.3 (2026-06-09)
-- (@GermanBluefox) Added button to re-create the docker container
+- (@GermanBluefox) Added a button to re-create the docker container
 
 ### 3.0.2 (2026-05-30)
-- (@GermanBluefox) Replaced the track of objects with drop down menu
+- (@GermanBluefox) Replaced the track of objects with a drop down menu
 
 ### 3.0.0 (2026-05-16)
 - (copilot) Adapter requires node.js >= 22 now
