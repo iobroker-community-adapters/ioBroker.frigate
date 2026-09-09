@@ -35,8 +35,8 @@ Adapter for [Frigate NVR](https://frigate.video/) — an open-source, self-hoste
 -->
 ### 3.1.3 (2026-09-09)
 - (@GermanBluefox) The camera name in the device manager tile moved below the picture: at the top of the tile the drag handle and the favourite star of the widget manager were drawn over it
-- (@GermanBluefox) The build helper is written in TypeScript now and runs directly, as node 22.19 strips the types itself
-
+- (@GermanBluefox) The build helper is written in TypeScriptpes itself now.
+  
 ### 3.1.2 (2026-08-28)
 - (@GermanBluefox) The Frigate directory can no longer be left empty by accident: the validator complained but did not stop the dialog from being saved. With an empty directory the plugin mounts named volumes instead of the chosen directory, while the adapter writes `config.yml` into the ioBroker data directory - Frigate then starts without its configuration
 - (@GermanBluefox) Removed the `iobBackup=frigate_data` label: no volume of that name exists, so it never marked anything. The label works for named volumes only, and everything worth keeping lives in the bind-mounted Frigate directory - `config.yml` is generated from the instance settings, which an ioBroker backup contains anyway, and recordings and clips are far too large for one
