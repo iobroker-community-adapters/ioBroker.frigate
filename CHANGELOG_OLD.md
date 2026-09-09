@@ -1,4 +1,9 @@
 # Older changes
+## 3.0.0 (2026-05-16)
+- (copilot) Adapter requires node.js >= 22 now
+- (copilot) Added re-streaming support for live video feeds (experimental)
+- (copilot) Added support for license plate recognition events from Frigate
+
 ## 2.3.2 (2026-04-14)
 - (@GermanBluefox) Added support of shm_size
 

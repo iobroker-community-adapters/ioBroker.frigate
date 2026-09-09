@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "frigate",
-    "version": "3.1.2",
+    "version": "3.1.3",
     "news": {
+      "3.1.3": {
+        "en": "The camera name in the device manager tile moved below the picture: at the top of the tile the drag handle and the favourite star of the widget manager were drawn over it\nThe build helper is written in TypeScript now and runs directly, as node 22.19 strips the types itself",
+        "de": "Der Kameraname in der Gerätemanager-Kachel wurde unter das Bild verschoben. Oben wurden der Ziehgriff und der Lieblingsstern des Widget-Managers\nDer Build-Helper ist jetzt in TypeScript und läuft direkt, da Node 22.19 die Typen entfernt",
+        "ru": "Название камеры на плитке диспетчера устройств переместилось под картинку: в верхней части плитки над ней были нарисованы ручка перетаскивания и любимая звезда менеджера виджетов\nПомощник сборки теперь написан на TypeScript и работает напрямую, поскольку узел 22.19 сам удаляет типы",
+        "pt": "O nome da câmera no gerenciador de dispositivos se moveu abaixo da imagem: no topo, a alça e a estrela favorita do gerenciador de widgets\nO build helper agora é escrito em TypeScript e roda diretamente, já que o node 22.19 remove os tipos",
+        "nl": "De cameranaam in de tegel voor apparaatbeheer is onder de afbeelding verschoven: bovenaan de tegel zijn de sleephendel en de favoriete ster van de widgetmanager eroverheen getekend\nDe build-helper is nu geschreven in TypeScript en wordt rechtstreeks uitgevoerd, aangezien node 22.19 de typen zelf verwijdert",
+        "fr": "Le nom de la caméra dans la vignette du gestionnaire d'appareils a été déplacé sous l'image : en haut de la vignette, la molette et l'étoile préférée du gestionnaire de widgets ont été dessinées\nL'assistant de compilation est écrit en TypeScript et s'exécute directement, car le nœud 22.19 supprime les types",
+        "it": "Il nome della fotocamera nel riquadro Gestione dispositivi è stato spostato sotto l'immagine: sopra c'erano la maniglia e la stella preferita\nIl build helper è scritto in TypeScript ora e funziona direttamente, poiché il nodo 22.19",
+        "es": "El nombre de la cámara en el gestor de dispositivos se movió por debajo de la imagen: en la parte superior, se dibujaron el cursor y la estrella favorita del gestor de widgets\nEl ayudante de compilación está escrito en TypeScript y se ejecuta directamente, ya que el nodo 22.19 elimina los tipos",
+        "pl": "Nazwa kamery w kafelku menedżera urządzeń przesunięta poniżej obrazu: u góry kafelka narysowano na nim uchwyt przeciągania i ulubiona gwiazda menedżera widżetów\nPomocnik kompilacji jest teraz zapisany w TypeScript i działa bezpośrednio, ponieważ węzeł 22.19 usuwa same typy",
+        "uk": "Назва камери в плитці диспетчера пристроїв переміщено нижче зображення: у верхній частині плитки було намальовано маркер перетягування та улюблена зірка менеджера віджетів\nПомічник збірки зараз написаний у TypeScript і працює безпосередньо, оскільки вузол 22.19 знімає самі типи",
+        "zh-cn": "设备管理器图块中的摄像机名称移至图片下方：在图块的顶部，拖动手柄和控件管理器中最喜欢的星形被画在上面\n编译助手现在是用 TypeScript 编写的，可以直接运行，因为节点 22.19 会自行去除类型"
+      },
       "3.1.2": {
         "en": "The Frigate directory can no longer be left empty by accident: the validator complained but did not stop the dialog from being saved. With an empty directory the plugin mounts named volumes instead of the chosen directory, while the adapter writes `config.yml` into the ioBroker data directory - Frigate then starts without its configuration\nRemoved the `iobBackup=frigate_data` label: no volume of that name exists, so it never marked anything. The label works for named volumes only, and everything worth keeping lives in the bind-mounted Frigate directory - `config.yml` is generated from the instance settings, which an ioBroker backup contains anyway, and recordings and clips are far too large for one",
         "de": "Das Frigate-Verzeichnis darf nicht mehr versehentlich leer bleiben: Der Validator meldete zwar einen Fehler, verhinderte aber nicht das Speichern des Dialogs. Bei einem leeren Verzeichnis bindet das Plugin benannte Volumes anstelle des gewählten Verzeichnisses ein, während der Adapter die Datei `config.yml` in das ioBroker-Datenverzeichnis schreibt – Frigate startet dann ohne seine Konfiguration.\nDas Label `iobBackup=frigate_data` wurde entfernt: Es existiert kein Volume mit diesem Namen, daher wurde es nie verwendet. Das Label funktioniert nur für benannte Volumes, und alle wichtigen Daten befinden sich im eingebundenen Frigate-Verzeichnis. Die Datei `config.yml` wird aus den Instanzeinstellungen generiert, die ohnehin in einem ioBroker-Backup enthalten sind, und Aufzeichnungen und Clips sind viel zu groß für ein einzelnes Label.",
@@ -80,19 +93,6 @@
         "pl": "Dodano obsługę uwierzytelniania API Frigate dla portu 8971 (login użytkownika / hasła z JWT)\nAutomatyczne odświeżanie symboli w odpowiedzi 401",
         "uk": "Додано Frigate API автентифікації для порту 8971 (ім'я користувача / пароль логін з JWT)\nАвтоматичне оновлення токени на 401 відгуках",
         "zh-cn": "为端口 8971 添加了 Frigate API 认证支持(用户名/ Password 登录 JWT)\n401 回复时自动刷新令牌"
-      },
-      "2.3.0": {
-        "en": "Many new features, improvements, and bug fixes in development for the next major release (see 2.2.2)",
-        "de": "Viele neue Features, Verbesserungen und Fehlerbehebungen in der Entwicklung für die nächste große Version (siehe 2.2.2)",
-        "ru": "Многие новые функции, улучшения и исправления ошибок в разработке для следующего крупного выпуска (см. 2.2.2)",
-        "pt": "Muitas novas funcionalidades, melhorias e correções de bugs em desenvolvimento para a próxima versão principal (ver 2.2.2)",
-        "nl": "Veel nieuwe functies, verbeteringen en bugfixes in ontwikkeling voor de volgende grote release (zie 2.2.2)",
-        "fr": "De nombreuses nouvelles fonctionnalités, améliorations et corrections de bogues pour la prochaine version majeure (voir 2.2.2)",
-        "it": "Molte nuove funzionalità, miglioramenti e correzioni di bug in sviluppo per il prossimo rilascio principale (vedere 2.2.2)",
-        "es": "Muchas nuevas características, mejoras y correcciones de errores en el desarrollo para la próxima versión importante (véase 2.2.2)",
-        "pl": "Wiele nowych funkcji, ulepszeń i poprawek błędów w rozwoju dla następnego wydania głównego (patrz 2.2.2)",
-        "uk": "Багато нових функцій, вдосконалення та виправлення помилок у розробці для наступного основного релізу (див. 2.2.2)",
-        "zh-cn": "开发中的许多新特性、改进和错误修正,用于下一次主要发行(见2.2.2)"
       }
     },
     "titleLang": {

@@ -33,7 +33,7 @@ Adapter for [Frigate NVR](https://frigate.video/) — an open-source, self-hoste
     Placeholder for the next version (at the beginning of the line):
   ### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 3.1.3 (2026-09-09)
 - (@GermanBluefox) The camera name in the device manager tile moved below the picture: at the top of the tile the drag handle and the favourite star of the widget manager were drawn over it
 - (@GermanBluefox) The build helper is written in TypeScript now and runs directly, as node 22.19 strips the types itself
 
@@ -55,11 +55,6 @@ Adapter for [Frigate NVR](https://frigate.video/) — an open-source, self-hoste
 
 ### 3.0.2 (2026-05-30)
 - (@GermanBluefox) Replaced the track of objects with a drop down menu
-
-### 3.0.0 (2026-05-16)
-- (copilot) Adapter requires node.js >= 22 now
-- (copilot) Added re-streaming support for live video feeds (experimental)
-- (copilot) Added support for license plate recognition events from Frigate
 
 [Older changelogs can be found there](CHANGELOG_OLD.md)
 
