@@ -347,6 +347,10 @@ export abstract class FrigateWidgetBase<
                     >
                         {indicators}
                     </div>
+                    <Box sx={{ flex: 1, minHeight: 0, overflow: 'hidden' }}>{this.renderPicture()}</Box>
+                    {/* Below the picture, like the name of every other widget: the host draws the
+                        drag handle and the favourite star over the top-left corner of the tile and
+                        the indicators over the top-right one, so a label up there is written over */}
                     {label ? (
                         <Typography
                             variant="caption"
@@ -354,7 +358,7 @@ export abstract class FrigateWidgetBase<
                                 fontWeight: 700,
                                 color: 'text.secondary',
                                 px: 0.5,
-                                pb: 0.25,
+                                pt: 0.25,
                                 whiteSpace: 'nowrap',
                                 overflow: 'hidden',
                                 textOverflow: 'ellipsis',
@@ -363,7 +367,6 @@ export abstract class FrigateWidgetBase<
                             {label}
                         </Typography>
                     ) : null}
-                    <Box sx={{ flex: 1, minHeight: 0, overflow: 'hidden' }}>{this.renderPicture()}</Box>
                 </Box>
                 {this.renderDialog()}
             </Box>

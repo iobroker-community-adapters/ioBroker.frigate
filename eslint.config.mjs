@@ -5,11 +5,12 @@ export default [
     {
         languageOptions: {
             parserOptions: {
-                allowDefaultProject: {
-                    allow: ['*.js', '*.mjs'],
+                // tasks.ts is a build helper and therefore outside of the "src" scope of
+                // tsconfig.json, so the project service has to fall back to its default project
+                projectService: {
+                    allowDefaultProject: ['*.js', '*.mjs', 'tasks.ts'],
                 },
                 tsconfigRootDir: import.meta.dirname,
-                // project: './tsconfig.json',
             },
         },
     },

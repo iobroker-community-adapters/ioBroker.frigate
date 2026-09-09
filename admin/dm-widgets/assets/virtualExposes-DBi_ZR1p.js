@@ -1,1 +1,0 @@
-import{t as e}from"./virtual_mf-exposes___mfe_internal__DevicesWidgetFrigateSet__customDevices_js-B2yFUGpP.js";export{e as default};

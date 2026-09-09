@@ -4,13 +4,15 @@
  * `src-devices` is a separate module-federation bundle that ioBroker.devices loads at runtime. The
  * built files go to admin/dm-widgets/, which ships with the adapter because admin/ is already listed
  * in "files" of package.json.
+ *
+ * Runs as TypeScript without a build step: node >= 22.19 strips the types itself, so this file must
+ * stay in erasable syntax only - no enums, no parameter properties, no namespaces.
  */
 import { existsSync, rmSync, mkdirSync, readdirSync, copyFileSync, statSync } from 'node:fs';
-import { join, dirname } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { join } from 'node:path';
 import { execSync } from 'node:child_process';
 
-const root = dirname(fileURLToPath(import.meta.url));
+const root = import.meta.dirname;
 
 /**
  * Copy a whole directory, creating the target as needed.
@@ -18,7 +20,7 @@ const root = dirname(fileURLToPath(import.meta.url));
  * @param from source directory
  * @param to target directory
  */
-function copyDir(from, to) {
+function copyDir(from: string, to: string): void {
     if (!existsSync(from)) {
         return;
     }
@@ -40,27 +42,27 @@ function copyDir(from, to) {
  * @param command the command line
  * @param cwd directory to run it in
  */
-function run(command, cwd) {
+function run(command: string, cwd: string): void {
     console.log(`> ${command}  (in ${cwd})`);
     execSync(command, { cwd, stdio: 'inherit' });
 }
 
-function devicesClean() {
+function devicesClean(): void {
     rmSync(join(root, 'src-devices/build'), { recursive: true, force: true });
     rmSync(join(root, 'admin/dm-widgets'), { recursive: true, force: true });
 }
 
-function devicesNpm() {
+function devicesNpm(): void {
     if (!existsSync(join(root, 'src-devices/node_modules'))) {
         run('npm install', join(root, 'src-devices'));
     }
 }
 
-function devicesBuild() {
+function devicesBuild(): void {
     run('npm run build', join(root, 'src-devices'));
 }
 
-function devicesCopy() {
+function devicesCopy(): void {
     const build = join(root, 'src-devices/build');
     const target = join(root, 'admin/dm-widgets');
     if (!existsSync(join(build, 'customDevices.js'))) {
@@ -87,6 +89,6 @@ if (process.argv.includes('--devices-0-clean')) {
     devicesBuild();
     devicesCopy();
 } else {
-    console.error('Usage: node tasks --devices-build | --devices-0-clean | ... | --devices-3-copy');
+    console.error('Usage: node tasks.ts --devices-build | --devices-0-clean | ... | --devices-3-copy');
     process.exit(1);
 }
