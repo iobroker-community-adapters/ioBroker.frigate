@@ -1,4 +1,7 @@
 # Older changes
+## 3.0.2 (2026-05-30)
+- (@GermanBluefox) Replaced the track of objects with a drop down menu
+
 ## 3.0.0 (2026-05-16)
 - (copilot) Adapter requires node.js >= 22 now
 - (copilot) Added re-streaming support for live video feeds (experimental)

@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "frigate",
-    "version": "3.1.3",
+    "version": "3.1.4",
     "news": {
+      "3.1.4": {
+        "en": "The live widget for `ioBroker.devices` switches to single pictures over the socket by itself when the page is opened through the ioBroker cloud (iobroker.pro / iobroker.net): the cloud cannot relay the MJPEG stream, and the address of the web instance is not reachable from outside anyway",
+        "de": "Das Live-Widget für `ioBroker.Devices` wechselt automatisch zu Einzelbildern über den Socket, wenn die Seite über die ioBroker-Cloud (iobroker.pro/iobroker.net) geöffnet wird: Die Cloud kann den MJPEG-Stream nicht weiterleiten und die Adresse der Webinstanz ist sowieso nicht erreichbar",
+        "ru": "Живой виджет для `IOBroker.devices` сам переключается на отдельные картинки через сокет при открытии страницы через облако IOBroker (iobroker.pro/iobroker.net): облако не может передавать поток MJPEG, а адрес веб-экземпляра все равно недоступен извне",
+        "pt": "O widget ativo de `IObroker.devices` muda para imagens únicas no soquete sozinho quando a página é aberta na nuvem IOBroker (iobroker.pro/ iobroker.net): a nuvem não pode retransmitir o fluxo MJPEG e o endereço da instância web não pode ser acessado de fora",
+        "nl": "De live-widget voor `IOBroker.devices` schakelt vanzelf over naar afzonderlijke afbeeldingen via de socket wanneer de pagina wordt geopend via de IOBroker-cloud (iobroker.pro/iobroker.net): de cloud kan de MJPEG-stream niet doorsturen en het adres van de webinstance is sowieso niet van buitenaf bereikbaar",
+        "fr": "Le widget en direct pour « IOBroker.Devices » passe à des images uniques sur le socket tout seul lorsque la page est ouverte via le cloud IObroker (iobroker.pro/iobroker.net) : le cloud ne peut pas relayer le flux MJPEG et l'adresse de l'instance Web n'est de toute façon pas accessible de l'extérieur",
+        "it": "Il widget live per `IOBroker.devices` passa a singole immagini sul socket da solo quando la pagina viene aperta tramite il cloud IOBroker (iobroker.pro/iobroker.net): il cloud non può inoltrare lo stream MJPEG e l'indirizzo dell'istanza web non è comunque raggiungibile dall'esterno",
+        "es": "El widget en vivo de «IOBroker.Devices» cambia por sí solo a imágenes individuales en el socket cuando la página se abre en la nube de IOBroker (iobroker.pro/iobroker.net): la nube no puede retransmitir la transmisión MJPEG y la dirección de la instancia web no es accesible desde fuera de todos modos",
+        "pl": "Widżet na żywo dla `iobroker.devices` sam przełącza się na pojedyncze obrazy przez gniazdo, gdy strona jest otwierana przez chmurę ioBroker (iobroker.pro/iobroker.net): chmura nie może przekazywać strumienia MJPEG, a adres instancji internetowej i tak nie jest dostępny z zewnątrz",
+        "uk": "Живий віджет для `ioBroker.devices` перемикається на окремі зображення через сокет сам по собі, коли сторінка відкривається через хмару IObroker (iobroker.pro/ iobroker.net): хмара не може передати потік MJPEG, а адреса веб-екземпляра все одно не доступна ззовні",
+        "zh-cn": "当通过 IOBroker 云（iobroker.pro/iobroker.net）打开页面时，`iobroker.devices` 的实时插件会通过插槽自行切换到单张图片：云无法中继 MJPEG 流，而且无论如何都无法从外部访问网络实例的地址"
+      },
       "3.1.3": {
         "en": "The camera name in the device manager tile moved below the picture: at the top of the tile the drag handle and the favourite star of the widget manager were drawn over it\nThe build helper is written in TypeScript now and runs directly, as node 22.19 strips the types itself",
         "de": "Der Kameraname in der Gerätemanager-Kachel wurde unter das Bild verschoben. Oben wurden der Ziehgriff und der Lieblingsstern des Widget-Managers\nDer Build-Helper ist jetzt in TypeScript und läuft direkt, da Node 22.19 die Typen entfernt",
@@ -80,19 +93,6 @@
         "pl": "Adapter wymaga node.js > = 22\nDodano wsparcie restreamingu dla transmisji wideo na żywo (eksperymentalne)\nDodano wsparcie dla rozpoznawania tablic rejestracyjnych z Frigate",
         "uk": "Адаптер вимагає node.js >= 22 тепер\nДодана підтримка потокового відео живих товарів (експериментально)\nДодана підтримка заходів розпізнавання ліцензійних пластин від Frigate",
         "zh-cn": "适配器需要节点.js 现在22\n添加对视频直播的再流支持(实验性)\n增加护卫舰对牌照识别活动的支持"
-      },
-      "2.3.1": {
-        "en": "Added Frigate API authentication support for port 8971 (username/password login with JWT)\nAutomatic token refresh on 401 responses",
-        "de": "Hinzugefügt Frigate API Authentifizierungsunterstützung für Port 8971 (Benutzername/Passwort-Login mit JWT)\nAutomatische Token-Erfrischung auf 401 Antworten",
-        "ru": "Добавлена поддержка аутентификации Frigate API для порта 8971 (логин имени пользователя / пароля с JWT)\nАвтоматическое обновление токена на 401 ответ",
-        "pt": "Adicionado suporte de autenticação API fragata para a porta 8971 (início do usuário/senha com JWT)\nActualização automática do token em 401 respostas",
-        "nl": "Toegevoegd Frigate API authenticatie ondersteuning voor poort 8971 (gebruikersnaam/wachtwoord aanmelden bij JWT)\nAutomatisch verversen van token op 401 reacties",
-        "fr": "Ajout du support d'authentification de l'API Frigate pour le port 8971 (nom d'utilisateur/mot de passe avec JWT)\nJeton automatique rafraîchi sur 401 réponses",
-        "it": "Aggiunto il supporto di autenticazione Frigate API per la porta 8971 (username/password login con JWT)\nRinfresco automatico dei gettoni su 401 risposte",
-        "es": "Añadido Soporte de autenticación de Frigate API para el puerto 8971 (nombre de usuario/password login con JWT)\nRefrigerio automático de token en 401 respuestas",
-        "pl": "Dodano obsługę uwierzytelniania API Frigate dla portu 8971 (login użytkownika / hasła z JWT)\nAutomatyczne odświeżanie symboli w odpowiedzi 401",
-        "uk": "Додано Frigate API автентифікації для порту 8971 (ім'я користувача / пароль логін з JWT)\nАвтоматичне оновлення токени на 401 відгуках",
-        "zh-cn": "为端口 8971 添加了 Frigate API 认证支持(用户名/ Password 登录 JWT)\n401 回复时自动刷新令牌"
       }
     },
     "titleLang": {
