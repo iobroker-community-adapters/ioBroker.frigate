@@ -9,6 +9,7 @@
   "frigate_fps": "Bilder pro Sekunde",
   "frigate_fps_help": "Frigate kodiert den Stream pro Betrachter – ein niedriger Wert spart CPU",
   "frigate_instance": "Frigate-Instanz",
+  "frigate_live_cloud": "Über die ioBroker-Cloud (iobroker.pro / iobroker.net) kommt der Stream nicht durch. Das Widget schaltet dort automatisch auf Einzelbilder über den Socket um, mit der unten eingestellten Bildrate.",
   "frigate_live_needs_web": "Dieses Widget streamt über den Kamera-Proxy des web-Adapters. Ohne web-Instanz nimm stattdessen das Standbild-Widget.",
   "frigate_loading": "Wird geladen…",
   "frigate_name": "Name",

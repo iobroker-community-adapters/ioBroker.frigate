@@ -280,6 +280,9 @@ beide können Frigate die Objektrahmen und den Zeitstempel ins Bild zeichnen las
   **web**-Adapter, den die Geräte-Oberfläche nur erreicht, wenn sie in einer Web-Instanz läuft. Läuft
   sie im Admin — der Normalfall —, muss die Web-Instanz in den Widget-Einstellungen eingetragen
   werden, z. B. `http://192.168.1.5:8082`.
+  Über die ioBroker-Cloud (iobroker.pro / iobroker.net) schaltet das Widget von selbst auf Einzelbilder
+  über den Socket um, denn die Cloud kann keinen Stream durchreichen. Die eingestellte Bildrate legt
+  dann fest, wie oft ein Bild abgefragt wird.
 
 Im Zweifel das Snapshot-Widget nehmen, das hat diese Einschränkung nicht.
 

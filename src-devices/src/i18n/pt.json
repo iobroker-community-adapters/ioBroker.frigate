@@ -9,6 +9,7 @@
   "frigate_fps": "Quadros por segundo",
   "frigate_fps_help": "O Frigate codifica o fluxo para cada espectador — um valor baixo poupa CPU",
   "frigate_instance": "Instância do Frigate",
+  "frigate_live_cloud": "Através da nuvem ioBroker (iobroker.pro / iobroker.net) o fluxo não passa. Aí o widget muda automaticamente para imagens individuais através do socket, com a taxa de quadros definida abaixo.",
   "frigate_live_needs_web": "Este widget transmite através do proxy de câmeras do adaptador web. Sem uma instância web use antes o widget de instantâneo.",
   "frigate_loading": "A carregar…",
   "frigate_name": "Nome",

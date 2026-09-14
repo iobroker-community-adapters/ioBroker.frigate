@@ -9,6 +9,7 @@
   "frigate_fps": "Fotogrammi al secondo",
   "frigate_fps_help": "Frigate codifica il flusso per ogni spettatore — un valore basso riduce la CPU",
   "frigate_instance": "Istanza Frigate",
+  "frigate_live_cloud": "Tramite il cloud ioBroker (iobroker.pro / iobroker.net) il flusso non passa. Lì il widget passa automaticamente a singole immagini tramite il socket, con la frequenza fotogrammi impostata sotto.",
   "frigate_live_needs_web": "Questo widget trasmette tramite il proxy telecamere dell'adattatore web. Senza un'istanza web usa invece il widget istantanea.",
   "frigate_loading": "Caricamento…",
   "frigate_name": "Nome",

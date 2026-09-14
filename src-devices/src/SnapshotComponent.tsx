@@ -11,6 +11,7 @@ import type { ConfigItemPanel, ConfigItemTabs } from '@iobroker/dm-utils';
 
 import FrigateWidgetBase, { type FrigateWidgetSettings, type FrigateWidgetState } from './FrigateWidgetBase';
 import { toDataUrl } from './frigateCommon';
+import SnapshotPoller from './SnapshotPoller';
 
 export interface SnapshotSettings extends FrigateWidgetSettings {
     /** Poll interval of the tile in milliseconds */
@@ -29,14 +30,23 @@ export interface SnapshotState extends FrigateWidgetState {
 }
 
 export class SnapshotComponent extends FrigateWidgetBase<SnapshotSettings, SnapshotState> {
-    private pollTimer: ReturnType<typeof setTimeout> | null = null;
-    private requesting = false;
-    private destroyed = false;
+    private readonly poller: SnapshotPoller;
 
     constructor(props: WidgetGenericProps<SnapshotSettings>) {
         super(props);
         this.state = { ...this.state, frame: '' };
-        this.destroyed = false;
+        this.poller = new SnapshotPoller({
+            getSocket: () => this.props.stateContext.getSocket(),
+            getCamera: () => this.camera,
+            getParams: () => ({
+                height: this.getRequestedHeight(this.state.dialogOpen),
+                bbox: !!this.props.settings.bbox,
+                timestamp: !!this.props.settings.timestamp,
+            }),
+            getInterval: () => this.getPollInterval(),
+            onFrame: frame => this.setState({ frame, error: '' }),
+            onError: error => this.setError(error),
+        });
     }
 
     static override getConfigSchema(): { name: string; schema: ConfigItemPanel | ConfigItemTabs } {
@@ -65,16 +75,11 @@ export class SnapshotComponent extends FrigateWidgetBase<SnapshotSettings, Snaps
     }
 
     protected startCamera(): void {
-        this.destroyed = false;
-        void this.poll();
+        this.poller.start();
     }
 
     protected stopCamera(): void {
-        this.destroyed = true;
-        if (this.pollTimer) {
-            clearTimeout(this.pollTimer);
-            this.pollTimer = null;
-        }
+        this.poller.stop();
     }
 
     /**
@@ -88,68 +93,9 @@ export class SnapshotComponent extends FrigateWidgetBase<SnapshotSettings, Snaps
         return Math.max(500, parseInt(this.props.settings.pollingInterval as unknown as string, 10) || 2000);
     }
 
-    /**
-     * Opening or closing the dialog switches the rate. Replace a waiting timer so the new interval
-     * applies at once; with a request in flight there is no timer, and the `finally` of `poll()`
-     * picks the new rate up anyway.
-     */
+    /** Opening or closing the dialog switches the rate, without waiting for the running interval */
     protected override onDialogToggled(): void {
-        if (this.pollTimer) {
-            clearTimeout(this.pollTimer);
-            this.pollTimer = null;
-            void this.poll();
-        }
-    }
-
-    private scheduleNext(): void {
-        if (this.destroyed) {
-            return;
-        }
-        this.pollTimer = setTimeout(() => {
-            this.pollTimer = null;
-            void this.poll();
-        }, this.getPollInterval());
-    }
-
-    /** One `snapshot` round trip. Never runs twice in parallel - a slow camera just lowers the rate. */
-    private async poll(): Promise<void> {
-        if (this.destroyed || this.requesting || !this.camera) {
-            return;
-        }
-        this.requesting = true;
-
-        try {
-            const socket = this.props.stateContext.getSocket();
-            const result: { data?: string; contentType?: string; error?: string } = await socket.sendTo(
-                this.camera.instance,
-                'snapshot',
-                {
-                    camera: this.camera.name,
-                    height: this.getRequestedHeight(this.state.dialogOpen),
-                    bbox: !!this.props.settings.bbox,
-                    timestamp: !!this.props.settings.timestamp,
-                },
-            );
-
-            if (this.destroyed) {
-                return;
-            }
-
-            if (result?.error) {
-                this.setError(result.error);
-            } else if (result?.data) {
-                this.setState({ frame: result.data, error: '' });
-            } else {
-                this.setError('No data');
-            }
-        } catch (e) {
-            if (!this.destroyed) {
-                this.setError((e as Error).toString());
-            }
-        } finally {
-            this.requesting = false;
-            this.scheduleNext();
-        }
+        this.poller.reschedule();
     }
 
     protected renderImage(full?: boolean): React.JSX.Element | null {

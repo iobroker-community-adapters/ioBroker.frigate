@@ -70,6 +70,16 @@ export function parseCameraId(id: string | undefined | null): CameraRef | null {
 }
 
 /**
+ * True when the page is opened through the ioBroker cloud (iobroker.pro / iobroker.net).
+ *
+ * The cloud relays the socket, but not an endless HTTP response like the MJPEG stream, and the address
+ * of the web instance is a local one that is not reachable from outside anyway.
+ */
+export function isCloud(): boolean {
+    return typeof window !== 'undefined' && /(^|\.)iobroker\.(pro|net)$/i.test(window.location.hostname);
+}
+
+/**
  * Base64 payload from the adapter -> data URL for an `<img>`
  *
  * @param base64 the encoded picture

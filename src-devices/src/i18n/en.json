@@ -9,6 +9,7 @@
   "frigate_fps": "Frames per second",
   "frigate_fps_help": "Frigate encodes the stream for every viewer - a low value saves CPU",
   "frigate_instance": "Frigate instance",
+  "frigate_live_cloud": "Opened through the ioBroker cloud (iobroker.pro / iobroker.net) the stream cannot pass. The widget then switches to single pictures over the socket by itself, at the frame rate set below.",
   "frigate_live_needs_web": "This widget streams through the camera proxy of the web adapter. Without a web instance use the snapshot widget instead.",
   "frigate_loading": "Loading…",
   "frigate_name": "Name",

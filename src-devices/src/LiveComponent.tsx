@@ -8,13 +8,18 @@
  * served from admin (port 8081). Only when this widget runs inside a web instance does a relative URL
  * work; everywhere else the web instance has to be named in the settings. That is why the snapshot
  * widget, which goes over the socket, is the one that works everywhere.
+ *
+ * Through the ioBroker cloud (iobroker.pro / iobroker.net) there is no stream at all: the cloud relays
+ * the socket but not an endless HTTP response. There the widget fetches single pictures over the
+ * socket at the configured frame rate instead, like the snapshot widget does.
  */
 import { React, MuiMaterial, type WidgetGenericProps } from '@iobroker/dm-widgets';
 import type { TypographyProps } from '@mui/material';
 import type { ConfigItemPanel, ConfigItemTabs } from '@iobroker/dm-utils';
 
 import FrigateWidgetBase, { type FrigateWidgetSettings, type FrigateWidgetState } from './FrigateWidgetBase';
-import { buildWebUrl } from './frigateCommon';
+import { buildWebUrl, isCloud, toDataUrl } from './frigateCommon';
+import SnapshotPoller from './SnapshotPoller';
 
 const Typography: React.ComponentType<TypographyProps> = MuiMaterial?.Typography;
 
@@ -34,6 +39,8 @@ export interface LiveState extends FrigateWidgetState {
     resolvedRoute: string;
     /** Why no URL could be worked out; empty when there is one or the adapter said nothing */
     webReason: string;
+    /** Base64 JPEG of the newest frame, only used behind the cloud */
+    frame: string;
 }
 
 /**
@@ -48,21 +55,47 @@ const REASON_TEXT: Record<string, string> = {
 };
 
 export default class LiveComponent extends FrigateWidgetBase<LiveSettings, LiveState> {
+    /** Opened through the cloud: single pictures over the socket instead of the MJPEG stream */
+    private readonly cloud = isCloud();
+
+    private readonly poller: SnapshotPoller;
+
     constructor(props: WidgetGenericProps<LiveSettings>) {
         super(props);
-        this.state = { ...this.state, reloadCounter: 0, resolvedWebUrl: '', resolvedRoute: '', webReason: '' };
+        this.state = {
+            ...this.state,
+            reloadCounter: 0,
+            resolvedWebUrl: '',
+            resolvedRoute: '',
+            webReason: '',
+            frame: '',
+        };
+        this.poller = new SnapshotPoller({
+            getSocket: () => this.props.stateContext.getSocket(),
+            getCamera: () => this.camera,
+            getParams: () => ({
+                height: this.getRequestedHeight(this.state.dialogOpen),
+                bbox: !!this.props.settings.bbox,
+                timestamp: !!this.props.settings.timestamp,
+            }),
+            getInterval: () => 1000 / this.getFps(),
+            onFrame: frame => this.setState({ frame, error: '' }),
+            onError: error => this.setError(error),
+        });
     }
 
     componentDidMount(): void {
         super.componentDidMount();
-        void this.resolveWebUrl();
+        if (!this.cloud) {
+            void this.resolveWebUrl();
+        }
     }
 
     componentDidUpdate(prevProps: WidgetGenericProps<LiveSettings>): void {
         super.componentDidUpdate(prevProps);
         // The proxy belongs to the frigate instance, so a different instance can mean a different
         // web instance and a different route
-        if (prevProps.settings.instance !== this.props.settings.instance) {
+        if (!this.cloud && prevProps.settings.instance !== this.props.settings.instance) {
             void this.resolveWebUrl();
         }
     }
@@ -108,11 +141,21 @@ export default class LiveComponent extends FrigateWidgetBase<LiveSettings, LiveS
         return base;
     }
 
+    /** Frame rate within the bounds of the settings dialog */
+    private getFps(): number {
+        return Math.min(30, Math.max(1, parseInt(this.props.settings.fps as unknown as string, 10) || 5));
+    }
+
     static override getConfigSchema(): { name: string; schema: ConfigItemPanel | ConfigItemTabs } {
         return FrigateWidgetBase.buildConfigSchema('frigate_LiveCamera', {
             _webHint: {
                 type: 'staticText',
                 text: 'frigate_live_needs_web',
+                sm: 12,
+            },
+            _cloudHint: {
+                type: 'staticText',
+                text: 'frigate_live_cloud',
                 sm: 12,
             },
             webUrl: {
@@ -135,16 +178,25 @@ export default class LiveComponent extends FrigateWidgetBase<LiveSettings, LiveS
     }
 
     /**
-     * Nothing to start or stop: the browser opens the stream when the `<img>` is mounted and closes
-     * it when React removes the element again.
+     * Behind the cloud the poller delivers the pictures. Otherwise there is nothing to start or
+     * stop: the browser opens the stream when the `<img>` is mounted and closes it when React removes
+     * the element again.
      */
     protected startCamera(): void {
-        this.setState({ reloadCounter: this.state.reloadCounter + 1 });
+        if (this.cloud) {
+            this.poller.start();
+        } else {
+            this.setState({ reloadCounter: this.state.reloadCounter + 1 });
+        }
     }
 
-    // eslint-disable-next-line class-methods-use-this
     protected stopCamera(): void {
-        // intentionally empty
+        this.poller.stop();
+    }
+
+    /** The dialog asks for a bigger picture, so fetch it now instead of after the running interval */
+    protected override onDialogToggled(): void {
+        this.poller.reschedule();
     }
 
     protected renderImage(full?: boolean): React.JSX.Element | null {
@@ -152,9 +204,21 @@ export default class LiveComponent extends FrigateWidgetBase<LiveSettings, LiveS
             return null;
         }
 
-        const fps = Math.min(30, Math.max(1, parseInt(this.props.settings.fps as unknown as string, 10) || 5));
+        if (this.cloud) {
+            if (!this.state.frame) {
+                return null;
+            }
+            return (
+                <img
+                    src={toDataUrl(this.state.frame)}
+                    alt={this.camera.name}
+                    style={FrigateWidgetBase.styleFor(full)}
+                />
+            );
+        }
+
         const url = buildWebUrl(this.getWebBase(), this.state.resolvedRoute, this.camera, 'stream.mjpeg', {
-            fps,
+            fps: this.getFps(),
             height: this.getRequestedHeight(full),
             ...this.getDrawParams(),
         });
@@ -174,11 +238,12 @@ export default class LiveComponent extends FrigateWidgetBase<LiveSettings, LiveS
     /**
      * Show the hint about the web instance instead of a bare error, but only when neither the
      * settings nor the adapter produced a base URL - otherwise the real error is the useful one.
+     * Behind the cloud the web instance plays no part, so no such hint applies.
      */
     protected override renderPicture(full?: boolean): React.JSX.Element {
         const hasBase = !!(this.props.settings.webUrl || this.state.resolvedWebUrl);
 
-        if (this.camera && !hasBase) {
+        if (!this.cloud && this.camera && !hasBase) {
             // The adapter named a cause, so say it straight away instead of letting the browser run
             // into a 404 first and then blaming the settings for it
             if (this.state.webReason) {

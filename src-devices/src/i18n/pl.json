@@ -9,6 +9,7 @@
   "frigate_fps": "Klatki na sekundę",
   "frigate_fps_help": "Frigate koduje strumień dla każdego widza — niska wartość oszczędza CPU",
   "frigate_instance": "Instancja Frigate",
+  "frigate_live_cloud": "Przez chmurę ioBroker (iobroker.pro / iobroker.net) strumień nie przechodzi. Widżet przełącza się wtedy automatycznie na pojedyncze klatki przez gniazdo, z ustawioną poniżej liczbą klatek na sekundę.",
   "frigate_live_needs_web": "Ten widżet przesyła obraz przez proxy kamer adaptera web. Bez instancji web użyj widżetu zdjęcia.",
   "frigate_loading": "Ładowanie…",
   "frigate_name": "Nazwa",

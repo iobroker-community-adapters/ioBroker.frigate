@@ -9,6 +9,7 @@
   "frigate_fps": "每秒帧数",
   "frigate_fps_help": "Frigate 为每个观看者单独编码视频流，数值越低越省 CPU",
   "frigate_instance": "Frigate 实例",
+  "frigate_live_cloud": "通过 ioBroker 云（iobroker.pro / iobroker.net）无法传输视频流。此时小部件会自动改为通过 socket 获取单张图片，帧率使用下方的设置。",
   "frigate_live_needs_web": "此小部件通过 web 适配器的摄像机代理传输。没有 web 实例时请改用快照小部件。",
   "frigate_loading": "加载中…",
   "frigate_name": "名称",

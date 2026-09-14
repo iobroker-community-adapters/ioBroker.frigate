@@ -9,6 +9,7 @@
   "frigate_fps": "Beelden per seconde",
   "frigate_fps_help": "Frigate codeert de stream per kijker — een lage waarde bespaart CPU",
   "frigate_instance": "Frigate-instantie",
+  "frigate_live_cloud": "Via de ioBroker-cloud (iobroker.pro / iobroker.net) komt de stream niet door. Het widget schakelt daar automatisch over op losse beelden via de socket, met de hieronder ingestelde beeldsnelheid.",
   "frigate_live_needs_web": "Dit widget streamt via de cameraproxy van de web-adapter. Zonder web-instantie kun je beter het momentopname-widget gebruiken.",
   "frigate_loading": "Laden…",
   "frigate_name": "Naam",
