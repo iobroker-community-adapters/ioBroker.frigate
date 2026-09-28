@@ -46,6 +46,8 @@ export interface LiveState extends FrigateWidgetState {
     webResolved: boolean;
     /** The stream failed to load, so single pictures come over the socket instead */
     streamFailed: boolean;
+    /** Key of the `<img>` whose first frame has arrived; anything else is still on its way */
+    loadedKey: string;
     /** Base64 JPEG of the newest frame, only used when the pictures come over the socket */
     frame: string;
 }
@@ -59,6 +61,9 @@ interface WebUrlAnswer {
 
 /** How long to wait for `frigate:getWebUrl`. An adapter too old to know the command never answers. */
 const RESOLVE_TIMEOUT = 3000;
+
+/** How long a stream may take for its first frame before the pictures are taken over the socket */
+const STREAM_TIMEOUT = 10000;
 
 /**
  * Reason codes of `frigate:getWebUrl` mapped to what the tile shows. Anything the adapter reports
@@ -83,6 +88,32 @@ export default class LiveComponent extends FrigateWidgetBase<LiveSettings, LiveS
     /** Whether the poller is running, see `syncPoller()` */
     private polling = false;
 
+    /** Waits for the first frame of the stream, see `syncStreamWatchdog()` */
+    private streamWatchdog: ReturnType<typeof setTimeout> | null = null;
+
+    /** The picture the watchdog waits for, so that a running one is not restarted at every render */
+    private watchdogKey: string | null = null;
+
+    /** The `<img>` that shows the stream right now */
+    private streamImg: HTMLImageElement | null = null;
+
+    /**
+     * End the stream together with its `<img>`.
+     *
+     * Taking the element out of the document does not reliably end an endless response, and Frigate
+     * encodes one MJPEG stream per client - one that is not ended keeps a connection of the browser
+     * and an encoder of Frigate busy. `removeAttribute` rather than `src = ''`, which browsers resolve
+     * to the address of the page and would load that as a picture.
+     *
+     * Bound once, so React really only calls it when the element comes and goes.
+     */
+    private readonly setStreamImg = (element: HTMLImageElement | null): void => {
+        if (!element) {
+            this.streamImg?.removeAttribute('src');
+        }
+        this.streamImg = element;
+    };
+
     constructor(props: WidgetGenericProps<LiveSettings>) {
         super(props);
         this.state = {
@@ -93,6 +124,7 @@ export default class LiveComponent extends FrigateWidgetBase<LiveSettings, LiveS
             webReason: '',
             webResolved: false,
             streamFailed: false,
+            loadedKey: '',
             frame: '',
         };
         this.poller = new SnapshotPoller({
@@ -115,6 +147,7 @@ export default class LiveComponent extends FrigateWidgetBase<LiveSettings, LiveS
             void this.resolveWebUrl();
         }
         this.syncPoller();
+        this.syncStreamWatchdog();
     }
 
     componentDidUpdate(prevProps: WidgetGenericProps<LiveSettings>): void {
@@ -138,6 +171,7 @@ export default class LiveComponent extends FrigateWidgetBase<LiveSettings, LiveS
             }
         }
         this.syncPoller();
+        this.syncStreamWatchdog();
     }
 
     /**
@@ -228,6 +262,49 @@ export default class LiveComponent extends FrigateWidgetBase<LiveSettings, LiveS
     }
 
     /**
+     * Give up on a stream that never starts.
+     *
+     * `onError` of the `<img>` only fires when a request really fails. A request that is never sent
+     * produces no event at all: a browser holds about six connections per server, and every stream on
+     * screen keeps one of them for as long as it runs. With a few camera tiles the next stream - the
+     * one of the dialog that has just been opened - therefore waits forever, and the dialog stays
+     * empty. The pictures then come over the socket, which needs no connection of its own.
+     */
+    private syncStreamWatchdog(): void {
+        const url = this.useSocket() ? null : this.streamUrl(this.state.dialogOpen);
+        const key = url === null ? null : this.streamKey(url);
+
+        if (key === null || key === this.state.loadedKey) {
+            this.clearStreamWatchdog();
+            return;
+        }
+        if (key === this.watchdogKey) {
+            // Already waiting for exactly this picture
+            return;
+        }
+
+        this.clearStreamWatchdog();
+        this.watchdogKey = key;
+        this.streamWatchdog = setTimeout(() => {
+            this.streamWatchdog = null;
+            this.watchdogKey = null;
+            console.warn(
+                `[frigate] No frame from ${url} within ${STREAM_TIMEOUT} ms. Taking the pictures over the socket.`,
+            );
+            this.setState({ streamFailed: true, error: '' });
+        }, STREAM_TIMEOUT);
+    }
+
+    /** Stop waiting for a stream, because its first frame arrived or nobody is looking at it */
+    private clearStreamWatchdog(): void {
+        if (this.streamWatchdog) {
+            clearTimeout(this.streamWatchdog);
+            this.streamWatchdog = null;
+        }
+        this.watchdogKey = null;
+    }
+
+    /**
      * The stream did not load, most likely because the browser cannot reach the web instance or
      * blocks an http stream inside an https page. The socket still works, so take the pictures from
      * there instead of leaving the tile with an error.
@@ -264,6 +341,33 @@ export default class LiveComponent extends FrigateWidgetBase<LiveSettings, LiveS
     /** Frame rate within the bounds of the settings dialog */
     private getFps(): number {
         return Math.min(30, Math.max(1, parseInt(this.props.settings.fps as unknown as string, 10) || 5));
+    }
+
+    /**
+     * Address of the MJPEG stream of a view, or `null` while nobody has said where the stream is.
+     *
+     * @param full true for the picture of the fullscreen dialog, which is asked for in a bigger size
+     */
+    private streamUrl(full?: boolean): string | null {
+        const base = this.getStreamBase();
+        if (!this.camera || base === null) {
+            return null;
+        }
+        return buildWebUrl(base, this.state.resolvedRoute, this.camera, 'stream.mjpeg', {
+            fps: this.getFps(),
+            height: this.getRequestedHeight(full),
+            ...this.getDrawParams(),
+        });
+    }
+
+    /**
+     * Identity of the `<img>` showing a stream. A different one is a different element, which loads
+     * from scratch - the tile and the dialog alone already differ in the size they ask for.
+     *
+     * @param url address of the stream
+     */
+    private streamKey(url: string): string {
+        return `${url}#${this.state.reloadCounter}`;
     }
 
     static override getConfigSchema(): { name: string; schema: ConfigItemPanel | ConfigItemTabs } {
@@ -310,11 +414,32 @@ export default class LiveComponent extends FrigateWidgetBase<LiveSettings, LiveS
     protected stopCamera(): void {
         this.poller.stop();
         this.polling = false;
+        this.clearStreamWatchdog();
     }
 
     /** The dialog asks for a bigger picture, so fetch it now instead of after the running interval */
     protected override onDialogToggled(): void {
         this.poller.reschedule();
+    }
+
+    /** Only the dialog asks, so the picture that counts is the one the dialog shows */
+    protected override isPictureReady(): boolean {
+        if (this.useSocket()) {
+            // A data URL is on screen as soon as there is a frame
+            return !!this.state.frame;
+        }
+        const url = this.streamUrl(true);
+        return url !== null && this.streamKey(url) === this.state.loadedKey;
+    }
+
+    /**
+     * While the dialog is open the stream runs there, and the tile behind it is covered anyway.
+     * Leaving its stream running as well would hold a second connection to the web instance for the
+     * same camera - one of the roughly six a browser grants per server, which a handful of camera
+     * tiles use up. Pictures over the socket cost no connection, so there the tile keeps showing them.
+     */
+    protected override showPictureInTile(): boolean {
+        return !this.state.dialogOpen || this.useSocket();
     }
 
     protected renderImage(full?: boolean): React.JSX.Element | null {
@@ -338,26 +463,31 @@ export default class LiveComponent extends FrigateWidgetBase<LiveSettings, LiveS
         // Nobody has said yet where the stream is: the adapter has not answered, or it named a reason
         // that renderPicture() shows instead. A relative URL would go to whatever serves this page -
         // admin in most installations, which knows nothing about the stream.
-        const base = this.getStreamBase();
-        if (base === null) {
+        const url = this.streamUrl(full);
+        if (url === null) {
             return null;
         }
 
-        const url = buildWebUrl(base, this.state.resolvedRoute, this.camera, 'stream.mjpeg', {
-            fps: this.getFps(),
-            height: this.getRequestedHeight(full),
-            ...this.getDrawParams(),
-        });
+        // The counter is part of the key, so a re-mount really re-opens the stream
+        const key = this.streamKey(url);
 
-        return (
+        return FrigateWidgetBase.withSpinner(
             <img
-                // The counter is part of the key, so a re-mount really re-opens the stream
-                key={`${url}#${this.state.reloadCounter}`}
+                key={key}
+                ref={this.setStreamImg}
                 src={url}
                 alt={this.camera.name}
                 style={FrigateWidgetBase.styleFor(full)}
+                onLoad={() => {
+                    // A browser reports every frame it decodes from the stream, only the first is news
+                    if (this.state.loadedKey !== key) {
+                        this.setState({ loadedKey: key });
+                    }
+                }}
                 onError={() => this.onStreamError(url)}
-            />
+            />,
+            this.state.loadedKey !== key,
+            full,
         );
     }
 

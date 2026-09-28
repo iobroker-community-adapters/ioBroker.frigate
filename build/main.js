@@ -16,6 +16,7 @@ import { prepareEventNotification, sendNotification } from './lib/notifications.
 import { fetchEventHistory, createCameraDevices, cleanTrackedObjects, fetchFaceNames, handleTrackedObjectUpdate, } from './lib/eventHistory.js';
 import { handleStateChange } from './lib/stateHandler.js';
 import { ZoneAggregator } from './lib/zoneAggregator.js';
+import { reportPortConflict, trackUsedPort } from './lib/usedResources.js';
 class FrigateAdapter extends Adapter {
     server;
     requestClient;
@@ -248,6 +249,13 @@ class FrigateAdapter extends Adapter {
     }
     // --- MQTT ---
     initMqtt() {
+        // Say who else declared this port before the operating system answers with an EADDRINUSE -
+        // 1883 is the default of the MQTT adapter as well, and the error below does not name it.
+        // Not awaited: the answer is a hint for the log, the broker must not wait for the host.
+        void reportPortConflict(this, { port: this.config.mqttPort }, 'the built-in MQTT broker');
+        // Report the port to the host for as long as it is open, taken from the running server.
+        // Freeing on shutdown is left to the host, which releases the entries of a stopped instance.
+        trackUsedPort(this, this.server);
         this.server
             .listen(this.config.mqttPort, () => {
             this.log.info(`MQTT server started and listening on port ${this.config.mqttPort}`);
@@ -308,6 +316,8 @@ class FrigateAdapter extends Adapter {
         this.aedes.on('connectionError', (client, err) => this.log.warn(`client error: ${client.id} ${err.message} ${err.stack}`));
     }
     initMqttClient() {
+        // Nothing is reported to the registry of used resources here: in client mode the broker runs
+        // somewhere else, so `mqttPort` is a port on that machine and not occupied on this host
         if (!this.config.mqttHost) {
             this.log.error('External MQTT broker host is not configured. Please set the MQTT host in the adapter settings.');
             this.terminate();

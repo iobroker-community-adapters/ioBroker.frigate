@@ -98,6 +98,11 @@ export class SnapshotComponent extends FrigateWidgetBase<SnapshotSettings, Snaps
         this.poller.reschedule();
     }
 
+    /** The picture is a data URL, so it is on screen as soon as there is a frame */
+    protected override isPictureReady(): boolean {
+        return !!this.state.frame;
+    }
+
     protected renderImage(full?: boolean): React.JSX.Element | null {
         if (!this.state.frame) {
             return null;

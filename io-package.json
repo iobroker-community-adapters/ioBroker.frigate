@@ -146,6 +146,7 @@
     "mode": "daemon",
     "type": "alarm",
     "compact": true,
+    "declareUsedResources": true,
     "connectionType": "local",
     "dataSource": "push",
     "adminUI": {

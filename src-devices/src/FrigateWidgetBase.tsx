@@ -16,7 +16,14 @@ import WidgetGeneric, {
     type WidgetGenericState,
     type CustomWidgetPlugin,
 } from '@iobroker/dm-widgets';
-import type { BoxProps, TypographyProps, DialogProps, DialogContentProps, IconButtonProps } from '@mui/material';
+import type {
+    BoxProps,
+    TypographyProps,
+    DialogProps,
+    DialogContentProps,
+    IconButtonProps,
+    CircularProgressProps,
+} from '@mui/material';
 import type { ConfigItemPanel, ConfigItemTabs } from '@iobroker/dm-utils';
 
 import { resolveCamera, type CameraRef } from './frigateCommon';
@@ -26,6 +33,7 @@ const Typography: React.ComponentType<TypographyProps> = MuiMaterial?.Typography
 const Dialog: React.ComponentType<DialogProps> = MuiMaterial?.Dialog;
 const DialogContent: React.ComponentType<DialogContentProps> = MuiMaterial?.DialogContent;
 const IconButton: React.ComponentType<IconButtonProps> = MuiMaterial?.IconButton;
+const CircularProgress: React.ComponentType<CircularProgressProps> = MuiMaterial?.CircularProgress;
 const CloseIcon: React.ComponentType<any> = MuiIcons?.Close;
 
 export interface FrigateWidgetSettings extends CustomWidgetPlugin {
@@ -232,6 +240,39 @@ export abstract class FrigateWidgetBase<
         return full ? FrigateWidgetBase.fullImageStyle : FrigateWidgetBase.imageStyle;
     }
 
+    /**
+     * The picture with a spinner over it while the browser has no frame of it yet.
+     *
+     * The wrapper is rendered whether the spinner is shown or not: dropping it would move the `<img>`
+     * to another place in the tree, and the remount would start the whole delivery over again.
+     *
+     * @param image the picture element
+     * @param loading true while the browser has not decoded a frame of it
+     * @param full true while the fullscreen dialog is open
+     */
+    protected static withSpinner(image: React.JSX.Element, loading: boolean, full?: boolean): React.JSX.Element {
+        return (
+            <Box
+                sx={{
+                    position: 'relative',
+                    width: '100%',
+                    height: full ? 'auto' : '100%',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                }}
+            >
+                {image}
+                {loading ? (
+                    <CircularProgress
+                        size={40}
+                        sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }}
+                    />
+                ) : null}
+            </Box>
+        );
+    }
+
     protected renderPicture(full?: boolean): React.JSX.Element {
         if (!this.camera) {
             return (
@@ -277,6 +318,27 @@ export abstract class FrigateWidgetBase<
         return i18n?.[word]?.[lang] || word;
     }
 
+    /**
+     * Whether the picture of the fullscreen dialog is on screen already.
+     *
+     * An `<img>` whose source has not arrived is zero pixels high, and the dialog takes its height
+     * from what is in it - which left it a bare strip until the picture was there. While this is
+     * false, the dialog keeps a place for the picture instead of collapsing around it.
+     */
+    // eslint-disable-next-line class-methods-use-this
+    protected isPictureReady(): boolean {
+        return true;
+    }
+
+    /**
+     * Whether the tile draws the picture as well while the dialog is open. The dialog covers the tile
+     * anyway, so a widget whose pictures cost something can say no here.
+     */
+    // eslint-disable-next-line class-methods-use-this
+    protected showPictureInTile(): boolean {
+        return true;
+    }
+
     protected renderDialog(): React.JSX.Element | null {
         if (!this.state.dialogOpen) {
             return null;
@@ -299,6 +361,10 @@ export abstract class FrigateWidgetBase<
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
+                        // A picture that is not there yet has no height, and the dialog would be a bare
+                        // strip until it is. Roughly what a 16:9 picture takes up in this dialog, and
+                        // never more than half of the window
+                        minHeight: this.isPictureReady() ? undefined : 'min(50vh, 56vw)',
                     }}
                 >
                     <IconButton
@@ -347,7 +413,9 @@ export abstract class FrigateWidgetBase<
                     >
                         {indicators}
                     </div>
-                    <Box sx={{ flex: 1, minHeight: 0, overflow: 'hidden' }}>{this.renderPicture()}</Box>
+                    <Box sx={{ flex: 1, minHeight: 0, overflow: 'hidden' }}>
+                        {this.showPictureInTile() ? this.renderPicture() : null}
+                    </Box>
                     {/* Below the picture, like the name of every other widget: the host draws the
                         drag handle and the favourite star over the top-left corner of the tile and
                         the indicators over the top-right one, so a label up there is written over */}
