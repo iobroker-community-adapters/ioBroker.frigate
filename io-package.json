@@ -152,6 +152,13 @@
     "adminUI": {
       "config": "json"
     },
+    "localLinks": {
+      "_default": {
+        "link": "http://%native_friurl%",
+        "name": "Frigate",
+        "intro": true
+      }
+    },
     "webExtension": "build/lib/web.js",
     "dependencies": [
       {
