@@ -28,7 +28,7 @@
     "@iobroker/plugin-docker": "^1.2.1",
     "aedes": "^1.2.0",
     "axios": "^1.20.0",
-    "mqtt": "^5.16.0"
+    "mqtt": "^5.16.1"
   },
   "devDependencies": {
     "@alcalzone/release-script": "^5.2.1",
