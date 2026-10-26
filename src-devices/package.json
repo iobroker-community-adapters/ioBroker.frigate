@@ -16,7 +16,7 @@
         "@iobroker/dm-widgets": "^2.0.1",
         "@module-federation/runtime": "^2.9.2",
         "@module-federation/vite": "^1.23.3",
-        "@mui/icons-material": "^9.4.0",
+        "@mui/icons-material": "^9.5.0",
         "@mui/material": "^9.4.0",
         "@types/react": "^19.3.0",
         "@types/react-dom": "^19.3.0",
