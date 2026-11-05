@@ -40,9 +40,21 @@ export default class ProxyFrigate {
     private readonly namespace: string;
     private readonly requestClient: AxiosInstance;
     private readonly frigateBaseUrl: string;
+    /** Connections to Frigate, closed by `unload()` */
+    private readonly httpsAgent = new Agent({ rejectUnauthorized: false });
 
-    /** Running MJPEG streams, so that `unload()` can stop pulling from Frigate */
-    private readonly streams = new Set<Readable>();
+    /**
+     * Running MJPEG streams with the response to the browser they feed, so that `unload()` can stop pulling from
+     * Frigate and let the browser know - it opens the stream again, then from the new extension
+     */
+    private readonly streams = new Map<Readable, Response>();
+
+    /**
+     * Tells `ioBroker.web` that it can stop this extension and start it again with new settings while it keeps
+     * running, instead of restarting itself: `unload()` gives back everything besides the routes, which web
+     * takes back by itself.
+     */
+    public readonly supportsHotReload = true;
 
     /** A single login is shared by all requests that run into a 401 at the same time */
     private loginPromise: Promise<boolean> | null = null;
@@ -79,7 +91,7 @@ export default class ProxyFrigate {
             headers: { 'User-Agent': 'ioBroker.frigate', accept: '*/*' },
             timeout: 30000,
             // Frigate on 8971 normally presents a self-signed certificate
-            httpsAgent: new Agent({ rejectUnauthorized: false }),
+            httpsAgent: this.httpsAgent,
         });
 
         this.installRoutes();
@@ -125,10 +137,15 @@ export default class ProxyFrigate {
     }
 
     unload(): Promise<void> {
-        for (const stream of this.streams) {
+        for (const [stream, res] of this.streams) {
             stream.destroy();
+            // A destroyed source does not end the response it is piped into
+            if (!res.writableEnded) {
+                res.end();
+            }
         }
         this.streams.clear();
+        this.httpsAgent.destroy();
         return Promise.resolve();
     }
 
@@ -271,7 +288,7 @@ export default class ProxyFrigate {
             res.setHeader('Content-Type', (response.headers['content-type'] as string) || 'multipart/x-mixed-replace');
             res.setHeader('Cache-Control', 'no-store, private');
 
-            this.streams.add(stream);
+            this.streams.set(stream, res);
 
             // Frigate encodes the MJPEG per client, so stop it as soon as the browser is gone
             res.on('close', () => {
