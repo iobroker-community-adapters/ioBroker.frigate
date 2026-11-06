@@ -5,6 +5,7 @@ import { removePathData } from './messageHandler.js';
  * Only values that differ from the last fetch are written: the history is fetched again after every
  * event, and mostly nothing in it has changed. Writing everything again flooded the controller and
  * every adapter subscribed to all states with thousands of unchanged values.
+ * Values the new data does not have any more are set to null, so no old event shows through.
  *
  * @param ctx adapter, client and the known cameras
  * @param devices cameras to fetch, '' for the history of all cameras; default: all known ones
@@ -35,11 +36,20 @@ export async function fetchEventHistory(ctx, devices = ctx.deviceArray) {
                     path = `${device}.history`;
                 }
                 removePathData(response.data);
+                const written = new Set();
                 await ctx.json2iob.parse(path, response.data, {
                     forceIndex: true,
                     channelName: 'Events history',
                     onlyChanged: true,
+                    writtenIds: written,
                 });
+                // The entries are numbered by position: without this, a field the new event at a
+                // position does not have (e.g. no sub_label) kept the value of the event before, and
+                // the positions beyond a shorter list kept old events
+                const cleared = await ctx.json2iob.clearStatesNotWritten(path, written, ['events.history.json']);
+                if (cleared) {
+                    ctx.adapter.log.debug(`Cleared ${cleared} outdated values in ${path}`);
+                }
                 if (!device) {
                     await ctx.json2iob.setStateIfChanged('events.history.json', JSON.stringify(response.data));
                 }

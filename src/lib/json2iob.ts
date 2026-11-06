@@ -19,6 +19,7 @@ type Options = {
     makeStateWritableWithEnding?: string[]; // Array of strings to make states with this ending writable.
     dontSaveCreatedObjects?: boolean; // Create objects but do not save them to alreadyCreatedObjects.
     onlyChanged?: boolean; // Write a state only if its value differs from the last one written.
+    writtenIds?: Set<string>; // Collects the ids of all states the parse wrote (or left unchanged), for clearStatesNotWritten.
 };
 
 export default class Json2iob {
@@ -27,6 +28,8 @@ export default class Json2iob {
     private readonly objectTypes: { [id: string]: ioBroker.CommonType };
     /** Last value written per state id, for `onlyChanged` */
     private readonly lastValues = new Map<string, ioBroker.StateValue>();
+    /** State ids below a parsed path, for `clearStatesNotWritten` */
+    private readonly knownStates = new Map<string, Set<string>>();
     private readonly forbiddenCharsRegex: RegExp;
 
     constructor(adapter: ioBroker.Adapter) {
@@ -68,6 +71,7 @@ export default class Json2iob {
      * @param options.makeStateWritableWithEnding - Array of strings to make states with this ending writable.
      * @param options.dontSaveCreatedObjects - Create objects but do not save them to alreadyCreatedObjects.
      * @param options.onlyChanged - Write a state only if its value differs from the last one written.
+     * @param options.writtenIds - Collects the ids of all states the parse wrote, for clearStatesNotWritten.
      * @returns A promise that resolves when the parsing is complete.
      */
     async parse(path: string, element: any, options: Options = { write: false }): Promise<void> {
@@ -184,6 +188,11 @@ export default class Json2iob {
                     for (const key of this.lastValues.keys()) {
                         if (key.startsWith(path)) {
                             this.lastValues.delete(key);
+                        }
+                    }
+                    for (const key of this.knownStates.keys()) {
+                        if (key.startsWith(path)) {
+                            this.knownStates.delete(key);
                         }
                     }
                     await this.adapter.delObjectAsync(path, { recursive: true });
@@ -333,6 +342,51 @@ export default class Json2iob {
     }
 
     /**
+     * Sets every state below `path` to null that a parse did not write.
+     *
+     * A parse only writes the values that are in the data, so values of an earlier parse stay where the
+     * data has nothing any more: a field the new entry at a position does not have, or the positions
+     * beyond a list that got shorter. The ids below `path` are read from the object DB the first time,
+     * so values left from before a restart are cleared as well. Only states that are not null yet are
+     * written.
+     *
+     * @param path - The path that was parsed.
+     * @param written - The ids the parse wrote, collected with `options.writtenIds`.
+     * @param keep - Ids below `path` that are written separately and must stay.
+     * @returns - The number of states that were set to null.
+     */
+    async clearStatesNotWritten(path: string, written: Set<string>, keep: string[] = []): Promise<number> {
+        path = path.replace(this.forbiddenCharsRegex, '_');
+        let known = this.knownStates.get(path);
+        if (!known) {
+            known = new Set();
+            const prefix = `${this.adapter.namespace}.`;
+            try {
+                const view = await this.adapter.getObjectViewAsync('system', 'state', {
+                    startkey: `${prefix}${path}.`,
+                    endkey: `${prefix}${path}.香`,
+                });
+                for (const row of view?.rows || []) {
+                    known.add(row.id.substring(prefix.length));
+                }
+            } catch (error) {
+                this.adapter.log.warn(`Cannot read the states below ${path}: ${error}`);
+            }
+            this.knownStates.set(path, known);
+        }
+        for (const id of written) {
+            known.add(id);
+        }
+        let cleared = 0;
+        for (const id of known) {
+            if (!written.has(id) && !keep.includes(id) && (await this.setStateIfChanged(id, null))) {
+                cleared++;
+            }
+        }
+        return cleared;
+    }
+
+    /**
      * Writes a parsed value, unchanged values only if `options.onlyChanged` is not set.
      *
      * @param id - The state id without the namespace.
@@ -340,6 +394,7 @@ export default class Json2iob {
      * @param options - The parsing options.
      */
     private async _setState(id: string, value: ioBroker.StateValue, options: Options): Promise<void> {
+        options.writtenIds?.add(id.replace(this.forbiddenCharsRegex, '_'));
         if (options.onlyChanged) {
             await this.setStateIfChanged(id, value);
         } else {

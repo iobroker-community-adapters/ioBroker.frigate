@@ -5,13 +5,15 @@ import { fetchEventHistory } from '../build/lib/eventHistory.js';
 /**
  * Adapter with plain maps as object and state DB; every setState is recorded.
  *
- * @param states values left in the states DB from an earlier run
+ * @param states values left in the states DB from an earlier run, their objects exist too
  */
 function createAdapter(states = {}) {
     const writes = [];
     const stateDb = {};
+    const objects = {};
     for (const [id, val] of Object.entries(states)) {
         stateDb[id] = { val, ack: true };
+        objects[id] = { type: 'state' };
     }
     return {
         namespace: 'frigate.0',
@@ -20,8 +22,17 @@ function createAdapter(states = {}) {
         config: { webnum: 10 },
         log: { info: () => {}, warn: () => {}, debug: () => {}, error: () => {} },
         stateDb,
+        objects,
         writes,
-        extendObjectAsync: async () => {},
+        extendObjectAsync: async (id, obj) => {
+            objects[id] = { ...objects[id], ...obj };
+        },
+        getObjectViewAsync: async (_design, search, { startkey, endkey }) => ({
+            rows: Object.keys(objects)
+                .map(id => `frigate.0.${id}`)
+                .filter(id => id >= startkey && id <= endkey && objects[id.substring(10)].type === search)
+                .map(id => ({ id, value: objects[id.substring(10)] })),
+        }),
         getStateAsync: async id => stateDb[id] || null,
         setStateAsync: async (id, val, ack) => {
             stateDb[id] = { val, ack };
@@ -114,6 +125,67 @@ describe('Event history (fetchEventHistory)', () => {
         const restarted = createAdapter(values);
         await fetchEventHistory(context(restarted, events));
         assert.deepStrictEqual(restarted.writes, []);
+    });
+
+    it('clears a field the new event at the same position does not have', async () => {
+        const adapter = createAdapter();
+        const ctx = context(adapter, [frigateEvent('e2', 'haustuer', { sub_label: 'Denis', zones: ['garten'] })]);
+        await fetchEventHistory(ctx);
+        assert.strictEqual(adapter.stateDb['events.history.01.sub_label'].val, 'Denis');
+        assert.strictEqual(adapter.stateDb['events.history.01.zones.garten'].val, 'garten');
+
+        // Frigate sends sub_label: null for an event without a recognized name
+        ctx.requestClient = createClient([frigateEvent('e3', 'haustuer', { sub_label: null, zones: ['steg'] })]);
+        await fetchEventHistory(ctx);
+        assert.strictEqual(adapter.stateDb['events.history.01.id'].val, 'e3');
+        assert.strictEqual(adapter.stateDb['events.history.01.sub_label'].val, null);
+        assert.strictEqual(adapter.stateDb['events.history.01.zones.garten'].val, null);
+        assert.strictEqual(adapter.stateDb['events.history.01.zones.steg'].val, 'steg');
+        assert.strictEqual(adapter.stateDb['haustuer.history.01.sub_label'].val, null);
+    });
+
+    it('clears the positions beyond a list that got shorter, but not events.history.json', async () => {
+        const adapter = createAdapter();
+        const ctx = context(adapter, events);
+        await fetchEventHistory(ctx);
+        assert.strictEqual(adapter.stateDb['events.history.02.id'].val, 'e1');
+
+        ctx.requestClient = createClient([]);
+        await fetchEventHistory(ctx);
+        for (const [id, state] of Object.entries(adapter.stateDb)) {
+            if (id !== 'events.history.json') {
+                assert.strictEqual(state.val, null, id);
+            }
+        }
+        assert.strictEqual(adapter.stateDb['events.history.json'].val, '[]');
+    });
+
+    it('writes nothing more once the outdated values are cleared', async () => {
+        const adapter = createAdapter();
+        const ctx = context(adapter, events);
+        await fetchEventHistory(ctx);
+        ctx.requestClient = createClient([events[0]]);
+        await fetchEventHistory(ctx);
+        adapter.writes.length = 0;
+
+        await fetchEventHistory(ctx);
+        assert.deepStrictEqual(adapter.writes, []);
+    });
+
+    it('clears values left from before a restart', async () => {
+        const restarted = createAdapter({
+            'events.history.01.id': 'e2',
+            'events.history.02.id': 'old',
+            'events.history.02.sub_label': 'Denis',
+            'garten.history.01.id': 'old',
+        });
+        const ctx = context(restarted, [events[0]]);
+        await fetchEventHistory(ctx);
+        assert.strictEqual(restarted.stateDb['events.history.01.id'].val, 'e2');
+        assert.strictEqual(restarted.stateDb['events.history.02.id'].val, null);
+        assert.strictEqual(restarted.stateDb['events.history.02.sub_label'].val, null);
+        assert.strictEqual(restarted.stateDb['garten.history.01.id'].val, null);
+        assert.ok(!restarted.writes.includes('events.history.01.id'), 'unchanged value written again');
     });
 
     it('fetches only the requested cameras', async () => {
