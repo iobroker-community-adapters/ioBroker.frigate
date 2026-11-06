@@ -1,0 +1,299 @@
+{
+    "$schema": "https://raw.githubusercontent.com/ioBroker/web-components/main/schemas/manifest.json",
+    "manifestVersion": 1,
+    "tag": "iob-frigate-live",
+    "name": {
+        "en": "Frigate Live",
+        "de": "Frigate-Livebild",
+        "ru": "Живое изображение Frigate",
+        "pt": "Imagem ao vivo Frigate",
+        "nl": "Frigate livebeeld",
+        "fr": "Image en direct Frigate",
+        "it": "Immagine dal vivo Frigate",
+        "es": "Imagen en vivo Frigate",
+        "pl": "Obraz na żywo Frigate",
+        "uk": "Живе зображення Frigate",
+        "zh-cn": "Frigate 实时画面"
+    },
+    "description": {
+        "en": "Live MJPEG stream of a Frigate camera via the web adapter",
+        "de": "Live-MJPEG-Stream einer Frigate-Kamera über den Web-Adapter",
+        "ru": "Живой MJPEG-поток камеры Frigate через веб-адаптер",
+        "pt": "Fluxo MJPEG ao vivo de uma câmera Frigate através do adaptador web",
+        "nl": "Live MJPEG-stream van een Frigate-camera via de web-adapter",
+        "fr": "Flux MJPEG en direct d une caméra Frigate via l adaptateur web",
+        "it": "Flusso MJPEG dal vivo di una telecamera Frigate tramite l adattatore web",
+        "es": "Flujo MJPEG en vivo de una cámara Frigate a través del adaptador web",
+        "pl": "Strumień MJPEG na żywo z kamery Frigate przez adapter web",
+        "uk": "Живий MJPEG-потік камери Frigate через веб-адаптер",
+        "zh-cn": "通过 web 适配器播放的 Frigate 摄像机实时 MJPEG 流"
+    },
+    "icon": "../frigate.png",
+    "module": "frigate-live.js",
+    "size": {
+        "width": 400,
+        "height": 250
+    },
+    "settings": {
+        "type": "panel",
+        "items": {
+            "camera": {
+                "type": "objectId",
+                "types": "device",
+                "root": "frigate",
+                "label": {
+                    "en": "Camera",
+                    "de": "Kamera",
+                    "ru": "Камера",
+                    "pt": "Câmera",
+                    "nl": "Camera",
+                    "fr": "Caméra",
+                    "it": "Telecamera",
+                    "es": "Cámara",
+                    "pl": "Kamera",
+                    "uk": "Камера",
+                    "zh-cn": "摄像机"
+                },
+                "help": {
+                    "en": "The device of the camera: frigate.0.<camera>",
+                    "de": "Das Gerät der Kamera: frigate.0.<Kamera>",
+                    "ru": "Устройство камеры: frigate.0.<камера>",
+                    "pt": "O dispositivo da câmera: frigate.0.<câmera>",
+                    "nl": "Het apparaat van de camera: frigate.0.<camera>",
+                    "fr": "L'appareil de la caméra : frigate.0.<caméra>",
+                    "it": "Il dispositivo della telecamera: frigate.0.<telecamera>",
+                    "es": "El dispositivo de la cámara: frigate.0.<cámara>",
+                    "pl": "Urządzenie kamery: frigate.0.<kamera>",
+                    "uk": "Пристрій камери: frigate.0.<камера>",
+                    "zh-cn": "摄像机的设备：frigate.0.<摄像机>"
+                }
+            },
+            "showName": {
+                "type": "checkbox",
+                "default": true,
+                "label": {
+                    "en": "Show name",
+                    "de": "Namen anzeigen",
+                    "ru": "Показывать название",
+                    "pt": "Mostrar nome",
+                    "nl": "Naam tonen",
+                    "fr": "Afficher le nom",
+                    "it": "Mostra nome",
+                    "es": "Mostrar nombre",
+                    "pl": "Pokaż nazwę",
+                    "uk": "Показувати назву",
+                    "zh-cn": "显示名称"
+                }
+            },
+            "name": {
+                "type": "text",
+                "label": {
+                    "en": "Name",
+                    "de": "Name",
+                    "ru": "Имя",
+                    "pt": "Nome",
+                    "nl": "Naam",
+                    "fr": "Nom",
+                    "it": "Nome",
+                    "es": "Nombre",
+                    "pl": "Nazwa",
+                    "uk": "Ім’я",
+                    "zh-cn": "名称"
+                },
+                "help": {
+                    "en": "Overrides the camera name shown on the tile. Leave empty to use the camera name itself.",
+                    "de": "Überschreibt den auf der Kachel angezeigten Kameranamen. Leer lassen, um den Kameranamen zu verwenden.",
+                    "ru": "Заменяет имя камеры, показываемое на плитке. Оставьте пустым, чтобы использовать имя камеры.",
+                    "pt": "Substitui o nome da câmera mostrado no mosaico. Deixe vazio para usar o nome da câmera.",
+                    "nl": "Vervangt de cameranaam die op de tegel wordt getoond. Laat leeg om de cameranaam te gebruiken.",
+                    "fr": "Remplace le nom de la caméra affiché sur la tuile. Laisser vide pour utiliser le nom de la caméra.",
+                    "it": "Sostituisce il nome della telecamera mostrato sul riquadro. Lasciare vuoto per usare il nome della telecamera.",
+                    "es": "Sustituye el nombre de la cámara mostrado en el mosaico. Déjelo vacío para usar el nombre de la cámara.",
+                    "pl": "Zastępuje nazwę kamery pokazywaną na kafelku. Pozostaw puste, aby użyć nazwy kamery.",
+                    "uk": "Замінює ім’я камери, що показується на плитці. Залиште порожнім, щоб використати ім’я камери.",
+                    "zh-cn": "覆盖磁贴上显示的摄像机名称。留空则使用摄像机名称。"
+                },
+                "hidden": "data.showName === false"
+            },
+            "height": {
+                "type": "select",
+                "default": "480",
+                "options": [
+                    {
+                        "value": "240",
+                        "label": "240 px"
+                    },
+                    {
+                        "value": "360",
+                        "label": "360 px"
+                    },
+                    {
+                        "value": "480",
+                        "label": "480 px"
+                    },
+                    {
+                        "value": "720",
+                        "label": "720 px"
+                    },
+                    {
+                        "value": "1080",
+                        "label": "1080 px"
+                    }
+                ],
+                "label": {
+                    "en": "Picture height (px)",
+                    "de": "Bildhöhe (px)",
+                    "ru": "Высота изображения (px)",
+                    "pt": "Altura da imagem (px)",
+                    "nl": "Beeldhoogte (px)",
+                    "fr": "Hauteur de l'image (px)",
+                    "it": "Altezza dell'immagine (px)",
+                    "es": "Altura de la imagen (px)",
+                    "pl": "Wysokość obrazu (px)",
+                    "uk": "Висота зображення (px)",
+                    "zh-cn": "图像高度（像素）"
+                },
+                "help": {
+                    "en": "Frigate scales the picture of the tile down to this height. A smaller picture loads faster; the enlarged view always asks for 720 px.",
+                    "de": "Frigate verkleinert das Bild der Kachel auf diese Höhe. Ein kleineres Bild lädt schneller; die vergrößerte Ansicht fragt immer 720 px an.",
+                    "ru": "Frigate уменьшает изображение плитки до этой высоты. Меньшее изображение загружается быстрее; увеличенный вид всегда запрашивает 720 px.",
+                    "pt": "O Frigate reduz a imagem do bloco para esta altura. Uma imagem menor carrega mais rápido; a vista ampliada pede sempre 720 px.",
+                    "nl": "Frigate verkleint het beeld van de tegel tot deze hoogte. Een kleiner beeld laadt sneller; de vergrote weergave vraagt altijd 720 px.",
+                    "fr": "Frigate réduit l'image de la tuile à cette hauteur. Une image plus petite se charge plus vite ; la vue agrandie demande toujours 720 px.",
+                    "it": "Frigate riduce l'immagine del riquadro a questa altezza. Un'immagine più piccola si carica più velocemente; la vista ingrandita chiede sempre 720 px.",
+                    "es": "Frigate reduce la imagen del mosaico a esta altura. Una imagen más pequeña carga más rápido; la vista ampliada pide siempre 720 px.",
+                    "pl": "Frigate zmniejsza obraz kafelka do tej wysokości. Mniejszy obraz ładuje się szybciej; powiększony widok zawsze pobiera 720 px.",
+                    "uk": "Frigate зменшує зображення плитки до цієї висоти. Менше зображення завантажується швидше; збільшений вигляд завжди запитує 720 px.",
+                    "zh-cn": "Frigate 将磁贴的图像缩小到此高度。图像越小加载越快；放大视图始终请求 720 像素。"
+                }
+            },
+            "bbox": {
+                "type": "checkbox",
+                "default": false,
+                "label": {
+                    "en": "Draw detection boxes",
+                    "de": "Objektrahmen einzeichnen",
+                    "ru": "Рисовать рамки объектов",
+                    "pt": "Desenhar caixas de deteção",
+                    "nl": "Detectiekaders tekenen",
+                    "fr": "Dessiner les cadres de détection",
+                    "it": "Disegna i riquadri di rilevamento",
+                    "es": "Dibujar recuadros de detección",
+                    "pl": "Rysuj ramki detekcji",
+                    "uk": "Малювати рамки об’єктів",
+                    "zh-cn": "绘制检测框"
+                }
+            },
+            "timestamp": {
+                "type": "checkbox",
+                "default": false,
+                "label": {
+                    "en": "Draw timestamp",
+                    "de": "Zeitstempel einzeichnen",
+                    "ru": "Рисовать метку времени",
+                    "pt": "Desenhar data/hora",
+                    "nl": "Tijdstempel tekenen",
+                    "fr": "Dessiner l'horodatage",
+                    "it": "Disegna la marca temporale",
+                    "es": "Dibujar marca de tiempo",
+                    "pl": "Rysuj znacznik czasu",
+                    "uk": "Малювати мітку часу",
+                    "zh-cn": "绘制时间戳"
+                }
+            },
+            "_webHint": {
+                "type": "staticText",
+                "text": {
+                    "en": "This widget streams through the camera proxy of the web adapter. Without a web instance use the snapshot widget instead.",
+                    "de": "Dieses Widget streamt über den Kamera-Proxy des web-Adapters. Ohne web-Instanz nimm stattdessen das Standbild-Widget.",
+                    "ru": "Этот виджет транслирует через прокси камер адаптера web. Без экземпляра web используйте виджет снимка.",
+                    "pt": "Este widget transmite através do proxy de câmeras do adaptador web. Sem uma instância web use antes o widget de instantâneo.",
+                    "nl": "Dit widget streamt via de cameraproxy van de web-adapter. Zonder web-instantie kun je beter het momentopname-widget gebruiken.",
+                    "fr": "Ce widget diffuse via le proxy de caméras de l'adaptateur web. Sans instance web, utilisez plutôt le widget instantané.",
+                    "it": "Questo widget trasmette tramite il proxy telecamere dell'adattatore web. Senza un'istanza web usa invece il widget istantanea.",
+                    "es": "Este widget transmite a través del proxy de cámaras del adaptador web. Sin una instancia web use el widget de instantánea.",
+                    "pl": "Ten widżet przesyła obraz przez proxy kamer adaptera web. Bez instancji web użyj widżetu zdjęcia.",
+                    "uk": "Цей віджет транслює через проксі камер адаптера web. Без екземпляра web скористайтеся віджетом знімка.",
+                    "zh-cn": "此小部件通过 web 适配器的摄像机代理传输。没有 web 实例时请改用快照小部件。"
+                }
+            },
+            "_fallbackHint": {
+                "type": "staticText",
+                "text": {
+                    "en": "When the stream cannot be loaded, the widget switches to single pictures over the socket by itself, at the frame rate set below. That is always the case through the ioBroker cloud (iobroker.pro / iobroker.net), elsewhere e.g. when the browser cannot reach the web instance or blocks the http stream inside an https admin.",
+                    "de": "Lässt sich der Stream nicht laden, schaltet das Widget automatisch auf Einzelbilder über den Socket um, mit der unten eingestellten Bildrate. Das ist immer so über die ioBroker-Cloud (iobroker.pro / iobroker.net), sonst z. B. wenn der Browser die web-Instanz nicht erreicht oder den http-Stream in einem https-Admin blockiert.",
+                    "ru": "Если поток не загружается, виджет автоматически переключается на отдельные кадры через сокет с частотой, заданной ниже. Через облако ioBroker (iobroker.pro / iobroker.net) так происходит всегда, в остальных случаях — например, когда браузер не может достучаться до экземпляра web или блокирует http-поток внутри admin по https.",
+                    "pt": "Se o fluxo não puder ser carregado, o widget muda automaticamente para imagens individuais através do socket, com a taxa de quadros definida abaixo. Isso acontece sempre através da nuvem ioBroker (iobroker.pro / iobroker.net); nos outros casos, p. ex., quando o navegador não alcança a instância web ou bloqueia o fluxo http dentro de um admin https.",
+                    "nl": "Kan de stream niet worden geladen, dan schakelt het widget automatisch over op losse beelden via de socket, met de hieronder ingestelde beeldsnelheid. Dat is altijd zo via de ioBroker-cloud (iobroker.pro / iobroker.net), anders bijv. wanneer de browser de web-instantie niet bereikt of de http-stream in een https-admin blokkeert.",
+                    "fr": "Si le flux ne peut pas être chargé, le widget bascule automatiquement sur des images individuelles via le socket, à la fréquence d'images réglée ci-dessous. C'est toujours le cas via le cloud ioBroker (iobroker.pro / iobroker.net), ailleurs p. ex. lorsque le navigateur n'atteint pas l'instance web ou bloque le flux http dans un admin https.",
+                    "it": "Se il flusso non può essere caricato, il widget passa automaticamente a singole immagini tramite il socket, con la frequenza fotogrammi impostata sotto. Succede sempre tramite il cloud ioBroker (iobroker.pro / iobroker.net), altrimenti ad es. quando il browser non raggiunge l'istanza web o blocca il flusso http in un admin https.",
+                    "es": "Si el flujo no se puede cargar, el widget cambia automáticamente a imágenes sueltas a través del socket, con la tasa de fotogramas indicada abajo. Siempre ocurre a través de la nube de ioBroker (iobroker.pro / iobroker.net); en otros casos, p. ej., cuando el navegador no alcanza la instancia web o bloquea el flujo http dentro de un admin https.",
+                    "pl": "Jeśli strumienia nie da się załadować, widżet przełącza się automatycznie na pojedyncze klatki przez gniazdo, z ustawioną poniżej liczbą klatek na sekundę. Tak jest zawsze przez chmurę ioBroker (iobroker.pro / iobroker.net), w innych przypadkach np. gdy przeglądarka nie może połączyć się z instancją web lub blokuje strumień http w adminie działającym przez https.",
+                    "uk": "Якщо потік не завантажується, віджет автоматично перемикається на окремі кадри через сокет із частотою, заданою нижче. Через хмару ioBroker (iobroker.pro / iobroker.net) так відбувається завжди, в інших випадках — наприклад, коли браузер не може дістатися до екземпляра web або блокує http-потік усередині admin через https.",
+                    "zh-cn": "无法加载视频流时，小部件会自动改为通过 socket 获取单张图片，帧率使用下方的设置。通过 ioBroker 云（iobroker.pro / iobroker.net）访问时总是如此；其他情况例如浏览器无法访问 web 实例，或在 https 的 admin 中阻止了 http 视频流。"
+                }
+            },
+            "webUrl": {
+                "type": "text",
+                "label": {
+                    "en": "Web instance (optional)",
+                    "de": "Web-Instanz (optional)",
+                    "ru": "Экземпляр web (необязательно)",
+                    "pt": "Instância web (opcional)",
+                    "nl": "Web-instantie (optioneel)",
+                    "fr": "Instance web (facultatif)",
+                    "it": "Istanza web (facoltativo)",
+                    "es": "Instancia web (opcional)",
+                    "pl": "Instancja web (opcjonalnie)",
+                    "uk": "Екземпляр web (необов’язково)",
+                    "zh-cn": "web 实例（可选）"
+                },
+                "help": {
+                    "en": "Leave empty: the adapter works the address out from the web instance and its host. Only fill this in when that cannot be right, e.g. behind a reverse proxy or an external domain - then something like http://192.168.1.5:8082",
+                    "de": "Leer lassen: Der Adapter ermittelt die Adresse selbst aus der Web-Instanz und deren Host. Nur eintragen, wenn das nicht passt, z. B. bei Reverse-Proxy oder externer Domain - dann etwa http://192.168.1.5:8082",
+                    "ru": "Оставьте пустым: адаптер сам определит адрес по экземпляру web и его хосту. Заполняйте только тогда, когда это не может быть верно, например за обратным прокси или при внешнем домене - тогда что-то вроде http://192.168.1.5:8082",
+                    "pt": "Deixe vazio: o adaptador deduz o endereço a partir da instância web e do seu host. Preencha apenas quando isso não puder estar certo, p. ex. atrás de um proxy reverso ou com um domínio externo - então algo como http://192.168.1.5:8082",
+                    "nl": "Laat leeg: de adapter leidt het adres af uit de web-instantie en de host daarvan. Vul dit alleen in als dat niet kan kloppen, bijv. achter een reverse proxy of bij een extern domein - dan zoiets als http://192.168.1.5:8082",
+                    "fr": "Laisser vide : l'adaptateur déduit l'adresse de l'instance web et de son hôte. À renseigner uniquement lorsque cela ne peut pas convenir, p. ex. derrière un proxy inverse ou avec un domaine externe - alors quelque chose comme http://192.168.1.5:8082",
+                    "it": "Lasciare vuoto: l'adattatore ricava l'indirizzo dall'istanza web e dal suo host. Compilare solo quando questo non può essere corretto, ad es. dietro un reverse proxy o con un dominio esterno - allora qualcosa come http://192.168.1.5:8082",
+                    "es": "Déjelo vacío: el adaptador deduce la dirección de la instancia web y su host. Rellénelo solo cuando eso no pueda ser correcto, p. ej. detrás de un proxy inverso o con un dominio externo; entonces algo como http://192.168.1.5:8082",
+                    "pl": "Pozostaw puste: adapter sam ustala adres na podstawie instancji web i jej hosta. Wypełnij tylko wtedy, gdy to nie może być poprawne, np. za reverse proxy lub przy zewnętrznej domenie - wtedy coś w rodzaju http://192.168.1.5:8082",
+                    "uk": "Залиште порожнім: адаптер сам визначить адресу за екземпляром web та його хостом. Заповнюйте лише тоді, коли це не може бути правильним, наприклад за зворотним проксі або із зовнішнім доменом - тоді щось на кшталт http://192.168.1.5:8082",
+                    "zh-cn": "留空：适配器会根据 web 实例及其主机自动推算地址。仅当推算结果不可能正确时才填写，例如位于反向代理之后或使用外部域名 —— 此时填写类似 http://192.168.1.5:8082"
+                }
+            },
+            "fps": {
+                "type": "number",
+                "default": 5,
+                "min": 1,
+                "max": 30,
+                "label": {
+                    "en": "Frames per second",
+                    "de": "Bilder pro Sekunde",
+                    "ru": "Кадров в секунду",
+                    "pt": "Quadros por segundo",
+                    "nl": "Beelden per seconde",
+                    "fr": "Images par seconde",
+                    "it": "Fotogrammi al secondo",
+                    "es": "Imágenes por segundo",
+                    "pl": "Klatki na sekundę",
+                    "uk": "Кадрів на секунду",
+                    "zh-cn": "每秒帧数"
+                },
+                "help": {
+                    "en": "Frigate encodes the stream for every viewer - a low value saves CPU",
+                    "de": "Frigate kodiert den Stream pro Betrachter – ein niedriger Wert spart CPU",
+                    "ru": "Frigate кодирует поток для каждого зрителя — малое значение экономит ЦП",
+                    "pt": "O Frigate codifica o fluxo para cada espectador — um valor baixo poupa CPU",
+                    "nl": "Frigate codeert de stream per kijker — een lage waarde bespaart CPU",
+                    "fr": "Frigate encode le flux pour chaque spectateur — une valeur basse économise le CPU",
+                    "it": "Frigate codifica il flusso per ogni spettatore — un valore basso riduce la CPU",
+                    "es": "Frigate codifica el flujo para cada espectador — un valor bajo ahorra CPU",
+                    "pl": "Frigate koduje strumień dla każdego widza — niska wartość oszczędza CPU",
+                    "uk": "Frigate кодує потік для кожного глядача — низьке значення економить ЦП",
+                    "zh-cn": "Frigate 为每个观看者单独编码视频流，数值越低越省 CPU"
+                }
+            }
+        }
+    }
+}
