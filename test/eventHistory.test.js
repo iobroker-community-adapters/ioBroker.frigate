@@ -188,6 +188,22 @@ describe('Event history (fetchEventHistory)', () => {
         assert.ok(!restarted.writes.includes('events.history.01.id'), 'unchanged value written again');
     });
 
+    it('links the thumbnail when Frigate (0.14+) sends none, and keeps the base64 picture of older versions', async () => {
+        const adapter = createAdapter();
+        await fetchEventHistory(
+            context(adapter, [
+                frigateEvent('e2', 'haustuer', { thumbnail: null }),
+                frigateEvent('e1', 'garten', { thumbnail: 'AAAA' }),
+            ]),
+        );
+        assert.strictEqual(
+            adapter.stateDb['events.history.01.thumbnail'].val,
+            'http://frigate:5000/api/events/e2/thumbnail.jpg',
+        );
+        assert.strictEqual(adapter.stateDb['events.history.02.thumbnail'].val, 'data:image/jpeg;base64,AAAA');
+        assert.ok(adapter.stateDb['events.history.json'].val.includes('/api/events/e2/thumbnail.jpg'));
+    });
+
     it('fetches only the requested cameras', async () => {
         const adapter = createAdapter();
         const requests = [];

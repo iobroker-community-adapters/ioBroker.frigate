@@ -28,7 +28,11 @@ export async function fetchEventHistory(ctx, devices = ctx.deviceArray) {
                     event.websnap = `${ctx.adapter.frigateBaseUrl}/api/events/${event.id}/snapshot.jpg`;
                     event.webclip = `${ctx.adapter.frigateBaseUrl}/api/events/${event.id}/clip.mp4`;
                     event.webm3u8 = `${ctx.adapter.frigateBaseUrl}/vod/event/${event.id}/master.m3u8`;
-                    event.thumbnail = `data:image/jpeg;base64,${event.thumbnail}`;
+                    // Up to Frigate 0.13 the thumbnail came as base64. Since 0.14 Frigate keeps it as a
+                    // file and sends null, which made "data:image/jpeg;base64,null" - a broken picture
+                    event.thumbnail = event.thumbnail
+                        ? `data:image/jpeg;base64,${event.thumbnail}`
+                        : `${ctx.adapter.frigateBaseUrl}/api/events/${event.id}/thumbnail.jpg`;
                     delete event.path_data;
                 }
                 let path = 'events.history';
