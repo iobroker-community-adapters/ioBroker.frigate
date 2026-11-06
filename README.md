@@ -36,7 +36,7 @@ Adapter for [Frigate NVR](https://frigate.video/) — an open-source, self-hoste
     Placeholder for the next version (at the beginning of the line):
   ### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 3.2.4 (2026-11-06)
 - (@GermanBluefox) The event history (`events.history.*`, `<camera>.history.*`, `events.history.json`) is fetched again after every event, and nearly all of it was written again unchanged - several thousand writes within seconds, which every adapter subscribed to all states (e.g. MQTT with `*`, JavaScript) had to process as well. Now only values that changed are written, also after a restart. After an event only the overall history and the history of that camera are fetched, no longer those of all cameras. Live values from MQTT are written as before
 
 ### 3.2.3 (2026-11-05)
@@ -53,9 +53,6 @@ Adapter for [Frigate NVR](https://frigate.video/) — an open-source, self-hoste
 - (@GermanBluefox) The live widget for `ioBroker.devices` still tried the stream relative to admin (port 8081) when the adapter did not report the address of the web instance in time. Without an address the widget now takes single pictures over the socket and tells the reason in the browser console; an address that arrives late still switches to the stream
 - (@GermanBluefox) Added the names Frigate recognizes (face recognition, known license plates): `<zone>.sub_labels` lists the names in a zone right now, and `sub_labels.<name>` is `true` as long as a running event carries that name. With face recognition enabled, the names of the face library are created on start, so automations can be set up before somebody is recognized for the first time (#277)
 - (@GermanBluefox) Fixed repochecker warnings: literal placeholders of the settings dialog are in the translation files, and dependabot also watches `src-devices`
-
-### 3.1.5 (2026-09-22)
-- (@GermanBluefox) The live widget for `ioBroker.devices` did not show the stream in admin: before the adapter had reported the address of the web instance, the widget already loaded the stream relative to admin (port 8081), and the error of that attempt stayed on the tile even after the right address had arrived. The widget now waits for the address, and if the stream still cannot be loaded (web instance not reachable, http stream inside an https admin), it switches to single pictures over the socket
 
 [Older changelogs can be found there](CHANGELOG_OLD.md)
 

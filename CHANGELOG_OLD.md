@@ -1,4 +1,7 @@
 # Older changes
+## 3.1.5 (2026-09-22)
+- (@GermanBluefox) The live widget for `ioBroker.devices` did not show the stream in admin: before the adapter had reported the address of the web instance, the widget already loaded the stream relative to admin (port 8081), and the error of that attempt stayed on the tile even after the right address had arrived. The widget now waits for the address, and if the stream still cannot be loaded (web instance not reachable, http stream inside an https admin), it switches to single pictures over the socket
+
 ## 3.1.4 (2026-09-14)
 - (@GermanBluefox) The live widget for `ioBroker.devices` switches to single pictures over the socket by itself when the page is opened through the ioBroker cloud (iobroker.pro / iobroker.net): the cloud cannot relay the MJPEG stream, and the address of the web instance is not reachable from outside anyway
 
