@@ -51,7 +51,8 @@ export interface MessageHandlerContext {
     onFirstStats: () => Promise<void>;
     onEvent: (data: FrigateMessage) => Promise<void>;
     onTrackedObjectUpdate: (data: FrigateMessage) => Promise<void>;
-    debouncedFetchEventHistory: () => void;
+    /** Fetches the history of the overall list and of the given camera a moment after the last event */
+    debouncedFetchEventHistory: (camera?: string) => void;
     sendNotification: (message: NotificationMessage) => Promise<void>;
 }
 
@@ -133,7 +134,7 @@ export async function handleMqttMessage(ctx: MessageHandlerContext, topic: strin
                 write = true;
             } else if (event === 'events' && typeof data === 'object') {
                 await ctx.onEvent(data);
-                ctx.debouncedFetchEventHistory();
+                ctx.debouncedFetchEventHistory(data.after?.camera || data.before?.camera);
             } else if (command === 'reviews' && typeof data === 'object') {
                 delete data.after.data.detections;
                 delete data.before.data.detections;

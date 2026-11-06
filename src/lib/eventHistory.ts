@@ -10,8 +10,18 @@ interface EventHistoryContext {
     deviceArray: string[];
 }
 
-export async function fetchEventHistory(ctx: EventHistoryContext): Promise<void> {
-    for (const device of ctx.deviceArray) {
+/**
+ * Reads the last events from Frigate into `events.history` (all cameras) and `<camera>.history`.
+ *
+ * Only values that differ from the last fetch are written: the history is fetched again after every
+ * event, and mostly nothing in it has changed. Writing everything again flooded the controller and
+ * every adapter subscribed to all states with thousands of unchanged values.
+ *
+ * @param ctx adapter, client and the known cameras
+ * @param devices cameras to fetch, '' for the history of all cameras; default: all known ones
+ */
+export async function fetchEventHistory(ctx: EventHistoryContext, devices: string[] = ctx.deviceArray): Promise<void> {
+    for (const device of devices) {
         const params: { limit: number; cameras?: string } = { limit: ctx.adapter.config.webnum as number };
         if (device) {
             params.cameras = device;
@@ -41,9 +51,10 @@ export async function fetchEventHistory(ctx: EventHistoryContext): Promise<void>
                 await ctx.json2iob.parse(path, response.data, {
                     forceIndex: true,
                     channelName: 'Events history',
+                    onlyChanged: true,
                 });
                 if (!device) {
-                    await ctx.adapter.setStateAsync('events.history.json', JSON.stringify(response.data), true);
+                    await ctx.json2iob.setStateIfChanged('events.history.json', JSON.stringify(response.data));
                 }
             }
         } catch (error: any) {

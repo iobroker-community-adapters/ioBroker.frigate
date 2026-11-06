@@ -118,7 +118,7 @@ export async function handleMqttMessage(ctx, topic, payload) {
             }
             else if (event === 'events' && typeof data === 'object') {
                 await ctx.onEvent(data);
-                ctx.debouncedFetchEventHistory();
+                ctx.debouncedFetchEventHistory(data.after?.camera || data.before?.camera);
             }
             else if (command === 'reviews' && typeof data === 'object') {
                 delete data.after.data.detections;

@@ -44,6 +44,8 @@ class FrigateAdapter extends Adapter {
     private aedes!: Aedes;
     private mqttClient: MqttClient | null = null;
     private fetchEventHistoryTimeout: ioBroker.Timeout | undefined | null = null;
+    /** Cameras with events since the last history fetch */
+    private readonly pendingHistoryCameras = new Set<string>();
     private zoneAggregator: ZoneAggregator;
     frigateBaseUrl = '';
 
@@ -502,7 +504,7 @@ class FrigateAdapter extends Adapter {
             onTrackedObjectUpdate: async (data: FrigateMessage) => {
                 this.trackedObjectsHistory = await handleTrackedObjectUpdate(this, this.trackedObjectsHistory, data);
             },
-            debouncedFetchEventHistory: () => this.debouncedFetchEventHistory(),
+            debouncedFetchEventHistory: (camera?: string) => this.debouncedFetchEventHistory(camera),
             sendNotification: async msg => sendNotification(this._notifCtx, msg),
         };
         // Make firstStart a live reference to the adapter's property
@@ -513,23 +515,42 @@ class FrigateAdapter extends Adapter {
 
     // --- Event History ---
 
-    private debouncedFetchEventHistory(): void {
+    /**
+     * Fetches the history 2 s after the last event: the overall list and the cameras that had events.
+     * The history of the other cameras cannot have changed.
+     *
+     * @param camera camera of the event
+     */
+    private debouncedFetchEventHistory(camera?: string): void {
+        if (camera) {
+            this.pendingHistoryCameras.add(camera);
+        }
         if (this.fetchEventHistoryTimeout) {
             this.clearTimeout(this.fetchEventHistoryTimeout);
         }
         this.fetchEventHistoryTimeout = this.setTimeout(async () => {
             this.fetchEventHistoryTimeout = null;
-            await this.doFetchEventHistory();
+            const devices = this.deviceArray.filter(device => !device || this.pendingHistoryCameras.has(device));
+            this.pendingHistoryCameras.clear();
+            await this.doFetchEventHistory(devices);
         }, 2000);
     }
 
-    private async doFetchEventHistory(): Promise<void> {
-        await fetchEventHistory({
-            adapter: this,
-            requestClient: this.requestClient,
-            json2iob: this.json2iob,
-            deviceArray: this.deviceArray,
-        });
+    /**
+     * Fetches the event history.
+     *
+     * @param devices cameras to fetch, '' for all cameras together; default: everything
+     */
+    private async doFetchEventHistory(devices?: string[]): Promise<void> {
+        await fetchEventHistory(
+            {
+                adapter: this,
+                requestClient: this.requestClient,
+                json2iob: this.json2iob,
+                deviceArray: this.deviceArray,
+            },
+            devices,
+        );
     }
 
     // --- Frigate API Authentication ---

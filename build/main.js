@@ -32,6 +32,8 @@ class FrigateAdapter extends Adapter {
     aedes;
     mqttClient = null;
     fetchEventHistoryTimeout = null;
+    /** Cameras with events since the last history fetch */
+    pendingHistoryCameras = new Set();
     zoneAggregator;
     frigateBaseUrl = '';
     constructor(options) {
@@ -435,7 +437,7 @@ class FrigateAdapter extends Adapter {
             onTrackedObjectUpdate: async (data) => {
                 this.trackedObjectsHistory = await handleTrackedObjectUpdate(this, this.trackedObjectsHistory, data);
             },
-            debouncedFetchEventHistory: () => this.debouncedFetchEventHistory(),
+            debouncedFetchEventHistory: (camera) => this.debouncedFetchEventHistory(camera),
             sendNotification: async (msg) => sendNotification(this._notifCtx, msg),
         };
         // Make firstStart a live reference to the adapter's property
@@ -444,22 +446,38 @@ class FrigateAdapter extends Adapter {
         });
     }
     // --- Event History ---
-    debouncedFetchEventHistory() {
+    /**
+     * Fetches the history 2 s after the last event: the overall list and the cameras that had events.
+     * The history of the other cameras cannot have changed.
+     *
+     * @param camera camera of the event
+     */
+    debouncedFetchEventHistory(camera) {
+        if (camera) {
+            this.pendingHistoryCameras.add(camera);
+        }
         if (this.fetchEventHistoryTimeout) {
             this.clearTimeout(this.fetchEventHistoryTimeout);
         }
         this.fetchEventHistoryTimeout = this.setTimeout(async () => {
             this.fetchEventHistoryTimeout = null;
-            await this.doFetchEventHistory();
+            const devices = this.deviceArray.filter(device => !device || this.pendingHistoryCameras.has(device));
+            this.pendingHistoryCameras.clear();
+            await this.doFetchEventHistory(devices);
         }, 2000);
     }
-    async doFetchEventHistory() {
+    /**
+     * Fetches the event history.
+     *
+     * @param devices cameras to fetch, '' for all cameras together; default: everything
+     */
+    async doFetchEventHistory(devices) {
         await fetchEventHistory({
             adapter: this,
             requestClient: this.requestClient,
             json2iob: this.json2iob,
             deviceArray: this.deviceArray,
-        });
+        }, devices);
     }
     // --- Frigate API Authentication ---
     async loginToFrigate() {

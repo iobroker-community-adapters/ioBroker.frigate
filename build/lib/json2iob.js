@@ -2,6 +2,8 @@ export default class Json2iob {
     adapter;
     alreadyCreatedObjects;
     objectTypes;
+    /** Last value written per state id, for `onlyChanged` */
+    lastValues = new Map();
     forbiddenCharsRegex;
     constructor(adapter) {
         if (!adapter) {
@@ -40,6 +42,7 @@ export default class Json2iob {
      * @param options.excludeStateWithEnding - Array of strings to exclude states with this ending.
      * @param options.makeStateWritableWithEnding - Array of strings to make states with this ending writable.
      * @param options.dontSaveCreatedObjects - Create objects but do not save them to alreadyCreatedObjects.
+     * @param options.onlyChanged - Write a state only if its value differs from the last one written.
      * @returns A promise that resolves when the parsing is complete.
      */
     async parse(path, element, options = { write: false }) {
@@ -114,7 +117,7 @@ export default class Json2iob {
                     }
                     await this._createState(path, common, options);
                 }
-                await this.adapter.setStateAsync(path, element, true);
+                await this._setState(path, element, options);
                 return;
             }
             if (options.removePasswords && path.toString().toLowerCase().includes('password')) {
@@ -143,6 +146,11 @@ export default class Json2iob {
                     for (const key in this.alreadyCreatedObjects) {
                         if (key.startsWith(path)) {
                             delete this.alreadyCreatedObjects[key];
+                        }
+                    }
+                    for (const key of this.lastValues.keys()) {
+                        if (key.startsWith(path)) {
+                            this.lastValues.delete(key);
                         }
                     }
                     await this.adapter.delObjectAsync(path, { recursive: true });
@@ -244,13 +252,56 @@ export default class Json2iob {
                         }
                         await this._createState(`${path}.${pathKey}`, common, options);
                     }
-                    await this.adapter.setStateAsync(`${path}.${pathKey}`, element[key], true);
+                    await this._setState(`${path}.${pathKey}`, element[key], options);
                 }
             }
         }
         catch (error) {
             this.adapter.log.error(`Error extract keys: ${path} ${JSON.stringify(element)}`);
             this.adapter.log.error(error);
+        }
+    }
+    /**
+     * Writes a value with ack=true, but only if it differs from the last value written to this id.
+     *
+     * The first write of an id after the adapter start compares with the value in the states DB, so a
+     * restart does not write everything again either. After that the comparison is made in memory.
+     *
+     * @param id - The state id without the namespace.
+     * @param value - The value to write.
+     * @returns - True if the value was written.
+     */
+    async setStateIfChanged(id, value) {
+        if (this.lastValues.has(id)) {
+            if (this.lastValues.get(id) === value) {
+                return false;
+            }
+        }
+        else {
+            const state = await this.adapter.getStateAsync(id);
+            if (state?.ack && state.val === value) {
+                this.lastValues.set(id, value);
+                return false;
+            }
+        }
+        await this.adapter.setStateAsync(id, value, true);
+        this.lastValues.set(id, value);
+        return true;
+    }
+    /**
+     * Writes a parsed value, unchanged values only if `options.onlyChanged` is not set.
+     *
+     * @param id - The state id without the namespace.
+     * @param value - The value to write.
+     * @param options - The parsing options.
+     */
+    async _setState(id, value, options) {
+        if (options.onlyChanged) {
+            await this.setStateIfChanged(id, value);
+        }
+        else {
+            await this.adapter.setStateAsync(id, value, true);
+            this.lastValues.delete(id);
         }
     }
     /**
@@ -491,7 +542,7 @@ export default class Json2iob {
                         }
                         await this._createState(`${path}.${subKey}`, common, options);
                     }
-                    await this.adapter.setStateAsync(`${path}.${subKey}`, subValue, true);
+                    await this._setState(`${path}.${subKey}`, subValue, options);
                     continue;
                 }
                 await this.parse(`${path}.${arrayPath}`, arrayElement, options);
