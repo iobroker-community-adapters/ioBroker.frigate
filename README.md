@@ -36,7 +36,7 @@ Adapter for [Frigate NVR](https://frigate.video/) — an open-source, self-hoste
     Placeholder for the next version (at the beginning of the line):
   ### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 3.3.0 (2026-11-08)
 - (@GermanBluefox) Added the web components `iob-frigate-snapshot` and `iob-frigate-live` - the devices widgets "Frigate Snapshot" and "Frigate Live" for Aura and other hosts (`common.webComponents`). The names of the devices widgets are translated now
 
 ### 3.2.6 (2026-11-06)
@@ -50,9 +50,6 @@ Adapter for [Frigate NVR](https://frigate.video/) — an open-source, self-hoste
 
 ### 3.2.3 (2026-11-05)
 - (@GermanBluefox) ioBroker.web can stop the web extension and start it again with new settings instead of restarting itself (`supportsHotReload`, with a version of web that supports it). When it is stopped, the web extension now also ends the MJPEG streams to the browsers
-
-### 3.2.2 (2026-10-07)
-- (@GermanBluefox) Added a link to the web interface of Frigate, on the instance in admin and as a card on the intro page. It points at the address the adapter itself talks to (`friurl`); with the default `localhost:5000`, admin 8.0.24 and newer open it on the host the instance runs on instead of on the machine of the browser. With Frigate in a container of the adapter, the link follows the stored address and not the port of the container, where the two differ
 
 [Older changelogs can be found there](CHANGELOG_OLD.md)
 
