@@ -26,6 +26,7 @@ Adapter für [Frigate NVR](https://frigate.video/) — ein quelloffenes, selbst 
 - [Integration](#integration)
   - [Live-Ansicht über den Web-Adapter](#live-ansicht-über-den-web-adapter)
   - [Geräte-Manager-Widgets](#geräte-manager-widgets)
+  - [Web-Komponenten](#web-komponenten)
   - [vis-Integration](#vis-integration)
   - [Skripte & Automatisierung](#skripte--automatisierung)
 - [Voraussetzungen](#voraussetzungen)
@@ -298,10 +299,10 @@ Der Adapter bringt zwei Widgets für **ioBroker.devices** mit. Bei beiden wird d
 gewöhnliches Objekt unterhalb des `frigate`-Namespace ausgewählt (z. B. `frigate.0.einfahrt`), und
 beide können Frigate die Objektrahmen und den Zeitstempel ins Bild zeichnen lassen.
 
-- **Frigate Snapshot** — lädt in einem einstellbaren Intervall ein Standbild neu. Es fragt den Adapter
+- **Frigate-Standbild** (Frigate Snapshot) — lädt in einem einstellbaren Intervall ein Standbild neu. Es fragt den Adapter
   über den ioBroker-Socket, funktioniert also überall dort, wo die Geräte-Oberfläche läuft, auch im
   Admin, und nutzt die Frigate-Anmeldung des Adapters mit.
-- **Frigate Live** — zeigt den MJPEG-Stream, den der Browser selbst dekodiert. Der Stream kommt vom
+- **Frigate-Livebild** (Frigate Live) — zeigt den MJPEG-Stream, den der Browser selbst dekodiert. Der Stream kommt vom
   **web**-Adapter, den die Geräte-Oberfläche nur erreicht, wenn sie in einer Web-Instanz läuft. Läuft
   sie im Admin — der Normalfall —, muss die Web-Instanz in den Widget-Einstellungen eingetragen
   werden, z. B. `http://192.168.1.5:8082`.
@@ -312,6 +313,27 @@ beide können Frigate die Objektrahmen und den Zeitstempel ins Bild zeichnen las
   Bild abgefragt wird.
 
 Im Zweifel das Snapshot-Widget nehmen, das hat diese Einschränkung nicht.
+
+### Web-Komponenten
+
+Beide Widgets gibt es auch als Web-Komponenten (`@iobroker/web-components`) für **Aura** und jede andere
+Oberfläche, die sie anzeigt (vis-2, Admin, Geräte): `<iob-frigate-snapshot>` („Frigate-Standbild“) und
+`<iob-frigate-live>` („Frigate-Livebild“). Sie holen ihre Bilder genau wie die Geräte-Manager-Widgets
+oben - das Standbild über den Socket, das Livebild vom Kamera-Proxy des Web-Adapters mit demselben
+Rückfall auf Einzelbilder. Die Geräte-Oberfläche bietet weiterhin ihre eigenen Widgets an.
+
+| Einstellung | |
+| --- | --- |
+| Kamera | das Gerät der Kamera, z. B. `frigate.0.einfahrt`; die Instanz ergibt sich daraus |
+| Namen anzeigen, Name | der Name unter dem Bild; leer: der Name der Kamera |
+| Bildhöhe | die Höhe, auf die Frigate das Bild der Kachel verkleinert, 240 bis 1080 px (480) |
+| Objektrahmen / Zeitstempel einzeichnen | lässt Frigate sie ins Bild zeichnen |
+| Abrufintervall Kachel / Vollbild | nur `<iob-frigate-snapshot>`: wie im Widget |
+| Web-Instanz, Bilder pro Sekunde | nur `<iob-frigate-live>`: wie im Widget |
+
+Ein Klick zeigt die Kamera vergrößert in einem Dialog der Oberfläche (720 px). Vorher sendet das Element
+das Ereignis `frigate-camera-click` mit `{ instance, camera }`; eine Oberfläche, die `preventDefault()`
+aufruft, zeigt die Kamera selbst an.
 
 ### vis-Integration
 

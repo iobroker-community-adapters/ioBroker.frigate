@@ -21,3 +21,6 @@ admin/i18n/*/flat.txt
 # Intermediate build of the device widgets - only admin/dm-widgets/ is shipped
 /src-devices/build/
 /src-devices/.__mf__temp/
+
+# Intermediate build of the web components - only admin/webcomponents/ is shipped
+/src-webcomponents/build/

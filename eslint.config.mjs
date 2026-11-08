@@ -23,6 +23,7 @@ export default [
         },
     },
     {
-        ignores: ['build/**/*', 'admin/**/*', 'test/**/*', '**/*.mjs', 'src-devices/**/*'],
+        // src-webcomponents has an eslint config of its own: `npm run lint-wc`
+        ignores: ['build/**/*', 'admin/**/*', 'test/**/*', '**/*.mjs', 'src-devices/**/*', 'src-webcomponents/**/*'],
     },
 ];

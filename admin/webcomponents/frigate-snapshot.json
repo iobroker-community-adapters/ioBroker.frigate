@@ -1,0 +1,270 @@
+{
+    "$schema": "https://raw.githubusercontent.com/ioBroker/web-components/main/schemas/manifest.json",
+    "manifestVersion": 1,
+    "tag": "iob-frigate-snapshot",
+    "name": {
+        "en": "Frigate Snapshot",
+        "de": "Frigate-Standbild",
+        "ru": "Снимок Frigate",
+        "pt": "Instantâneo Frigate",
+        "nl": "Frigate momentopname",
+        "fr": "Instantané Frigate",
+        "it": "Istantanea Frigate",
+        "es": "Instantánea Frigate",
+        "pl": "Zdjęcie Frigate",
+        "uk": "Знімок Frigate",
+        "zh-cn": "Frigate 快照"
+    },
+    "description": {
+        "en": "Periodically updated still picture of a Frigate camera",
+        "de": "Regelmäßig aktualisiertes Standbild einer Frigate-Kamera",
+        "ru": "Периодически обновляемый снимок камеры Frigate",
+        "pt": "Imagem fixa da câmera Frigate atualizada periodicamente",
+        "nl": "Periodiek vernieuwd stilstaand beeld van een Frigate-camera",
+        "fr": "Image fixe d une caméra Frigate mise à jour périodiquement",
+        "it": "Immagine fissa di una telecamera Frigate aggiornata periodicamente",
+        "es": "Imagen fija de una cámara Frigate actualizada periódicamente",
+        "pl": "Okresowo odświeżany obraz z kamery Frigate",
+        "uk": "Періодично оновлюване зображення з камери Frigate",
+        "zh-cn": "定期更新的 Frigate 摄像机静态图像"
+    },
+    "icon": "../frigate.png",
+    "module": "frigate-snapshot.js",
+    "size": {
+        "width": 400,
+        "height": 250
+    },
+    "settings": {
+        "type": "panel",
+        "items": {
+            "camera": {
+                "type": "objectId",
+                "types": "device",
+                "root": "frigate",
+                "label": {
+                    "en": "Camera",
+                    "de": "Kamera",
+                    "ru": "Камера",
+                    "pt": "Câmera",
+                    "nl": "Camera",
+                    "fr": "Caméra",
+                    "it": "Telecamera",
+                    "es": "Cámara",
+                    "pl": "Kamera",
+                    "uk": "Камера",
+                    "zh-cn": "摄像机"
+                },
+                "help": {
+                    "en": "The device of the camera: frigate.0.<camera>",
+                    "de": "Das Gerät der Kamera: frigate.0.<Kamera>",
+                    "ru": "Устройство камеры: frigate.0.<камера>",
+                    "pt": "O dispositivo da câmera: frigate.0.<câmera>",
+                    "nl": "Het apparaat van de camera: frigate.0.<camera>",
+                    "fr": "L'appareil de la caméra : frigate.0.<caméra>",
+                    "it": "Il dispositivo della telecamera: frigate.0.<telecamera>",
+                    "es": "El dispositivo de la cámara: frigate.0.<cámara>",
+                    "pl": "Urządzenie kamery: frigate.0.<kamera>",
+                    "uk": "Пристрій камери: frigate.0.<камера>",
+                    "zh-cn": "摄像机的设备：frigate.0.<摄像机>"
+                }
+            },
+            "showName": {
+                "type": "checkbox",
+                "default": true,
+                "label": {
+                    "en": "Show name",
+                    "de": "Namen anzeigen",
+                    "ru": "Показывать название",
+                    "pt": "Mostrar nome",
+                    "nl": "Naam tonen",
+                    "fr": "Afficher le nom",
+                    "it": "Mostra nome",
+                    "es": "Mostrar nombre",
+                    "pl": "Pokaż nazwę",
+                    "uk": "Показувати назву",
+                    "zh-cn": "显示名称"
+                }
+            },
+            "name": {
+                "type": "text",
+                "label": {
+                    "en": "Name",
+                    "de": "Name",
+                    "ru": "Имя",
+                    "pt": "Nome",
+                    "nl": "Naam",
+                    "fr": "Nom",
+                    "it": "Nome",
+                    "es": "Nombre",
+                    "pl": "Nazwa",
+                    "uk": "Ім’я",
+                    "zh-cn": "名称"
+                },
+                "help": {
+                    "en": "Overrides the camera name shown on the tile. Leave empty to use the camera name itself.",
+                    "de": "Überschreibt den auf der Kachel angezeigten Kameranamen. Leer lassen, um den Kameranamen zu verwenden.",
+                    "ru": "Заменяет имя камеры, показываемое на плитке. Оставьте пустым, чтобы использовать имя камеры.",
+                    "pt": "Substitui o nome da câmera mostrado no mosaico. Deixe vazio para usar o nome da câmera.",
+                    "nl": "Vervangt de cameranaam die op de tegel wordt getoond. Laat leeg om de cameranaam te gebruiken.",
+                    "fr": "Remplace le nom de la caméra affiché sur la tuile. Laisser vide pour utiliser le nom de la caméra.",
+                    "it": "Sostituisce il nome della telecamera mostrato sul riquadro. Lasciare vuoto per usare il nome della telecamera.",
+                    "es": "Sustituye el nombre de la cámara mostrado en el mosaico. Déjelo vacío para usar el nombre de la cámara.",
+                    "pl": "Zastępuje nazwę kamery pokazywaną na kafelku. Pozostaw puste, aby użyć nazwy kamery.",
+                    "uk": "Замінює ім’я камери, що показується на плитці. Залиште порожнім, щоб використати ім’я камери.",
+                    "zh-cn": "覆盖磁贴上显示的摄像机名称。留空则使用摄像机名称。"
+                },
+                "hidden": "data.showName === false"
+            },
+            "height": {
+                "type": "select",
+                "default": "480",
+                "options": [
+                    {
+                        "value": "240",
+                        "label": "240 px"
+                    },
+                    {
+                        "value": "360",
+                        "label": "360 px"
+                    },
+                    {
+                        "value": "480",
+                        "label": "480 px"
+                    },
+                    {
+                        "value": "720",
+                        "label": "720 px"
+                    },
+                    {
+                        "value": "1080",
+                        "label": "1080 px"
+                    }
+                ],
+                "label": {
+                    "en": "Picture height (px)",
+                    "de": "Bildhöhe (px)",
+                    "ru": "Высота изображения (px)",
+                    "pt": "Altura da imagem (px)",
+                    "nl": "Beeldhoogte (px)",
+                    "fr": "Hauteur de l'image (px)",
+                    "it": "Altezza dell'immagine (px)",
+                    "es": "Altura de la imagen (px)",
+                    "pl": "Wysokość obrazu (px)",
+                    "uk": "Висота зображення (px)",
+                    "zh-cn": "图像高度（像素）"
+                },
+                "help": {
+                    "en": "Frigate scales the picture of the tile down to this height. A smaller picture loads faster; the enlarged view always asks for 720 px.",
+                    "de": "Frigate verkleinert das Bild der Kachel auf diese Höhe. Ein kleineres Bild lädt schneller; die vergrößerte Ansicht fragt immer 720 px an.",
+                    "ru": "Frigate уменьшает изображение плитки до этой высоты. Меньшее изображение загружается быстрее; увеличенный вид всегда запрашивает 720 px.",
+                    "pt": "O Frigate reduz a imagem do bloco para esta altura. Uma imagem menor carrega mais rápido; a vista ampliada pede sempre 720 px.",
+                    "nl": "Frigate verkleint het beeld van de tegel tot deze hoogte. Een kleiner beeld laadt sneller; de vergrote weergave vraagt altijd 720 px.",
+                    "fr": "Frigate réduit l'image de la tuile à cette hauteur. Une image plus petite se charge plus vite ; la vue agrandie demande toujours 720 px.",
+                    "it": "Frigate riduce l'immagine del riquadro a questa altezza. Un'immagine più piccola si carica più velocemente; la vista ingrandita chiede sempre 720 px.",
+                    "es": "Frigate reduce la imagen del mosaico a esta altura. Una imagen más pequeña carga más rápido; la vista ampliada pide siempre 720 px.",
+                    "pl": "Frigate zmniejsza obraz kafelka do tej wysokości. Mniejszy obraz ładuje się szybciej; powiększony widok zawsze pobiera 720 px.",
+                    "uk": "Frigate зменшує зображення плитки до цієї висоти. Менше зображення завантажується швидше; збільшений вигляд завжди запитує 720 px.",
+                    "zh-cn": "Frigate 将磁贴的图像缩小到此高度。图像越小加载越快；放大视图始终请求 720 像素。"
+                }
+            },
+            "bbox": {
+                "type": "checkbox",
+                "default": false,
+                "label": {
+                    "en": "Draw detection boxes",
+                    "de": "Objektrahmen einzeichnen",
+                    "ru": "Рисовать рамки объектов",
+                    "pt": "Desenhar caixas de deteção",
+                    "nl": "Detectiekaders tekenen",
+                    "fr": "Dessiner les cadres de détection",
+                    "it": "Disegna i riquadri di rilevamento",
+                    "es": "Dibujar recuadros de detección",
+                    "pl": "Rysuj ramki detekcji",
+                    "uk": "Малювати рамки об’єктів",
+                    "zh-cn": "绘制检测框"
+                }
+            },
+            "timestamp": {
+                "type": "checkbox",
+                "default": false,
+                "label": {
+                    "en": "Draw timestamp",
+                    "de": "Zeitstempel einzeichnen",
+                    "ru": "Рисовать метку времени",
+                    "pt": "Desenhar data/hora",
+                    "nl": "Tijdstempel tekenen",
+                    "fr": "Dessiner l'horodatage",
+                    "it": "Disegna la marca temporale",
+                    "es": "Dibujar marca de tiempo",
+                    "pl": "Rysuj znacznik czasu",
+                    "uk": "Малювати мітку часу",
+                    "zh-cn": "绘制时间戳"
+                }
+            },
+            "pollingInterval": {
+                "type": "number",
+                "default": 2000,
+                "min": 500,
+                "max": 600000,
+                "label": {
+                    "en": "Poll interval, tile (ms)",
+                    "de": "Abrufintervall Kachel (ms)",
+                    "ru": "Интервал опроса, плитка (мс)",
+                    "pt": "Intervalo de consulta, mosaico (ms)",
+                    "nl": "Ophaalinterval tegel (ms)",
+                    "fr": "Intervalle d'interrogation, tuile (ms)",
+                    "it": "Intervallo di richiesta, riquadro (ms)",
+                    "es": "Intervalo de sondeo, mosaico (ms)",
+                    "pl": "Interwał odpytywania, kafelek (ms)",
+                    "uk": "Інтервал опитування, плитка (мс)",
+                    "zh-cn": "轮询间隔（磁贴，毫秒）"
+                },
+                "help": {
+                    "en": "How often the tile requests a new picture",
+                    "de": "Wie oft die Kachel ein neues Bild anfordert",
+                    "ru": "Как часто плитка запрашивает новое изображение",
+                    "pt": "Com que frequência o mosaico solicita uma nova imagem",
+                    "nl": "Hoe vaak de tegel een nieuwe afbeelding opvraagt",
+                    "fr": "Fréquence à laquelle la tuile demande une nouvelle image",
+                    "it": "Ogni quanto il riquadro richiede una nuova immagine",
+                    "es": "Con qué frecuencia el mosaico solicita una nueva imagen",
+                    "pl": "Jak często kafelek pobiera nowy obraz",
+                    "uk": "Як часто плитка запитує нове зображення",
+                    "zh-cn": "磁贴请求新图像的频率"
+                }
+            },
+            "dialogPollingInterval": {
+                "type": "number",
+                "default": 500,
+                "min": 200,
+                "max": 600000,
+                "label": {
+                    "en": "Poll interval, fullscreen (ms)",
+                    "de": "Abrufintervall Vollbild (ms)",
+                    "ru": "Интервал опроса, полный экран (мс)",
+                    "pt": "Intervalo de consulta, ecrã inteiro (ms)",
+                    "nl": "Ophaalinterval volledig scherm (ms)",
+                    "fr": "Intervalle d'interrogation, plein écran (ms)",
+                    "it": "Intervallo di richiesta, schermo intero (ms)",
+                    "es": "Intervalo de sondeo, pantalla completa (ms)",
+                    "pl": "Interwał odpytywania, pełny ekran (ms)",
+                    "uk": "Інтервал опитування, повний екран (мс)",
+                    "zh-cn": "轮询间隔（全屏，毫秒）"
+                },
+                "help": {
+                    "en": "Applies while the enlarged view is open. A lower value gives a smoother picture and only costs something while someone is watching.",
+                    "de": "Gilt, solange die vergrößerte Ansicht offen ist. Ein kleinerer Wert gibt ein flüssigeres Bild und kostet nur, während jemand hinsieht.",
+                    "ru": "Действует, пока открыт увеличенный вид. Меньшее значение даёт более плавную картинку и нагружает систему только тогда, когда кто-то смотрит.",
+                    "pt": "Aplica-se enquanto a vista ampliada está aberta. Um valor mais baixo dá uma imagem mais fluida e só custa enquanto alguém está a ver.",
+                    "nl": "Geldt zolang de vergrote weergave open is. Een lagere waarde geeft een vloeiender beeld en kost alleen iets terwijl iemand kijkt.",
+                    "fr": "S'applique tant que la vue agrandie est ouverte. Une valeur plus faible donne une image plus fluide et ne coûte que pendant que quelqu'un regarde.",
+                    "it": "Vale finché la vista ingrandita è aperta. Un valore più basso rende l'immagine più fluida e pesa solo mentre qualcuno guarda.",
+                    "es": "Se aplica mientras la vista ampliada está abierta. Un valor menor da una imagen más fluida y solo cuesta mientras alguien está mirando.",
+                    "pl": "Obowiązuje, dopóki powiększony widok jest otwarty. Niższa wartość daje płynniejszy obraz i kosztuje tylko wtedy, gdy ktoś patrzy.",
+                    "uk": "Діє, поки відкрито збільшений вигляд. Менше значення дає плавнішу картинку й навантажує лише тоді, коли хтось дивиться.",
+                    "zh-cn": "在放大视图打开期间生效。数值越低画面越流畅，且仅在有人观看时才消耗资源。"
+                }
+            }
+        }
+    }
+}

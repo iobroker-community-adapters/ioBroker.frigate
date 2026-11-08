@@ -226,7 +226,19 @@
       "components": [
         {
           "name": "SnapshotComponent",
-          "label": "Frigate Snapshot",
+          "label": {
+            "en": "Frigate Snapshot",
+            "de": "Frigate-Standbild",
+            "ru": "Снимок Frigate",
+            "pt": "Instantâneo Frigate",
+            "nl": "Frigate momentopname",
+            "fr": "Instantané Frigate",
+            "it": "Istantanea Frigate",
+            "es": "Instantánea Frigate",
+            "pl": "Zdjęcie Frigate",
+            "uk": "Знімок Frigate",
+            "zh-cn": "Frigate 快照"
+          },
           "description": {
             "en": "Periodically updated still picture of a Frigate camera",
             "de": "Regelmäßig aktualisiertes Standbild einer Frigate-Kamera",
@@ -244,7 +256,19 @@
         },
         {
           "name": "LiveComponent",
-          "label": "Frigate Live",
+          "label": {
+            "en": "Frigate Live",
+            "de": "Frigate-Livebild",
+            "ru": "Живое изображение Frigate",
+            "pt": "Imagem ao vivo Frigate",
+            "nl": "Frigate livebeeld",
+            "fr": "Image en direct Frigate",
+            "it": "Immagine dal vivo Frigate",
+            "es": "Imagen en vivo Frigate",
+            "pl": "Obraz na żywo Frigate",
+            "uk": "Живе зображення Frigate",
+            "zh-cn": "Frigate 实时画面"
+          },
           "description": {
             "en": "Live MJPEG stream of a Frigate camera via the web adapter",
             "de": "Live-MJPEG-Stream einer Frigate-Kamera über den Web-Adapter",
@@ -261,7 +285,11 @@
           "icon": "frigate.png"
         }
       ]
-    }
+    },
+    "webComponents": [
+      "webcomponents/frigate-snapshot.json",
+      "webcomponents/frigate-live.json"
+    ]
   },
   "encryptedNative": [
     "mqttPassword",

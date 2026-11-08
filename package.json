@@ -59,21 +59,24 @@
     "test:integration": "mocha test/integration --exit",
     "test": "npm run test:js && npm run test:package",
     "lint": "eslint -c eslint.config.mjs && cd src-devices && npm run lint",
-    "npm": "npm i && cd src-devices && npm i",
+    "lint-wc": "cd src-webcomponents && npm run lint",
+    "check-wc": "cd src-webcomponents && npm run check-ts",
+    "npm": "npm i && cd src-devices && npm i && cd ../src-webcomponents && npm i",
     "translate": "translate-adapter",
     "release": "release-script --all",
     "release-patch": "release-script patch --yes",
     "release-minor": "release-script minor --yes",
     "release-major": "release-script major --yes",
     "prepublishOnly": "npm run build",
-    "build": "tsc -p tsconfig.build.json && npm run devices-build",
-    "update-packages": "npx -y npm-check-updates --upgrade && cd src-devices && npx -y npm-check-updates --upgrade",
+    "build": "tsc -p tsconfig.build.json && npm run devices-build && npm run build-wc",
+    "update-packages": "npx -y npm-check-updates --upgrade && cd src-devices && npx -y npm-check-updates --upgrade && cd ../src-webcomponents && npx -y npm-check-updates --upgrade",
     "devices-0-clean": "node tasks.ts --devices-0-clean",
     "devices-1-npm": "node tasks.ts --devices-1-npm",
     "devices-2-build": "node tasks.ts --devices-2-build",
     "devices-3-copy": "node tasks.ts --devices-3-copy",
     "devices-build": "node tasks.ts --devices-build",
-    "build-backend": "tsc -p tsconfig.build.json"
+    "build-backend": "tsc -p tsconfig.build.json",
+    "build-wc": "node tasks.ts --wc"
   },
   "bugs": {
     "url": "https://github.com/iobroker-community-adapters/ioBroker.frigate/issues"
