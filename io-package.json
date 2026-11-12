@@ -287,8 +287,50 @@
       ]
     },
     "webComponents": [
-      "webcomponents/frigate-snapshot.json",
-      "webcomponents/frigate-live.json"
+      {
+        "manifest": "webcomponents/frigate-snapshot.json",
+        "tag": "iob-frigate-snapshot",
+        "name": {
+          "en": "Frigate Snapshot",
+          "de": "Frigate-Standbild",
+          "ru": "Снимок Frigate",
+          "pt": "Instantâneo Frigate",
+          "nl": "Frigate momentopname",
+          "fr": "Instantané Frigate",
+          "it": "Istantanea Frigate",
+          "es": "Instantánea Frigate",
+          "pl": "Zdjęcie Frigate",
+          "uk": "Знімок Frigate",
+          "zh-cn": "Frigate 快照"
+        },
+        "icon": "../frigate.png",
+        "size": {
+          "width": 400,
+          "height": 250
+        }
+      },
+      {
+        "manifest": "webcomponents/frigate-live.json",
+        "tag": "iob-frigate-live",
+        "name": {
+          "en": "Frigate Live",
+          "de": "Frigate-Livebild",
+          "ru": "Живое изображение Frigate",
+          "pt": "Imagem ao vivo Frigate",
+          "nl": "Frigate livebeeld",
+          "fr": "Image en direct Frigate",
+          "it": "Immagine dal vivo Frigate",
+          "es": "Imagen en vivo Frigate",
+          "pl": "Obraz na żywo Frigate",
+          "uk": "Живе зображення Frigate",
+          "zh-cn": "Frigate 实时画面"
+        },
+        "icon": "../frigate.png",
+        "size": {
+          "width": 400,
+          "height": 250
+        }
+      }
     ]
   },
   "encryptedNative": [
