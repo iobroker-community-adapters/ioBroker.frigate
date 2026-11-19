@@ -42,8 +42,7 @@ if it has an effect beyond returning information.
     Placeholder for the next version (at the beginning of the line):
   ### **WORK IN PROGRESS**
 -->
-
-### **WORK IN PROGRESS**
+### 3.4.0 (2026-11-19)
 - (@GermanBluefox) Added the message "help": a description of all messages for AI agents (e.g. pi-agent), and `common.supportedMessages.help`
 - (@GermanBluefox) Added the short form of the web component manifests (tag, name, icon, size) to `common.webComponents`, so that hosts like Aura can list the components before the adapter is installed; the build writes it with `iob-web-components sync-io-package`
 - (@GermanBluefox) Every export in Frigate left 12 objects behind for good in `job_state.export.results.<camera>_<id>`, with the status "running" (a motion search one state per result): Frigate only reports the jobs that are queued or running. The objects of a job are now deleted as soon as it is no longer in `job_state`, and the job states from before the start are deleted at the start
@@ -61,9 +60,6 @@ if it has an effect beyond returning information.
 
 ### 3.2.4 (2026-11-06)
 - (@GermanBluefox) The event history (`events.history.*`, `<camera>.history.*`, `events.history.json`) is fetched again after every event, and nearly all of it was written again unchanged - several thousand writes within seconds, which every adapter subscribed to all states (e.g. MQTT with `*`, JavaScript) had to process as well. Now only values that changed are written, also after a restart. After an event only the overall history and the history of that camera are fetched, no longer those of all cameras. Live values from MQTT are written as before
-
-### 3.2.3 (2026-11-05)
-- (@GermanBluefox) ioBroker.web can stop the web extension and start it again with new settings instead of restarting itself (`supportsHotReload`, with a version of web that supports it). When it is stopped, the web extension now also ends the MJPEG streams to the browsers
 
 [Older changelogs can be found there](CHANGELOG_OLD.md)
 
