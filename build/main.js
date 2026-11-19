@@ -10,6 +10,7 @@ import { Aedes } from 'aedes';
 import mqtt from 'mqtt';
 import { Adapter, getAbsoluteDefaultDataDir } from '@iobroker/adapter-core';
 import { createFrigateConfigFile } from './lib/utils.js';
+import { COMMANDS, HELP } from './lib/help.js';
 import Json2iob from './lib/json2iob.js';
 import { handleMqttMessage } from './lib/messageHandler.js';
 import { prepareEventNotification, sendNotification } from './lib/notifications.js';
@@ -622,7 +623,12 @@ class FrigateAdapter extends Adapter {
         return FrigateAdapter.pickReachableIp(networkInterfaces(), browserIp) || hostname;
     }
     onMessage = (obj) => {
-        if (obj?.command === 'showLink') {
+        if (obj?.command === 'help') {
+            if (obj.callback) {
+                this.sendTo(obj.from, obj.command, { help: HELP, commands: COMMANDS }, obj.callback);
+            }
+        }
+        else if (obj?.command === 'showLink') {
             let data = { href: '', name: '' };
             // parse href
             if (typeof obj.message === 'string') {

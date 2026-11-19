@@ -143,6 +143,10 @@
     "tier": 3,
     "nogit": true,
     "messagebox": true,
+    "supportedMessages": {
+      "custom": true,
+      "help": true
+    },
     "mode": "daemon",
     "type": "alarm",
     "compact": true,

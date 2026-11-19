@@ -14,6 +14,7 @@ import { type AdapterOptions, Adapter, getAbsoluteDefaultDataDir } from '@iobrok
 
 import type { FrigateAdapterConfig, FrigateDockerManager, FrigateMessage, WebUrlReason } from './types.js';
 import { createFrigateConfigFile } from './lib/utils.js';
+import { COMMANDS, HELP } from './lib/help.js';
 import Json2iob from './lib/json2iob.js';
 import { handleMqttMessage, type MessageHandlerContext } from './lib/messageHandler.js';
 import { prepareEventNotification, sendNotification, type NotificationContext } from './lib/notifications.js';
@@ -715,7 +716,11 @@ class FrigateAdapter extends Adapter {
     }
 
     onMessage = (obj: ioBroker.Message): void => {
-        if (obj?.command === 'showLink') {
+        if (obj?.command === 'help') {
+            if (obj.callback) {
+                this.sendTo(obj.from, obj.command, { help: HELP, commands: COMMANDS }, obj.callback);
+            }
+        } else if (obj?.command === 'showLink') {
             let data: { href: string; name: string } = { href: '', name: '' };
             // parse href
             if (typeof obj.message === 'string') {
