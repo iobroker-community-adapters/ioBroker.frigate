@@ -9,6 +9,7 @@ updates:
     directories:
       - '/'
       - '/src-devices'
+      - '/src-webcomponents'
     schedule:
       interval: 'cron'
       timezone: 'Europe/Berlin'

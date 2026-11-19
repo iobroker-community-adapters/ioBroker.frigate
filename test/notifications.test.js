@@ -38,6 +38,8 @@ function makeCtx(tmpDir, { config = {}, download = 'ok', sendFails = false } = {
                 log: noopLog,
                 frigateBaseUrl: 'http://frigate.local:5000',
                 sleep: async () => {},
+                setTimeout: (cb, ms) => setTimeout(cb, ms),
+                clearTimeout: timer => clearTimeout(timer),
                 getStateAsync: async () => null,
                 sendToAsync: async () => {
                     calls.sends++;
@@ -130,6 +132,8 @@ function makeClipCtx(tmpDir, responder, logLines) {
                 log,
                 frigateBaseUrl: 'http://frigate.local:5000',
                 sleep: async () => {},
+                setTimeout: (cb, ms) => setTimeout(cb, ms),
+                clearTimeout: timer => clearTimeout(timer),
                 getStateAsync: async () => null,
                 sendToAsync: async () => {
                     calls.sends++;

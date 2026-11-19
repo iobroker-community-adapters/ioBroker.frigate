@@ -354,6 +354,8 @@
     "webInstance": "*",
     "route": "",
     "webnum": 10,
+    "historyPerCamera": true,
+    "historyStates": true,
     "notificationMinScore": 0,
     "notificationActive": false,
     "notificationInstances": "telegram.0",

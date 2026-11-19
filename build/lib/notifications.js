@@ -11,8 +11,9 @@ const CLIP_DOWNLOAD_ATTEMPTS = 3;
  * the server gave (for Frigate a JSON object with a `message`) would be lost without reading it here.
  *
  * @param data body of the error response: a stream, a buffer, a string or an already parsed object
+ * @param adapter for the timer, which the adapter clears when it stops
  */
-async function readErrorBody(data) {
+async function readErrorBody(data, adapter) {
     if (!data) {
         return '';
     }
@@ -34,13 +35,12 @@ async function readErrorBody(data) {
         const chunks = [];
         let length = 0;
         const stop = (timer) => {
-            clearTimeout(timer);
+            adapter.clearTimeout(timer);
             data.removeAllListeners?.('data');
             resolve(chunks.join('').slice(0, MAX_ERROR_BODY));
         };
         // Never block the notification flow if the server keeps the connection open
-        const timeout = setTimeout(() => stop(), 5000);
-        timeout.unref?.();
+        const timeout = adapter.setTimeout(() => stop(), 5000);
         const finish = () => stop(timeout);
         data.on('data', (chunk) => {
             if (length < MAX_ERROR_BODY) {
@@ -78,7 +78,8 @@ function parseErrorMessage(body) {
     return text;
 }
 /** Download an HTTP stream response to a local file */
-async function downloadStreamToFile(requestClient, url, fileName, log) {
+async function downloadStreamToFile(requestClient, url, fileName, adapter) {
+    const log = adapter.log;
     let writer = null;
     try {
         const response = await requestClient({ url, method: 'get', responseType: 'stream' });
@@ -104,7 +105,7 @@ async function downloadStreamToFile(requestClient, url, fileName, log) {
     }
     catch (error) {
         const status = error.response?.status;
-        const message = parseErrorMessage(await readErrorBody(error.response?.data));
+        const message = parseErrorMessage(await readErrorBody(error.response?.data, adapter));
         log.warn(`Download error from ${url}`);
         log.warn([status ? `Status ${status}` : '', message, !status ? String(error.message || error) : '']
             .filter(part => part)
@@ -150,7 +151,7 @@ async function downloadClipWithRetry(ctx, clipUrl, clipFileName) {
     for (let attempt = 1; attempt <= CLIP_DOWNLOAD_ATTEMPTS; attempt++) {
         ctx.adapter.log.debug(`Wait ${waitTime / 1000} seconds for clip (attempt ${attempt})`);
         await ctx.adapter.sleep(waitTime);
-        const result = await downloadStreamToFile(ctx.requestClient, clipUrl, clipFileName, ctx.adapter.log);
+        const result = await downloadStreamToFile(ctx.requestClient, clipUrl, clipFileName, ctx.adapter);
         if (result.ok) {
             return true;
         }
@@ -201,7 +202,7 @@ export async function prepareEventNotification(ctx, data) {
         if (imageUrl) {
             fileName = join(ctx.tmpDir, `${randomUUID()}.jpg`);
             ctx.adapter.log.debug(`create uuid image to ${fileName}`);
-            const downloaded = await downloadStreamToFile(ctx.requestClient, imageUrl, fileName, ctx.adapter.log);
+            const downloaded = await downloadStreamToFile(ctx.requestClient, imageUrl, fileName, ctx.adapter);
             if (!downloaded.ok) {
                 fileName = '';
             }

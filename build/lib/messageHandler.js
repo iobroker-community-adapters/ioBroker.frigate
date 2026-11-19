@@ -2,6 +2,7 @@ import fs from 'node:fs';
 import { join } from 'node:path';
 import { randomUUID } from 'node:crypto';
 import { ON_OFF_STATES } from './constants.js';
+import { handleJobState, JOB_STATE } from './jobState.js';
 import { STATS_DESCRIPTIONS, STATS_UNITS } from './statsMetadata.js';
 /** Remove path_data, gpu_usages, empty objects/arrays, and null values recursively */
 export function removePathData(obj) {
@@ -86,6 +87,10 @@ export async function handleMqttMessage(ctx, topic, payload) {
                 return;
             }
             removePathData(data);
+            if (command === JOB_STATE && pathArray.length === 1 && data && typeof data === 'object') {
+                await handleJobState(ctx, data);
+                return;
+            }
             if (event === 'snapshot') {
                 data = `data:image/jpeg;base64,${payload.toString('base64')}`;
                 if (ctx.adapter.config.notificationCamera && ctx.adapter.config.notificationActive) {

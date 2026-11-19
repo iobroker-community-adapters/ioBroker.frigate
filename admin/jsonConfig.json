@@ -172,6 +172,29 @@
                     "xl": 4,
                     "newLine": true
                 },
+                "historyPerCamera": {
+                    "type": "checkbox",
+                    "label": "Event history per camera",
+                    "help": "history_per_camera_help",
+                    "default": true,
+                    "xs": 12,
+                    "sm": 12,
+                    "md": 6,
+                    "lg": 4,
+                    "xl": 4,
+                    "newLine": true
+                },
+                "historyStates": {
+                    "type": "checkbox",
+                    "label": "Event history as single states",
+                    "help": "history_states_help",
+                    "default": true,
+                    "xs": 12,
+                    "sm": 12,
+                    "md": 6,
+                    "lg": 4,
+                    "xl": 4
+                },
                 "_headerWeb": {
                     "type": "header",
                     "text": "Camera proxy",

@@ -114,6 +114,15 @@ Der Adapter aktualisiert den Token automatisch wenn er abläuft (bei 401-Antwort
 | `events.after.has_snapshot` | Snapshot verfügbar               |
 | `events.after.has_clip`     | Clip verfügbar                   |
 | `events.history.json`       | JSON-Array der letzten X Events  |
+| `events.history.01.*` …     | Dieselben Events als einzelne States |
+| `<cam>.history.json`        | JSON-Array der letzten X Events dieser Kamera |
+| `<cam>.history.01.*` …      | Dieselben Events als einzelne States |
+
+Als einzelne States belegt jedes Event etwa 34 Objekte, und es sind (Kameras + 1) × X Events. Bei vielen Kameras wird so die Grenze überschritten, ab der ioBroker vor zu vielen Objekten warnt (5000 pro Instanz). Zwei Einstellungen im Abschnitt „Event History“ verringern das:
+- **Ereignis-Historie pro Kamera** — aus: nur `events.history`, kein `<cam>.history`
+- **Ereignis-Historie als einzelne Datenpunkte** — aus: nur die JSON-States `events.history.json` und `<cam>.history.json`
+
+Die Objekte, die nicht mehr gebraucht werden, löscht der Adapter beim Start.
 
 Jedes Event in der History enthält URLs für Snapshots und Clips:
 - `websnap` — Snapshot-URL
@@ -409,3 +418,6 @@ A: Setze `frigate.0.<kamera>.remote.motionThreshold` auf einen Wert zwischen 1-2
 
 **F: Benachrichtigungen werden nicht gesendet.**
 A: Stelle sicher, dass die Benachrichtigungs-Instanz (z.B. telegram.0) auf dem gleichen Host wie der Frigate-Adapter läuft. Prüfe ob Benachrichtigungen in den Adapter-Einstellungen aktiviert sind.
+
+**F: ioBroker warnt, dass frigate.0 zu viele Objekte hat.**
+A: Die meisten davon gehören zur Event-Historie, siehe [Events](#events). Schalte in den Adapter-Einstellungen „Ereignis-Historie pro Kamera“ oder „Ereignis-Historie als einzelne Datenpunkte“ aus, oder verringere die Anzahl der Events. Die Grenze selbst steht in `system.adapter.frigate.0.objectsWarnLimit`.

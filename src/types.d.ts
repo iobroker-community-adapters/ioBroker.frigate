@@ -157,6 +157,10 @@ export interface FrigateAdapterConfig extends FrigateAdapterConfigTyped {
     /** URL prefix of the proxied camera routes. Empty falls back to `<namespace>/`, e.g. `frigate.0/` */
     route: string;
     webnum: number | string;
+    /** Keep the history of every camera in `<camera>.history` as well. Missing (older settings) means on */
+    historyPerCamera?: boolean;
+    /** Write each event of the history as single states, not only as JSON. Missing means on */
+    historyStates?: boolean;
     notificationMinScore: number | string;
     notificationActive: boolean;
     notificationInstances: string;

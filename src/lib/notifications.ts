@@ -40,8 +40,9 @@ export interface DownloadResult {
  * the server gave (for Frigate a JSON object with a `message`) would be lost without reading it here.
  *
  * @param data body of the error response: a stream, a buffer, a string or an already parsed object
+ * @param adapter for the timer, which the adapter clears when it stops
  */
-async function readErrorBody(data: any): Promise<string> {
+async function readErrorBody(data: any, adapter: ioBroker.Adapter): Promise<string> {
     if (!data) {
         return '';
     }
@@ -61,14 +62,13 @@ async function readErrorBody(data: any): Promise<string> {
     return new Promise<string>(resolve => {
         const chunks: string[] = [];
         let length = 0;
-        const stop = (timer?: NodeJS.Timeout): void => {
-            clearTimeout(timer);
+        const stop = (timer?: ioBroker.Timeout): void => {
+            adapter.clearTimeout(timer);
             data.removeAllListeners?.('data');
             resolve(chunks.join('').slice(0, MAX_ERROR_BODY));
         };
         // Never block the notification flow if the server keeps the connection open
-        const timeout = setTimeout(() => stop(), 5000);
-        timeout.unref?.();
+        const timeout = adapter.setTimeout(() => stop(), 5000);
         const finish = (): void => stop(timeout);
         data.on('data', (chunk: Buffer) => {
             if (length < MAX_ERROR_BODY) {
@@ -111,8 +111,9 @@ async function downloadStreamToFile(
     requestClient: AxiosInstance,
     url: string,
     fileName: string,
-    log: ioBroker.Logger,
+    adapter: ioBroker.Adapter,
 ): Promise<DownloadResult> {
+    const log = adapter.log;
     let writer: fs.WriteStream | null = null;
     try {
         const response = await requestClient({ url, method: 'get', responseType: 'stream' });
@@ -137,7 +138,7 @@ async function downloadStreamToFile(
         return { ok: true, retryable: false };
     } catch (error: any) {
         const status: number | undefined = error.response?.status;
-        const message = parseErrorMessage(await readErrorBody(error.response?.data));
+        const message = parseErrorMessage(await readErrorBody(error.response?.data, adapter));
         log.warn(`Download error from ${url}`);
         log.warn(
             [status ? `Status ${status}` : '', message, !status ? String(error.message || error) : '']
@@ -190,7 +191,7 @@ async function downloadClipWithRetry(
     for (let attempt = 1; attempt <= CLIP_DOWNLOAD_ATTEMPTS; attempt++) {
         ctx.adapter.log.debug(`Wait ${waitTime / 1000} seconds for clip (attempt ${attempt})`);
         await ctx.adapter.sleep(waitTime);
-        const result = await downloadStreamToFile(ctx.requestClient, clipUrl, clipFileName, ctx.adapter.log);
+        const result = await downloadStreamToFile(ctx.requestClient, clipUrl, clipFileName, ctx.adapter);
         if (result.ok) {
             return true;
         }
@@ -248,7 +249,7 @@ export async function prepareEventNotification(ctx: NotificationContext, data: F
         if (imageUrl) {
             fileName = join(ctx.tmpDir, `${randomUUID()}.jpg`);
             ctx.adapter.log.debug(`create uuid image to ${fileName}`);
-            const downloaded = await downloadStreamToFile(ctx.requestClient, imageUrl, fileName, ctx.adapter.log);
+            const downloaded = await downloadStreamToFile(ctx.requestClient, imageUrl, fileName, ctx.adapter);
             if (!downloaded.ok) {
                 fileName = '';
             }

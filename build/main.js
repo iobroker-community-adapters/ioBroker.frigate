@@ -14,6 +14,7 @@ import Json2iob from './lib/json2iob.js';
 import { handleMqttMessage } from './lib/messageHandler.js';
 import { prepareEventNotification, sendNotification } from './lib/notifications.js';
 import { fetchEventHistory, createCameraDevices, cleanTrackedObjects, fetchFaceNames, handleTrackedObjectUpdate, } from './lib/eventHistory.js';
+import { deleteJobState } from './lib/jobState.js';
 import { handleStateChange } from './lib/stateHandler.js';
 import { ZoneAggregator } from './lib/zoneAggregator.js';
 import { reportPortConflict, trackUsedPort } from './lib/usedResources.js';
@@ -217,6 +218,7 @@ class FrigateAdapter extends Adapter {
     async cleanOldObjects() {
         await this.delObjectAsync('reviews.before.data.detections', { recursive: true });
         await this.delObjectAsync('reviews.after.data.detections', { recursive: true });
+        await deleteJobState(this);
         const allObjects = await this.getObjectListAsync({
             startkey: `${this.namespace}.`,
             endkey: `${this.namespace}.\u9999`,

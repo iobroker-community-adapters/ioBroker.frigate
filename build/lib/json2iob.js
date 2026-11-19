@@ -6,6 +6,8 @@ export default class Json2iob {
     lastValues = new Map();
     /** State ids below a parsed path, for `clearStatesNotWritten` */
     knownStates = new Map();
+    /** State and channel ids below a parsed path, for `deleteObjectsNotWritten` */
+    knownObjects = new Map();
     forbiddenCharsRegex;
     constructor(adapter) {
         if (!adapter) {
@@ -340,6 +342,82 @@ export default class Json2iob {
             }
         }
         return cleared;
+    }
+    /**
+     * Deletes the objects below `path` that a parse did not write, for data that is sent as a complete
+     * snapshot each time (e.g. `job_state`, which has only the jobs that run at that moment).
+     *
+     * `clearStatesNotWritten` keeps the objects and sets their values to null, which suits a list
+     * numbered by position. Here the ids come from the data itself (the id of a job, the time of a
+     * search result), so each new entry would leave its objects behind for good. A channel stays as
+     * long as a written state is below it. The objects below `path` are read from the object DB the
+     * first time, so objects left from before a restart are deleted as well.
+     *
+     * @param path - The path that was parsed. It stays itself.
+     * @param written - The ids the parse wrote, collected with `options.writtenIds`.
+     * @returns - The number of deleted objects.
+     */
+    async deleteObjectsNotWritten(path, written) {
+        path = path.replace(this.forbiddenCharsRegex, '_');
+        let known = this.knownObjects.get(path);
+        if (!known) {
+            known = new Set();
+            const prefix = `${this.adapter.namespace}.`;
+            for (const type of ['state', 'channel']) {
+                try {
+                    const view = await this.adapter.getObjectViewAsync('system', type, {
+                        startkey: `${prefix}${path}.`,
+                        endkey: `${prefix}${path}.香`,
+                    });
+                    for (const row of view?.rows || []) {
+                        known.add(row.id.substring(prefix.length));
+                    }
+                }
+                catch (error) {
+                    this.adapter.log.warn(`Cannot read the objects below ${path}: ${error}`);
+                }
+            }
+            this.knownObjects.set(path, known);
+        }
+        // The written states and the channels between them and `path`
+        const keep = new Set();
+        for (const id of written) {
+            let current = id;
+            while (current.length > path.length && !keep.has(current)) {
+                keep.add(current);
+                known.add(current);
+                current = current.substring(0, current.lastIndexOf('.'));
+            }
+        }
+        let deleted = 0;
+        for (const id of known) {
+            if (keep.has(id)) {
+                continue;
+            }
+            try {
+                await this.adapter.delObjectAsync(id);
+                deleted++;
+            }
+            catch (error) {
+                this.adapter.log.debug(`Cannot delete ${id}: ${error}`);
+            }
+            known.delete(id);
+            this.forget(id);
+        }
+        return deleted;
+    }
+    /**
+     * Forgets what is cached about an object, so that it is created again when the data has it again.
+     *
+     * @param id - The id without the namespace.
+     */
+    forget(id) {
+        delete this.alreadyCreatedObjects[id];
+        delete this.objectTypes[id];
+        this.lastValues.delete(id);
+        for (const states of this.knownStates.values()) {
+            states.delete(id);
+        }
     }
     /**
      * Writes a parsed value, unchanged values only if `options.onlyChanged` is not set.

@@ -11,18 +11,43 @@ interface EventHistoryContext {
 }
 
 /**
+ * Whether the history of every camera is kept in `<camera>.history` as well as in `events.history`.
+ *
+ * @param config the adapter settings; settings from before the option have it not and mean on
+ */
+function historyPerCamera(config: FrigateAdapterConfig): boolean {
+    return config.historyPerCamera !== false;
+}
+
+/**
+ * Whether each event of the history is written as single states, not only as JSON.
+ *
+ * @param config the adapter settings; settings from before the option have it not and mean on
+ */
+function historyStates(config: FrigateAdapterConfig): boolean {
+    return config.historyStates !== false;
+}
+
+/**
  * Reads the last events from Frigate into `events.history` (all cameras) and `<camera>.history`.
  *
+ * Each list is written as JSON (`<path>.json`) and, unless `historyStates` is off, as single states.
  * Only values that differ from the last fetch are written: the history is fetched again after every
  * event, and mostly nothing in it has changed. Writing everything again flooded the controller and
  * every adapter subscribed to all states with thousands of unchanged values.
  * Values the new data does not have any more are set to null, so no old event shows through.
  *
  * @param ctx adapter, client and the known cameras
- * @param devices cameras to fetch, '' for the history of all cameras; default: all known ones
+ * @param devices cameras to fetch, '' for the history of all cameras; default: all known ones. The
+ *     cameras are skipped when `historyPerCamera` is off
  */
 export async function fetchEventHistory(ctx: EventHistoryContext, devices: string[] = ctx.deviceArray): Promise<void> {
+    const perCamera = historyPerCamera(ctx.adapter.config);
+    const asStates = historyStates(ctx.adapter.config);
     for (const device of devices) {
+        if (device && !perCamera) {
+            continue;
+        }
         const params: { limit: number; cameras?: string } = { limit: ctx.adapter.config.webnum as number };
         if (device) {
             params.cameras = device;
@@ -47,29 +72,26 @@ export async function fetchEventHistory(ctx: EventHistoryContext, devices: strin
                         : `${ctx.adapter.frigateBaseUrl}/api/events/${event.id}/thumbnail.jpg`;
                     delete event.path_data;
                 }
-                let path = 'events.history';
-                if (device) {
-                    path = `${device}.history`;
-                }
+                const path = device ? `${device}.history` : 'events.history';
                 removePathData(response.data);
 
-                const written = new Set<string>();
-                await ctx.json2iob.parse(path, response.data, {
-                    forceIndex: true,
-                    channelName: 'Events history',
-                    onlyChanged: true,
-                    writtenIds: written,
-                });
-                // The entries are numbered by position: without this, a field the new event at a
-                // position does not have (e.g. no sub_label) kept the value of the event before, and
-                // the positions beyond a shorter list kept old events
-                const cleared = await ctx.json2iob.clearStatesNotWritten(path, written, ['events.history.json']);
-                if (cleared) {
-                    ctx.adapter.log.debug(`Cleared ${cleared} outdated values in ${path}`);
+                if (asStates) {
+                    const written = new Set<string>();
+                    await ctx.json2iob.parse(path, response.data, {
+                        forceIndex: true,
+                        channelName: 'Events history',
+                        onlyChanged: true,
+                        writtenIds: written,
+                    });
+                    // The entries are numbered by position: without this, a field the new event at a
+                    // position does not have (e.g. no sub_label) kept the value of the event before, and
+                    // the positions beyond a shorter list kept old events
+                    const cleared = await ctx.json2iob.clearStatesNotWritten(path, written, [`${path}.json`]);
+                    if (cleared) {
+                        ctx.adapter.log.debug(`Cleared ${cleared} outdated values in ${path}`);
+                    }
                 }
-                if (!device) {
-                    await ctx.json2iob.setStateIfChanged('events.history.json', JSON.stringify(response.data));
-                }
+                await ctx.json2iob.setStateIfChanged(`${path}.json`, JSON.stringify(response.data));
             }
         } catch (error: any) {
             ctx.adapter.log.warn(`fetchEventHistory error from ${ctx.adapter.frigateBaseUrl}/api/events`);
@@ -101,6 +123,12 @@ export async function createCameraDevices(ctx: EventHistoryContext): Promise<any
         return;
     }
 
+    const perCamera = historyPerCamera(ctx.adapter.config);
+    await ctx.adapter.extendObjectAsync('events.history', {
+        type: 'channel',
+        common: { name: 'Events history' },
+        native: {},
+    });
     if (data.cameras) {
         for (const key in data.cameras) {
             ctx.deviceArray.push(key);
@@ -110,11 +138,24 @@ export async function createCameraDevices(ctx: EventHistoryContext): Promise<any
                 common: { name: `Camera ${key}` },
                 native: {},
             });
-            await ctx.adapter.extendObjectAsync(`${key}.history`, {
-                type: 'channel',
-                common: { name: 'Event History' },
-                native: {},
-            });
+            if (perCamera) {
+                await ctx.adapter.extendObjectAsync(`${key}.history`, {
+                    type: 'channel',
+                    common: { name: 'Event History' },
+                    native: {},
+                });
+                await ctx.adapter.extendObjectAsync(`${key}.history.json`, {
+                    type: 'state',
+                    common: {
+                        name: 'Events history',
+                        role: 'json',
+                        type: 'string',
+                        read: true,
+                        write: false,
+                    },
+                    native: {},
+                });
+            }
             await ctx.adapter.extendObjectAsync(`${key}.remote`, {
                 type: 'channel',
                 common: { name: 'Control camera' },
@@ -260,10 +301,96 @@ export async function createCameraDevices(ctx: EventHistoryContext): Promise<any
         ctx.adapter.log.warn('No cameras found');
         ctx.adapter.log.info(JSON.stringify(data));
     }
-    ctx.adapter.log.info(`Fetch event history for ${ctx.deviceArray.length - 1} cameras`);
+    const cameras = ctx.deviceArray.filter(device => device);
+    await cleanEventHistoryObjects(ctx, cameras);
+    if (perCamera) {
+        ctx.adapter.log.info(`Fetch event history for ${cameras.length} cameras`);
+    } else {
+        ctx.adapter.log.info('Fetch event history (not per camera)');
+    }
     await fetchEventHistory(ctx);
     ctx.adapter.log.info('Device information created');
     return data;
+}
+
+/**
+ * Deletes the objects of the event history that the settings do not ask for (any more): the single
+ * states when only the JSON is wanted (`historyStates` off), the whole history of each camera when
+ * only the overall one is wanted (`historyPerCamera` off).
+ *
+ * Each event takes about 34 objects, and there are (cameras + 1) x `webnum` of them, which brought
+ * installations with many cameras over the warn limit of the controller (5000 objects per instance).
+ *
+ * @param ctx the adapter
+ * @param cameras names of the cameras
+ */
+export async function cleanEventHistoryObjects(
+    ctx: Pick<EventHistoryContext, 'adapter'>,
+    cameras: string[],
+): Promise<void> {
+    const asStates = historyStates(ctx.adapter.config);
+    const lists: { path: string; keepJson: boolean }[] = [];
+    if (!asStates) {
+        lists.push({ path: 'events.history', keepJson: true });
+    }
+    for (const camera of cameras) {
+        if (!historyPerCamera(ctx.adapter.config)) {
+            lists.push({ path: `${camera}.history`, keepJson: false });
+        } else if (!asStates) {
+            lists.push({ path: `${camera}.history`, keepJson: true });
+        }
+    }
+    for (const { path, keepJson } of lists) {
+        const deleted = await deleteHistoryObjects(ctx.adapter, path, keepJson);
+        if (deleted) {
+            ctx.adapter.log.info(`Deleted ${deleted} objects of the event history in ${path}`);
+        }
+    }
+}
+
+/**
+ * Deletes the states and channels below `path`.
+ *
+ * @param adapter the adapter
+ * @param path the history, e.g. `events.history`
+ * @param keepJson keep `<path>` and `<path>.json`, otherwise they are deleted as well
+ * @returns the number of deleted objects
+ */
+async function deleteHistoryObjects(adapter: ioBroker.Adapter, path: string, keepJson: boolean): Promise<number> {
+    const prefix = `${adapter.namespace}.`;
+    const ids: string[] = [];
+    try {
+        for (const type of ['state', 'channel'] as const) {
+            const view = await adapter.getObjectViewAsync('system', type, {
+                startkey: `${prefix}${path}.`,
+                endkey: `${prefix}${path}.香`,
+            });
+            for (const row of view?.rows || []) {
+                const id = row.id.substring(prefix.length);
+                if (!keepJson || id !== `${path}.json`) {
+                    ids.push(id);
+                }
+            }
+        }
+        if (!keepJson && (await adapter.getObjectAsync(path))) {
+            ids.push(path);
+        }
+    } catch (error) {
+        adapter.log.warn(
+            `Cannot read the objects below ${path}: ${error instanceof Error ? error.message : String(error)}`,
+        );
+        return 0;
+    }
+    let deleted = 0;
+    for (const id of ids) {
+        try {
+            await adapter.delObjectAsync(id);
+            deleted++;
+        } catch (error) {
+            adapter.log.debug(`Cannot delete ${id}: ${error instanceof Error ? error.message : String(error)}`);
+        }
+    }
+    return deleted;
 }
 
 /**
