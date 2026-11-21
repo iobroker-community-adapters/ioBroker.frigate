@@ -3,11 +3,19 @@
  * the MCP server with `send_to`) and for script authors. Keep it in sync with `onMessage` in main.ts and the docs.
  */
 
-/** The commands `onMessage` answers; `write`: the command has an effect beyond returning information */
-export const COMMANDS: { command: string; write: boolean }[] = [
+/**
+ * The commands `onMessage` answers; `write`: the command has an effect beyond returning information; `standard`:
+ * the command follows the shared catalog of camera commands (HELP.md of ioBroker.assistant)
+ */
+export const COMMANDS: { command: string; write: boolean; standard?: string }[] = [
     { command: 'help', write: false },
     { command: 'frigate:getCameras', write: false },
-    { command: 'snapshot', write: false },
+    { command: 'getCameras', write: false, standard: 'camera.getCameras' },
+    { command: 'snapshot', write: false, standard: 'camera.snapshot' },
+    { command: 'getStreamUrl', write: false, standard: 'camera.getStreamUrl' },
+    { command: 'getEvents', write: false, standard: 'camera.getEvents' },
+    { command: 'getEventImage', write: false, standard: 'camera.getEventImage' },
+    { command: 'pauseNotifications', write: true, standard: 'camera.pauseNotifications' },
     { command: 'frigate:getWebUrl', write: false },
     { command: 'restartContainer', write: true },
     { command: 'recreateContainer', write: true },
@@ -20,15 +28,36 @@ API. It reports per camera motion, the detected objects (person, car ...), their
 zones, recognized names, camera activity and statistics as states, switches detection, recording and
 snapshots per camera, and gives the current picture of a camera. An agent can look at a camera, read what
 was detected where and when, and switch these functions on the user's request.
+getCameras, snapshot, getStreamUrl, getEvents, getEventImage and pauseNotifications are the commands of the shared
+catalog of camera commands (standard camera.<command>): the same names, parameters and answers as in other camera
+adapters. Their errors: {error, reason}; reason BAD_REQUEST (a parameter is missing or wrong), NOT_FOUND or
+AMBIGUOUS with candidates (the camera names that fit), NOT_CONNECTED (no Frigate URL set, Frigate not reachable),
+NOT_SUPPORTED. camera = the Frigate name, compared without case; an exact name wins over a part of a name.
 
 Commands (sendTo frigate.0):
-- frigate:getCameras: the cameras: [{value, label}], both the Frigate name of the camera (e.g. "driveway").
+- getCameras: the cameras: {cameras: [{id, name}]}, both the Frigate name of the camera (e.g. "driveway").
+- frigate:getCameras: the same as [{value, label}] (for selects).
 - snapshot {camera, height?, quality?, bbox?, timestamp?} (or just the camera name as a string): the current
   frame of a camera from Frigate: {data, contentType}; data = the JPEG as base64 (no "data:" prefix).
   camera (string, required): the Frigate name (letters, digits, _ and -). height (pixels, default the size of
-  the camera; the width follows). quality (JPEG quality 1-100, default of Frigate). bbox (boolean): Frigate draws
-  the boxes of the detected objects. timestamp (boolean): Frigate draws the time. Errors: {error} (invalid camera
-  name, no Frigate URL set, Frigate not reachable).
+  the camera; the width follows; width and fileName of the catalog are not supported). quality (JPEG quality
+  1-100, default of Frigate). bbox (boolean): Frigate draws the boxes of the detected objects. timestamp
+  (boolean): Frigate draws the time. A camera the adapter does not know is asked of Frigate under that name.
+- getStreamUrl {camera, format?, hostname?}: the live stream of a camera through ioBroker.web (no Frigate login
+  needed): {url, format: "mjpeg"}, e.g. http://192.168.1.5:8082/frigate.0/driveway/stream.mjpeg. Only format
+  mjpeg (other formats: NOT_SUPPORTED), only with a web instance set in the settings (else NOT_SUPPORTED).
+  hostname = the host name the browser uses for ioBroker (picks the matching address).
+- getEvents {camera?, label?, start?, end?, limit?}: the last events: {events: [{id, camera, label, start, end?,
+  score?, name?}]}, newest first; start, end in ms since 1970 (parameters also as ISO 8601 text), label e.g.
+  person or car (without case), name = a recognized face or license plate (sub label of Frigate), score 0-1.
+  Only the events the adapter keeps: the last N of all cameras (events.history.json) or of one camera
+  (<cam>.history.json); N = "Number of last Events History" in the settings, default 10. start/end filter the
+  start of the event.
+- getEventImage {id} (or the id as a string): the snapshot Frigate stored for an event of getEvents: {data,
+  contentType}; NOT_FOUND if the event has none.
+- pauseNotifications {camera?, seconds}: no notifications of this adapter (messages to Telegram etc.) for one
+  camera or, without camera, for all, for that time (rounded up to minutes); seconds 0 ends the pause:
+  {ok: true, until} (ms since 1970). The notifications of Frigate itself are not touched.
 - frigate:getWebUrl {hostname?}: where ioBroker.web serves the cameras: {url, route, reason?}, e.g. url
   "http://192.168.1.5:8082", route "frigate.0/"; <url>/<route><camera>/snapshot.jpg is the current picture and
   <url>/<route><camera>/stream.mjpeg the live stream. url "" with reason disabled, noInstance, noAddress or error.
@@ -36,7 +65,7 @@ Commands (sendTo frigate.0):
 - restartContainer: restarts the Frigate Docker container (only if the adapter runs Frigate in Docker):
   {result} or {error}. recreateContainer: deletes the container and restarts the instance, which creates it
   again: {result} or {error}.
-- help: this text and the list of commands with their write flag.
+- help: this text and the list of commands with their write flag (and standard for the commands of the catalog).
 - showLink, readConfig: for the settings, not for agents.
 
 States (frigate.0.*), <cam> = the Frigate name of a camera, <zone> = a zone of Frigate:
@@ -76,6 +105,6 @@ How to talk to the user:
 - Use height 720 or less: the whole JPEG comes back as base64 in the answer.
 - Pictures of cameras are private: do not send them to other people (messenger, e-mail) or to another adapter
   unless the user asked for exactly that.
-- Switching detection, recordings, snapshots or notifications off, PTZ moves, creating events, restarting
-  Frigate (remote.restart, restartContainer) and recreateContainer: only on the user's explicit request; ask
-  before turning off recording or detection of a camera.`;
+- Switching detection, recordings, snapshots or notifications off (also pauseNotifications), PTZ moves, creating
+  events, restarting Frigate (remote.restart, restartContainer) and recreateContainer: only on the user's explicit
+  request; ask before turning off recording or detection of a camera.`;

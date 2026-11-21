@@ -22,9 +22,21 @@ describe('help', () => {
         for (const { command, write } of COMMANDS) {
             assert.strictEqual(typeof write, 'boolean', command);
         }
-        // only the Docker commands have an effect
+        // only the Docker commands and the pause of the notifications have an effect
         const writing = COMMANDS.filter(c => c.write).map(c => c.command);
-        assert.deepStrictEqual(writing.sort(), ['recreateContainer', 'restartContainer']);
+        assert.deepStrictEqual(writing.sort(), ['pauseNotifications', 'recreateContainer', 'restartContainer']);
+    });
+
+    it('marks the commands of the shared catalog with standard', () => {
+        const marked = Object.fromEntries(COMMANDS.filter(c => c.standard).map(c => [c.command, c.standard]));
+        assert.deepStrictEqual(marked, {
+            getCameras: 'camera.getCameras',
+            snapshot: 'camera.snapshot',
+            getStreamUrl: 'camera.getStreamUrl',
+            getEvents: 'camera.getEvents',
+            getEventImage: 'camera.getEventImage',
+            pauseNotifications: 'camera.pauseNotifications',
+        });
     });
 
     it('names every command', () => {

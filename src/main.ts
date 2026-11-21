@@ -15,6 +15,18 @@ import { type AdapterOptions, Adapter, getAbsoluteDefaultDataDir } from '@iobrok
 import type { FrigateAdapterConfig, FrigateDockerManager, FrigateMessage, WebUrlReason } from './types.js';
 import { createFrigateConfigFile } from './lib/utils.js';
 import { COMMANDS, HELP } from './lib/help.js';
+import {
+    findCamera,
+    isStandardError,
+    parseSeconds,
+    parseTime,
+    requestError,
+    snapshotCamera,
+    toStandardEvents,
+    type StandardCamera,
+    type StandardError,
+    type StandardEvent,
+} from './lib/standard.js';
 import Json2iob from './lib/json2iob.js';
 import { handleMqttMessage, type MessageHandlerContext } from './lib/messageHandler.js';
 import { prepareEventNotification, sendNotification, type NotificationContext } from './lib/notifications.js';
@@ -810,27 +822,31 @@ class FrigateAdapter extends Adapter {
         } else if (obj?.command === 'snapshot') {
             // Deliver a still image over the socket. The device manager widgets use this instead of the
             // HTTP route of the web adapter, because the Devices UI is normally served from admin (8081)
-            // where /frigate.0/... does not exist.
-            const message = (typeof obj.message === 'string' ? { camera: obj.message } : obj.message) as {
-                camera?: string;
-                height?: number | string;
-                quality?: number | string;
-                bbox?: boolean;
-                timestamp?: boolean;
-            };
-
-            this.getSnapshot(message)
-                .then(data => obj.callback && this.sendTo(obj.from, obj.command, data, obj.callback))
-                .catch(
-                    (e: unknown) =>
-                        obj.callback &&
-                        this.sendTo(
-                            obj.from,
-                            obj.command,
-                            { error: e instanceof Error ? e.message : String(e) },
-                            obj.callback,
-                        ),
-                );
+            // where /frigate.0/... does not exist. It is also camera.snapshot of the shared catalog.
+            void this.standardSnapshot(obj.message).then(
+                answer => obj.callback && this.sendTo(obj.from, obj.command, answer, obj.callback),
+            );
+        } else if (obj?.command === 'getCameras') {
+            // getCameras ... pauseNotifications: the commands of the shared catalog (family camera)
+            void this.standardCameras().then(
+                cameras => obj.callback && this.sendTo(obj.from, obj.command, { cameras }, obj.callback),
+            );
+        } else if (obj?.command === 'getStreamUrl') {
+            void this.standardStreamUrl(obj.message).then(
+                answer => obj.callback && this.sendTo(obj.from, obj.command, answer, obj.callback),
+            );
+        } else if (obj?.command === 'getEvents') {
+            void this.standardEvents(obj.message).then(
+                answer => obj.callback && this.sendTo(obj.from, obj.command, answer, obj.callback),
+            );
+        } else if (obj?.command === 'getEventImage') {
+            void this.standardEventImage(obj.message).then(
+                answer => obj.callback && this.sendTo(obj.from, obj.command, answer, obj.callback),
+            );
+        } else if (obj?.command === 'pauseNotifications') {
+            void this.standardPauseNotifications(obj.message).then(
+                answer => obj.callback && this.sendTo(obj.from, obj.command, answer, obj.callback),
+            );
         }
     };
 
@@ -889,6 +905,175 @@ class FrigateAdapter extends Adapter {
         };
     }
 
+    /** The cameras for `getCameras` of the shared catalog: Frigate knows only the name, so id = name */
+    private async standardCameras(): Promise<StandardCamera[]> {
+        return (await this.cameraNames()).map(name => ({ id: name, name }));
+    }
+
+    /**
+     * `snapshot` (also camera.snapshot of the shared catalog): the current frame, the camera found by its name
+     * without case. A camera the adapter does not know (yet) is asked of Frigate under the given name, as before.
+     *
+     * @param message `{camera, height?, quality?, bbox?, timestamp?}` or the camera name as a string
+     */
+    private async standardSnapshot(message: unknown): Promise<{ data: string; contentType: string } | StandardError> {
+        const request = (typeof message === 'string' ? { camera: message } : message || {}) as Record<string, unknown>;
+        // The widgets ask with the exact name every few seconds: look the name up only when it is not that
+        const camera =
+            typeof request.camera === 'string' && this.deviceArray.includes(request.camera)
+                ? request.camera
+                : snapshotCamera(await this.standardCameras(), request.camera);
+        if (typeof camera !== 'string') {
+            return camera;
+        }
+        if (!this.frigateBaseUrl) {
+            return { error: 'No Frigate url set', reason: 'NOT_CONNECTED' };
+        }
+        try {
+            return await this.getSnapshot({ ...request, camera });
+        } catch (e) {
+            return requestError(e, {
+                error: `Camera "${camera}" not found`,
+                reason: 'NOT_FOUND',
+                candidates: (await this.standardCameras()).map(cam => cam.name),
+            });
+        }
+    }
+
+    /**
+     * `getStreamUrl` of the shared catalog: the live MJPEG stream that ioBroker.web serves for a camera.
+     *
+     * @param message `{camera, format?, hostname?}` or the camera name as a string
+     */
+    private async standardStreamUrl(message: unknown): Promise<{ url: string; format: 'mjpeg' } | StandardError> {
+        const request = (typeof message === 'string' ? { camera: message } : message || {}) as Record<string, unknown>;
+        if (
+            request.format !== undefined &&
+            request.format !== null &&
+            request.format !== '' &&
+            request.format !== 'mjpeg'
+        ) {
+            return {
+                error: `The format ${JSON.stringify(request.format)} is not available, only mjpeg`,
+                reason: 'NOT_SUPPORTED',
+            };
+        }
+        const found = findCamera(await this.standardCameras(), request.camera);
+        if (isStandardError(found)) {
+            return found;
+        }
+        const web = await this.resolveWebUrl(typeof request.hostname === 'string' ? request.hostname : '');
+        if (!web.url) {
+            return {
+                error: `ioBroker.web does not serve the cameras of ${this.namespace} (${web.reason})`,
+                reason: 'NOT_SUPPORTED',
+            };
+        }
+        return { url: `${web.url}/${web.route}${encodeURIComponent(found.id)}/stream.mjpeg`, format: 'mjpeg' };
+    }
+
+    /**
+     * `getEvents` of the shared catalog: the events of the history the adapter keeps (the last "webnum" of all
+     * cameras in events.history.json, per camera in <camera>.history.json).
+     *
+     * @param message `{camera?, label?, start?, end?, limit?}`
+     */
+    private async standardEvents(message: unknown): Promise<{ events: StandardEvent[] } | StandardError> {
+        const request = (message || {}) as Record<string, unknown>;
+        const start = parseTime(request.start);
+        const end = parseTime(request.end);
+        if (Number.isNaN(start) || Number.isNaN(end)) {
+            return { error: 'start and end must be ms since 1970 or an ISO 8601 time', reason: 'BAD_REQUEST' };
+        }
+        let camera: string | undefined;
+        if (request.camera !== undefined && request.camera !== null && request.camera !== '') {
+            const found = findCamera(await this.standardCameras(), request.camera);
+            if (isStandardError(found)) {
+                return found;
+            }
+            camera = found.id;
+        }
+        try {
+            // the list of one camera is longer for that camera, but exists only with historyPerCamera
+            let state = camera ? await this.getStateAsync(`${camera}.history.json`) : null;
+            if (!state?.val) {
+                state = await this.getStateAsync('events.history.json');
+            }
+            const history: unknown = state?.val ? JSON.parse(String(state.val)) : [];
+            const events = toStandardEvents(history, {
+                camera,
+                label: typeof request.label === 'string' && request.label ? request.label : undefined,
+                start,
+                end,
+                limit: parseInt(String(request.limit), 10) || undefined,
+            });
+            return { events };
+        } catch (e) {
+            return { error: `Cannot read the event history: ${e instanceof Error ? e.message : String(e)}` };
+        }
+    }
+
+    /**
+     * `getEventImage` of the shared catalog: the snapshot Frigate stored for an event.
+     *
+     * @param message `{id}` (the id of getEvents) or the id as a string
+     */
+    private async standardEventImage(message: unknown): Promise<{ data: string; contentType: string } | StandardError> {
+        const id = typeof message === 'string' ? message : (message as { id?: unknown } | null | undefined)?.id;
+        // Event ids look like 1700000000.123456-abc123 - refuse anything that could leave /api/events/<id>/
+        if (typeof id !== 'string' || !/^[A-Za-z0-9._-]+$/.test(id) || id.includes('..')) {
+            return { error: `Invalid event id: "${String(id)}"`, reason: 'BAD_REQUEST' };
+        }
+        if (!this.frigateBaseUrl) {
+            return { error: 'No Frigate url set', reason: 'NOT_CONNECTED' };
+        }
+        try {
+            const response = await this.requestClient.get(`${this.frigateBaseUrl}/api/events/${id}/snapshot.jpg`, {
+                responseType: 'arraybuffer',
+            });
+            return {
+                data: Buffer.from(response.data as ArrayBuffer).toString('base64'),
+                contentType: (response.headers['content-type'] as string) || 'image/jpeg',
+            };
+        } catch (e) {
+            return requestError(e, { error: `Event "${id}" not found or without a snapshot`, reason: 'NOT_FOUND' });
+        }
+    }
+
+    /**
+     * `pauseNotifications` of the shared catalog: no notifications of the adapter for a camera (or all) for a
+     * while, through the states remote.pauseNotificationsForTime (minutes, rounded up) and remote.pauseNotifications.
+     *
+     * @param message `{camera?, seconds}`; seconds 0 ends the pause
+     */
+    private async standardPauseNotifications(message: unknown): Promise<{ ok: true; until: number } | StandardError> {
+        const request = (message || {}) as Record<string, unknown>;
+        const seconds = parseSeconds(request.seconds);
+        if (Number.isNaN(seconds)) {
+            return { error: 'The parameter "seconds" must be a number of 0 or more', reason: 'BAD_REQUEST' };
+        }
+        let prefix = '';
+        if (request.camera !== undefined && request.camera !== null && request.camera !== '') {
+            const found = findCamera(await this.standardCameras(), request.camera);
+            if (isStandardError(found)) {
+                return found;
+            }
+            prefix = `${found.id}.`;
+        }
+        try {
+            if (!seconds) {
+                await this.setStateAsync(`${prefix}remote.pauseNotifications`, false, true);
+                return { ok: true, until: Date.now() };
+            }
+            const minutes = Math.ceil(seconds / 60);
+            // handled in stateHandler.ts like a write of the user: pauses and ends the pause after the minutes
+            await this.setStateAsync(`${prefix}remote.pauseNotificationsForTime`, minutes, false);
+            return { ok: true, until: Date.now() + minutes * 60_000 };
+        } catch (e) {
+            return { error: `Cannot pause the notifications: ${e instanceof Error ? e.message : String(e)}` };
+        }
+    }
+
     /**
      * Build the base URL of one web instance, as seen from the browser that asked.
      *
@@ -941,28 +1126,41 @@ class FrigateAdapter extends Adapter {
      * @param obj the 'frigate:getWebUrl' message; `message.hostname` is the browser's own hostname
      */
     private async getWebUrl(obj: ioBroker.Message): Promise<void> {
+        const message = (typeof obj.message === 'string' ? { hostname: obj.message } : obj.message || {}) as {
+            hostname?: string;
+        };
+        const answer = await this.resolveWebUrl(message.hostname || '');
+        if (obj.callback) {
+            this.sendTo(obj.from, obj.command, answer, obj.callback);
+        }
+    }
+
+    /**
+     * Where ioBroker.web serves the cameras: for `frigate:getWebUrl` and `getStreamUrl`.
+     *
+     * @param hostname the host name the browser uses for ioBroker, '' if unknown
+     * @returns url '' with the reason when there is no web instance for it
+     */
+    private async resolveWebUrl(hostname: string): Promise<{ url: string; route: string; reason?: WebUrlReason }> {
         const route = (this.config.route || `${this.namespace}/`).replace(/^\/+/, '');
         // `reason` is a code the widget turns into a translated text; `detail` only reaches the log,
         // so its wording stays free to change
-        const reply = (url: string, reason?: WebUrlReason, detail?: string): void => {
+        const reply = (
+            url: string,
+            reason?: WebUrlReason,
+            detail?: string,
+        ): { url: string; route: string; reason?: WebUrlReason } => {
             if (detail) {
                 this.log.debug(`Camera proxy not available (${reason}): ${detail}`);
             }
-            if (obj.callback) {
-                this.sendTo(obj.from, obj.command, { url, route, reason }, obj.callback);
-            }
-        };
-
-        const message = (typeof obj.message === 'string' ? { hostname: obj.message } : obj.message || {}) as {
-            hostname?: string;
+            return { url, route, reason };
         };
 
         try {
             const own = await this.getForeignObjectAsync(`system.adapter.${this.namespace}`);
             const wanted = ((own?.native as { webInstance?: string })?.webInstance || '').trim();
             if (!wanted) {
-                reply('', 'disabled');
-                return;
+                return reply('', 'disabled');
             }
 
             const view = await this.getObjectViewAsync('system', 'instance', {
@@ -985,31 +1183,29 @@ class FrigateAdapter extends Adapter {
                 .sort((a, b) => a._id.localeCompare(b._id));
 
             if (!candidates.length) {
-                reply(
+                return reply(
                     '',
                     'noInstance',
                     wanted === '*'
                         ? 'No enabled web instance found'
                         : `Web instance "${wanted}" is not enabled or does not exist`,
                 );
-                return;
             }
 
-            const browserIp = await this.resolveToIPv4(message.hostname || '');
+            const browserIp = await this.resolveToIPv4(hostname);
             for (const instance of candidates) {
                 const url = await this.buildWebInstanceUrl(instance, browserIp);
                 if (url) {
                     this.log.debug(`Camera proxy of ${instance._id} resolved to ${url}/${route}`);
-                    reply(url);
-                    return;
+                    return reply(url);
                 }
             }
 
-            reply('', 'noAddress', 'The host of the web instance has no reachable address');
+            return reply('', 'noAddress', 'The host of the web instance has no reachable address');
         } catch (error) {
             const text = error instanceof Error ? error.message : String(error);
             this.log.warn(`Cannot resolve the web URL: ${text}`);
-            reply('', 'error', text);
+            return reply('', 'error', text);
         }
     }
 
@@ -1024,6 +1220,20 @@ class FrigateAdapter extends Adapter {
      * @param obj the 'frigate:getCameras' message
      */
     private async sendCameraList(obj: ioBroker.Message): Promise<void> {
+        const list = (await this.cameraNames()).map(name => ({ value: name, label: name }));
+        this.log.debug(`Reporting ${list.length} camera(s) to ${obj.from}`);
+
+        if (obj.callback) {
+            this.sendTo(obj.from, obj.command, list, obj.callback);
+        }
+    }
+
+    /**
+     * The names of the cameras, sorted: for `frigate:getCameras` and the commands of the shared catalog.
+     *
+     * @returns the Frigate names of the cameras
+     */
+    private async cameraNames(): Promise<string[]> {
         const cameras = new Set<string>();
 
         for (const name of this.deviceArray) {
@@ -1052,12 +1262,7 @@ class FrigateAdapter extends Adapter {
             this.log.warn(`Cannot read the camera devices: ${error instanceof Error ? error.message : String(error)}`);
         }
 
-        const list = [...cameras].sort((a, b) => a.localeCompare(b)).map(name => ({ value: name, label: name }));
-        this.log.debug(`Reporting ${list.length} camera(s) to ${obj.from}`);
-
-        if (obj.callback) {
-            this.sendTo(obj.from, obj.command, list, obj.callback);
-        }
+        return [...cameras].sort((a, b) => a.localeCompare(b));
     }
 
     /**

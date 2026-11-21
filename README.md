@@ -32,6 +32,10 @@ Adapter for [Frigate NVR](https://frigate.video/) — an open-source, self-hoste
 states for AI agents (e.g. ioBroker.pi-agent) and script authors, and the list of all commands, each with `write: true`
 if it has an effect beyond returning information.
 
+`getCameras`, `snapshot`, `getStreamUrl`, `getEvents`, `getEventImage` and `pauseNotifications` follow the commands
+that camera adapters share (the camera by its name without case, errors as `{ error, reason }`); `help` describes
+their parameters and answers.
+
 ## Discussion and questions
 
 [https://forum.iobroker.net/topic/64928/frigate-adapter-für-iobroker](https://forum.iobroker.net/topic/64928/frigate-adapter-für-iobroker)
@@ -42,6 +46,9 @@ if it has an effect beyond returning information.
     Placeholder for the next version (at the beginning of the line):
   ### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+- (@GermanBluefox) Added the standard commands of the shared catalog: camera.getCameras, camera.snapshot, camera.getStreamUrl, camera.getEvents, camera.getEventImage, camera.pauseNotifications
+
 ### 3.4.0 (2026-11-19)
 - (@GermanBluefox) Added the message "help": a description of all messages for AI agents (e.g. pi-agent), and `common.supportedMessages.help`
 - (@GermanBluefox) Added the short form of the web component manifests (tag, name, icon, size) to `common.webComponents`, so that hosts like Aura can list the components before the adapter is installed; the build writes it with `iob-web-components sync-io-package`
